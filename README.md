@@ -1,3 +1,8 @@
+
+
+[<img src="https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.jpg" width="50%">](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4)
+
+
 READ ME:  Spiraloid Blender 2.8x essentials setup
 
 misc Blender utilities

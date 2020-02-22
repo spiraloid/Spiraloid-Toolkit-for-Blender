@@ -1,4 +1,4 @@
-READ ME:  Spiraloid Blender 2.79 essentials setup
+READ ME:  Spiraloid Blender 2.8x essentials setup
 
 misc Blender utilities
 
@@ -14,19 +14,19 @@ Installation:
 
 WARNING!!!:  Blender users may wish to backup your current configuration before installing in case something goes wrong you can undo.  For example on a Mac,  creating a compressed zip archive of this folder:
 
-~/Library/Application Support/Blender/2.79
+~/Library/Application Support/Blender/2.82
 
 (or on windows 10)
 
-%APPDATA%\Roaming\Blender Foundation\Blender\2.79
+%APPDATA%\Roaming\Blender Foundation\Blender\2.82
 
  is a good idea.  
 (This is where blender stores all your preference data)
 
 Next
 
-Install blender 2.79 (if you have not already done so)
-https://www.blender.org/download/releases/2-79/
+Install blender 2.82 (if you have not already done so)
+https://www.blender.org/download/releases/2-82/
 
 Open Blender and edit  “file > User Preferences”.
 Under the add on tab, use button at Bottom that says “install add on from file”
@@ -87,7 +87,9 @@ Alt 5 set view to bottom
 Alt 6 set view to back
 
 Alt mouse wheel scrubs though frames
-Cmd mouse wheel scrubs though keyframes of selected objects.
+Ctrl mouse wheel scrubs though keyframes of selected objects.
+Ctrl mouse wheel expands or shrinks selection in edit mode.
+
 
 Up Arrow goes to first frame
 Down Arrow goes to last frame
@@ -108,6 +110,13 @@ E edges
 F faces
 V vertices
 
+shift+E Extrude edges/vertices/faces
+alt+E selects edge ring
+alt+shift+E selects edge ring
+ctrl+alt+shift+E selects boundary edge loop
+
+shift+MMB shirnk/fatten selection
+ctrl+shift+MMB crease/uncrease edges
 
 ---
 ---

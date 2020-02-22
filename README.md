@@ -1,6 +1,6 @@
 
 
-[<img src="https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.jpg" width="50%">](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4)
+[Demo Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4)
 
 
 READ ME:  Spiraloid Blender 2.8x essentials setup
@@ -83,7 +83,8 @@ Mouse wheel over a 3D view and the view will spin around the aimpoint like a scu
 You can set the aimpoint by hitting alt-a 
 (or cmd-a on a Mac).   This is actually an add-on I had to write.  It moves the cursor and aims to that.  Trust me.  Every other way to do this sucked.
 
-Alt ` set view to current camera
+` toggle between local global pivot placement.  (its called Accent_Grave in the demo video)
+Alt ` set view to current camera  (its called Accent_Grave in the demo video)
 Alt 1 set view to front
 Alt 2 set view to left
 Alt 3 set view to top

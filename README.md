@@ -177,8 +177,6 @@ I also strongly suggest these paid addons:
 
 https://blendermarket.com/products/voxel-heat-diffuse-skinning
 
-https://github.com/ucupumar/yPanel
-
 https://blendermarket.com/products/auto-rig-pro
 
 http://renderhjs.net/textools/blender/
@@ -205,5 +203,4 @@ good luck with your art.
 my 3D Graphic Novel "Nanite Fulcrum"
 http://spiraloid.net/nanitefulcrum
 
-my patreon
-https://www.patreon.com/spiraloid
+

@@ -1,13 +1,13 @@
 
 
-[<img src="https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.jpg" width="50%">](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4)
+[Demo Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4)
 
 
 READ ME:  Spiraloid Blender 2.8x essentials setup
 
 misc Blender utilities
 
-Unless stated otherwise, many of these scripts and addons are a collaboration of others from the blender open source community. I am posting the python scripts here because as I have updated or modified the code to work with blender 2.79 and suit my own workflows. No warranty or support should be implied. I am merely standing on the shoulders of others.
+Unless stated otherwise, many of these scripts and addons are a collaboration of others from the blender open source community. I am posting the python scripts here because as I have updated or modified the code to work with blender 2.82 and suit my own workflows. No warranty or support should be implied. I am merely standing on the shoulders of others.
 I try to reference the original authors and link to forum posts or webpages as I can in the history.
 Any concerns, feel free to contact me and I can adjust. Just want to share as I get with other awesome blender users.
 
@@ -83,7 +83,8 @@ Mouse wheel over a 3D view and the view will spin around the aimpoint like a scu
 You can set the aimpoint by hitting alt-a 
 (or cmd-a on a Mac).   This is actually an add-on I had to write.  It moves the cursor and aims to that.  Trust me.  Every other way to do this sucked.
 
-Alt ` set view to current camera
+` toggle between local global pivot placement.  (its called Accent_Grave in the demo video)
+Alt ` set view to current camera  (its called Accent_Grave in the demo video)
 Alt 1 set view to front
 Alt 2 set view to left
 Alt 3 set view to top
@@ -176,8 +177,6 @@ I also strongly suggest these paid addons:
 
 https://blendermarket.com/products/voxel-heat-diffuse-skinning
 
-https://github.com/ucupumar/yPanel
-
 https://blendermarket.com/products/auto-rig-pro
 
 http://renderhjs.net/textools/blender/
@@ -204,5 +203,4 @@ good luck with your art.
 my 3D Graphic Novel "Nanite Fulcrum"
 http://spiraloid.net/nanitefulcrum
 
-my patreon
-https://www.patreon.com/spiraloid
+

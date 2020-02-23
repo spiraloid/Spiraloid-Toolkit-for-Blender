@@ -9,7 +9,8 @@ bl_info = {
 
 import bpy
 
-isToggleSubd = False
+isToggleSubd = True
+currentSubdLevel = 0
 
 def main_decrease(context):
     for obj in bpy.context.scene.objects:
@@ -23,6 +24,10 @@ def main_decrease(context):
                 mod_next_level = mod.levels - 1
                 if mod_next_level >= 0:
                     mod.levels = mod_next_level
+                    bpy.context.space_data.overlay.show_wireframes = False
+                else :
+                    bpy.context.space_data.overlay.show_wireframes = True
+
     return {'FINISHED'}
 
 def main_increase(context):
@@ -38,6 +43,7 @@ def main_increase(context):
             mod_next_level = mod.levels + 1
             if mod_next_level <= mod_max_level:
                 mod.levels = mod_next_level
+    bpy.context.space_data.overlay.show_wireframes = False
     return {'FINISHED'}
 
 
@@ -103,6 +109,7 @@ def main_subdivide(context):
 
 def main_toggle(context):
     global isToggleSubd
+    global currentSubdLevel
     my_areas = bpy.context.workspace.screens[0].areas
     my_shading = 'WIREFRAME'  # 'WIREFRAME' 'SOLID' 'MATERIAL' 'RENDERED'
     bpy.context.space_data.overlay.show_overlays = True
@@ -121,28 +128,32 @@ def main_toggle(context):
     bpy.context.space_data.overlay.show_text = True
 
 
-
     for obj in bpy.context.scene.objects:
         if obj.visible_get and  obj.type == 'MESH':
             for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
                 mod_max_level = mod.render_levels
                 if isToggleSubd:
+                    currentSubdLevel = mod.levels
                     mod.levels = mod_max_level
                     mod.sculpt_levels = mod_max_level
-                if not isToggleSubd:    
-                    mod.levels = 0
-                    mod.sculpt_levels = 0
+                if not isToggleSubd:
+                    mod.levels = currentSubdLevel
+                    mod.sculpt_levels = currentSubdLevel
+                    if currentSubdLevel != 0:
+                        bpy.context.space_data.overlay.show_wireframes = False
+
 
             for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
                 mod_max_level = mod.render_levels
                 if isToggleSubd:
+                    currentSubdLevel = mod.levels
                     mod.levels = mod_max_level
-
-                if not isToggleSubd:    
-                    mod.levels = 0
+                if not isToggleSubd:
+                    mod.levels = currentSubdLevel
+                    if currentSubdLevel != 0:
+                        bpy.context.space_data.overlay.show_wireframes = False
 
             if isToggleSubd:
-                context.space_data.overlay.show_wireframes = False
                 bpy.context.space_data.overlay.show_overlays = True
                 bpy.context.space_data.overlay.show_floor = False
                 bpy.context.space_data.overlay.show_axis_x = False
@@ -159,15 +170,17 @@ def main_toggle(context):
                 bpy.context.space_data.overlay.show_text = False
 
                 if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
+                    bpy.context.scene.eevee.use_gtao = True
+                    bpy.context.scene.eevee.use_bloom = True
+                    bpy.context.scene.eevee.use_ssr = True
+                    bpy.context.space_data.overlay.show_overlays = False
                     my_shading =  'MATERIAL'
 
                 if bpy.context.scene.render.engine == 'CYCLES':
-                    my_shading =  'MATERIAL'
+                    my_shading =  'RENDERED'
 
                 
             if not isToggleSubd:    
-                context.space_data.overlay.show_wireframes = True
-                bpy.context.space_data.overlay.show_overlays = True
                 bpy.context.space_data.overlay.show_overlays = True
                 bpy.context.space_data.overlay.show_floor = True
                 bpy.context.space_data.overlay.show_axis_x = True
@@ -190,6 +203,7 @@ def main_toggle(context):
                 for space in area.spaces:
                     if space.type == 'VIEW_3D':
                         space.shading.type = my_shading
+
 
 
             for image in bpy.data.images:

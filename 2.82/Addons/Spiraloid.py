@@ -373,6 +373,18 @@ def empty_trash(self, context):
         if block.users == 0:
             bpy.data.cameras.remove(block)
 
+    for block in bpy.data.grease_pencils:
+        if block.users == 0:
+            bpy.data.grease_pencils.remove(block)
+
+    for block in bpy.data.texts:
+        if block.users == 0:
+            bpy.data.texts.remove(block)
+
+    for block in bpy.data.fonts:
+        if block.users == 0:
+            bpy.data.fonts.remove(block)
+
     return {'FINISHED'}
 
 class BR_OT_nuke_bsdf(bpy.types.Operator):
@@ -485,16 +497,28 @@ class BR_OT_nuke_bsdf_vertex_color(bpy.types.Operator):
                 
         return {'FINISHED'}
 
-class BR_OT_nuke_bsdf_texture(bpy.types.Operator):
+class BR_OT_nuke_bsdf_uv_texture(bpy.types.Operator):
     """Nuke Selected Object 50% Gray"""
-    bl_idname = "view3d.spiraloid_nuke_bsdf_texture"
-    bl_label = "Nuke BSDF Textures"
+    bl_idname = "view3d.spiraloid_nuke_bsdf_uv_texture"
+    bl_label = "Nuke BSDF UV Textures"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         selected_objects = bpy.context.selected_objects
         nuke_bsdf_textures(selected_objects, 1024, 1024)
         return {'FINISHED'}   
+
+class BR_OT_nuke_bsdf_triplanar_texture(bpy.types.Operator):
+    """Nuke Selected Object 50% Gray"""
+    bl_idname = "view3d.spiraloid_nuke_bsdf_triplanar_texture"
+    bl_label = "Nuke BSDF Triplanar Textures"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        selected_objects = bpy.context.selected_objects
+        nuke_bsdf_textures(selected_objects, 1024, 1024)
+        return {'FINISHED'}  
+
 
 class BR_OT_nuke_flat(bpy.types.Operator):
     """Nuke Selected Object 50% Gray"""
@@ -1903,7 +1927,8 @@ class SpiraloidSubMenuMaterials(bpy.types.Menu):
         layout = self.layout
         layout.operator("view3d.spiraloid_nuke_flat_texture")
         layout.operator("view3d.spiraloid_nuke_diffuse_texture")
-        layout.operator("view3d.spiraloid_nuke_bsdf_texture")
+        layout.operator("view3d.spiraloid_nuke_bsdf_uv_texture")
+        layout.operator("view3d.spiraloid_nuke_bsdf_triplanar_texture")
         layout.separator()
         layout.operator("view3d.spiraloid_nuke_bsdf")
         layout.operator("view3d.spiraloid_nuke_flat")
@@ -1923,8 +1948,7 @@ def draw_item(self, context):
 
 
 def register():
-    bpy.utils.register_class(BakeCollectionSettings)
-    bpy.types.Scene.bake_collection_settings = bpy.props.PointerProperty(type=BakeCollectionSettings)
+
 
     bpy.utils.register_class(SpiraloidMenu)
     bpy.utils.register_class(SpiraloidSubMenuHelp)    
@@ -1935,7 +1959,8 @@ def register():
     bpy.utils.register_class(BR_OT_nuke)
     bpy.utils.register_class(BR_OT_nuke_bsdf)
     bpy.utils.register_class(BR_OT_nuke_bsdf_vertex_color)
-    bpy.utils.register_class(BR_OT_nuke_bsdf_texture)
+    bpy.utils.register_class(BR_OT_nuke_bsdf_uv_texture)
+    bpy.utils.register_class(BR_OT_nuke_bsdf_triplanar_texture)
     bpy.utils.register_class(BR_OT_nuke_flat)
     bpy.utils.register_class(BR_OT_nuke_flat_vertex_color)
     bpy.utils.register_class(BR_OT_nuke_flat_texture)
@@ -1956,10 +1981,14 @@ def register():
     bpy.types.TOPBAR_MT_editor_menus.append(draw_item)
     # bpy.types.OUTLINER_MT_collection.append(draw_context_menus)
 
-    bpy.utils.register_class(BR_OT_bake_collection)
     bpy.types.TOPBAR_MT_render.append(menu_draw_bake)
     
     bpy.utils.register_class(SpiraloidPreferences)
+    
+    bpy.utils.register_class(BR_OT_bake_collection)
+    bpy.utils.register_class(BakeCollectionSettings)
+    bpy.types.Scene.bake_collection_settings = bpy.props.PointerProperty(type=BakeCollectionSettings)
+
 
 #    bpy.types.SEQUENCER_MT_add.prepend(add_object_button)
 
@@ -1983,7 +2012,8 @@ def unregister():
     bpy.utils.unregister_class(BR_OT_nuke)
     bpy.utils.unregister_class(BR_OT_nuke_bsdf)
     bpy.utils.unregister_class(BR_OT_nuke_bsdf_vertex_color)
-    bpy.utils.unregister_class(BR_OT_nuke_bsdf_texture)
+    bpy.utils.unregister_class(BR_OT_nuke_bsdf_uv_texture)
+    bpy.utils.unregister_class(BR_OT_nuke_bsdf_triplanar_texture)
     bpy.utils.unregister_class(BR_OT_nuke_flat)
     bpy.utils.unregister_class(BR_OT_nuke_flat_vertex_color)
     bpy.utils.unregister_class(BR_OT_nuke_flat_texture)

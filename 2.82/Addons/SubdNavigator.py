@@ -43,6 +43,7 @@ def main_increase(context):
             mod_next_level = mod.levels + 1
             if mod_next_level <= mod_max_level:
                 mod.levels = mod_next_level
+
     bpy.context.space_data.overlay.show_wireframes = False
     return {'FINISHED'}
 
@@ -129,7 +130,8 @@ def main_toggle(context):
 
 
     for obj in bpy.context.scene.objects:
-        if obj.visible_get and  obj.type == 'MESH':
+        # if obj.visible_get and obj.type == 'MESH':
+        if obj.visible_get :
             for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
                 mod_max_level = mod.render_levels
                 if isToggleSubd:

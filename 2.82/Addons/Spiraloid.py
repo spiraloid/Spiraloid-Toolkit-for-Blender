@@ -1912,7 +1912,7 @@ class SpiraloidSubMenuUtilities(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("view3d.spiraloid_bake_collection")
+        # layout.operator("view3d.spiraloid_bake_collection")
         layout.operator("view3d.spiraloid_vertex_color_to_texture")
         layout.operator("view3d.spiraloid_texture_to_vertex_color")
         layout.separator()

@@ -3577,6 +3577,7 @@ keyconfig_data = \
      ),
     ("transform.skin_resize", {"type": 'MIDDLEMOUSE', "value": 'PRESS', "shift": True}, None),
     ("view3d.subd_toggle", {"type": 'ACCENT_GRAVE', "value": 'PRESS', "ctrl": True}, None),
+    ("view3d.toggle_xray", {"type": 'Z', "value": 'PRESS', "alt": True}, None),
     ],
    },
   ),

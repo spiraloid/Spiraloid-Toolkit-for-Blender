@@ -59,12 +59,6 @@ class SpiraloidPreferences(AddonPreferences):
         layout.label(text="Location for Spiraloid Template Assets")
         layout.prop(self, "assets_folder")
 
-
-
-
-
-
-
 def nuke_flat_texture(objects, width, height):
     # selected_objects = bpy.context.selected_objects
 
@@ -134,7 +128,74 @@ def nuke_flat_texture(objects, width, height):
 
     return {'FINISHED'}
 
+def operator_exists(idname):
+    names = idname.split(".")
+    print(names)
+    a = bpy.ops
+    for prop in names:
+        a = getattr(a, prop)
+    try:
+        name = a.__repr__()
+    except Exception as e:
+        print(e)
+        return False
+    return True
 
+def uvmap_mesh(mesh_objects):
+    bpy.ops.object.select_all(action='DESELECT')
+    for ob in mesh_objects:
+        if ob.type == 'MESH':
+            ob.select_set(state=True)
+            bpy.context.view_layer.objects.active = ob
+            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+
+        bpy.ops.object.mode_set(mode='EDIT', toggle=False)   
+        bpy.ops.mesh.select_all(action='SELECT')
+        # bpy.ops.uv.cube_project(cube_size=1.27702, clip_to_bounds=False, scale_to_bounds=True)
+        bpy.ops.uv.smart_project(angle_limit=66, island_margin=0.02, user_area_weight=0.75, use_aspect=True, stretch_to_bounds=True)
+        bpy.ops.uv.minimize_stretch(iterations=256)
+        bpy.ops.uv.average_islands_scale()
+
+        # if operator_exists('uvpackmaster2'):
+        #     for area in bpy.context.screen.areas:
+        #         if area.type == 'IMAGE_EDITOR':
+        #             override = bpy.context.copy()
+        #             override['space_data'] = area.spaces.active
+        #             override['region'] = area.regions[-1]
+        #             override['area'] = area
+        #             bpy.context.scene.uvp2_props.pack_to_others = False
+        #             bpy.context.scene.uvp2_props.margin = 0.01
+        #             bpy.ops.uvpackmaster2.uv_pack()
+
+        # if decimate:
+        #     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        #     bpy.ops.object.modifier_add(type='DECIMATE')
+        #     bpy.context.object.modifiers["Decimate"].decimate_type = 'DISSOLVE'
+        #     bpy.context.object.modifiers["Decimate"].angle_limit = 0.0523599
+        #     bpy.context.object.modifiers["Decimate"].delimit = {'UV'}
+        #     bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Decimate")
+
+        #     bpy.ops.object.modifier_add(type='TRIANGULATE')
+        #     bpy.context.object.modifiers["Triangulate"].keep_custom_normals = True
+        #     bpy.context.object.modifiers["Triangulate"].quad_method = 'FIXED'
+        #     bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Triangulate")
+
+        #     bpy.ops.object.modifier_add(type='DECIMATE')
+        #     bpy.context.object.modifiers["Decimate"].ratio = ratio
+        #     bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Decimate")
+        #     bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+
+
+
+
+        bpy.ops.mesh.select_all(action='SELECT')
+        # bpy.ops.uv.stitch(use_limit=False, snap_islands=True, limit=0, static_island=0, active_object_index=0, midpoint_snap=False, clear_seams=True, mode='EDGE', stored_mode='EDGE')
+        bpy.ops.mesh.mark_seam(clear=True)
+        bpy.ops.uv.seams_from_islands()
+        bpy.ops.uv.unwrap(method='ANGLE_BASED', margin=0.001)
+        bpy.ops.uv.pack_islands(margin=0.0025)
+        # bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+    return {'FINISHED'} 
 
 def nuke_diffuse_texture(objects, width, height):
     # selected_objects = bpy.context.selected_objects
@@ -206,8 +267,6 @@ def nuke_diffuse_texture(objects, width, height):
 
 
     return {'FINISHED'}
-
-
 
 def nuke_bsdf_textures(objects, width, height):                
     selected_objects = bpy.context.selected_objects
@@ -339,6 +398,127 @@ def nuke_bsdf_textures(objects, width, height):
 
     return {'FINISHED'}
 
+def group_make(self, new_group_name):
+    self.node_tree = bpy.data.node_groups.new(new_group_name, 'ShaderNodeGroup')
+    self.group_name = self.node_tree.name
+
+    nodes = self.node_tree.nodes
+    inputnode.location = (-300, 0)
+    outputnode.location = (300, 0)
+    return self.node_tree
+
+def add_ao(self, context, objects):
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)                
+    selected_objects = objects 
+    if selected_objects is not None :
+        # ob = bpy.context.view_layer.objects.active
+        for ob in selected_objects:
+            if ob.type == 'MESH':
+                bpy.ops.object.select_all(action='DESELECT')
+                bpy.context.view_layer.objects.active = ob
+                if ob.active_material is not None:
+                    mat =  ob.active_material
+                    mat.use_nodes = True
+                    ao_group_name = 'AO group'
+
+                    gnodes = [n for n in mat.node_tree.nodes if n.name == ao_group_name]
+                    print(gnodes)
+                    for g in gnodes:
+                        g.select = True
+                        matnodes.active = g
+                        bpy.ops.node.delete_reconnect()
+
+
+                    mat_output = mat.node_tree.nodes.get('Material Output')
+                    shader_node = mat_output.inputs[0].links[0].from_node
+
+
+                    group = bpy.data.node_groups.new(type="ShaderNodeTree", name= ao_group_name)
+
+                    #Creating Group Input
+                    group.inputs.new("NodeSocketShader", "Input1")
+                    group.inputs.new("NodeSocketInterfaceFloat", "AO Intensity")
+                    input_node = group.nodes.new("NodeGroupInput")
+                    input_node.location = (0, 0)
+
+
+
+                    #Creating Group Output
+                    group.outputs.new("NodeSocketShader", "Output1")
+                    output_node = group.nodes.new("NodeGroupOutput")
+                    output_node.location = (500, 0)
+
+
+                    # Creating Principled bsdf Node
+                    #You can create any node here which you think are required to be in the group as these will be created automatically in a group
+
+
+                    # ao_group = mat.node_tree.nodes.new('ShaderNodeGroup')
+
+
+                    # # ao_group.name = ao_group_name
+                    # ao_group.node_tree = bpy.data.node_groups[mat.node_tree.name] 
+                    # # ao_group.node_tree = bpy.data.node_groups['BASE SKP']
+                    # D.node_groups['NodeGroup'].nodes['Group Input']
+                    
+                    # #  relink everything
+                    # mat.node_tree.links.new(shader_node.outputs[0], ao_group.inputs[0])
+                    # mat.node_tree.links.new(ao_group.outputs[0], mat_output.inputs[0])
+
+                    # # ao_group_input = mat.node_tree.nodes.new('NodeGroupInput')
+                    # # ao_group_output = mat.node_tree.nodes.new('NodeGroupOutput')
+
+                    ao = group.nodes.new(type='ShaderNodeAmbientOcclusion')
+                    black = group.nodes.new(type='ShaderNodeEmission')
+                    mix = group.nodes.new(type='ShaderNodeMixShader')
+                    gamma = group.nodes.new(type='ShaderNodeGamma')
+
+                    ao.samples = 4
+                    ao.inputs[1].default_value = 0.5
+
+                    black.inputs[0].default_value = (0, 0, 0, 1)
+
+
+                    mat_output = mat.node_tree.nodes.get('Material Output')
+                    existing_shader = mat_output.inputs[0].links[0].from_node
+
+
+                    group.links.new(ao.outputs[0], gamma.inputs[0])
+                    group.links.new(gamma.outputs[0], mix.inputs[0])
+                    group.links.new(black.outputs[0], mix.inputs[1])
+                    # group.links.new(existing_shader.outputs[0], mix.inputs[2])
+                    group.links.new(input_node.outputs[0], mix.inputs[2])
+                    group.links.new(mix.outputs[0], mat_output.inputs[0])
+
+
+                    #creating links between nodes in group
+                    group.links.new(input_node.outputs[1], gamma.inputs[1])
+                    group.links.new(mix.outputs[0], output_node.inputs[0])
+
+                    # Putting Node Group to the node editor
+                    tree = bpy.context.object.active_material.node_tree
+                    group_node = tree.nodes.new("ShaderNodeGroup")
+                    group_node.node_tree = group
+                    group_node.location = (-40,0)
+
+                    #connections bewteen node group to output 
+                    links = tree.links    
+                    link = links.new(group_node.outputs[0], mat_output.inputs[0])
+                    link = links.new(shader_node.outputs[0], group_node.inputs[0])
+
+                    #setup material slider ranges
+                    group.inputs[1].name = "AO Intensity"
+                    group.inputs[1].default_value = 3
+                    group.inputs[1].min_value = 0
+                    group.inputs[1].max_value = 50
+                # else:
+                #     self.report({'ERROR'}, 'You must have a material assigned first!')
+                    
+        for ob in selected_objects:
+            ob.select_set(state=True)
+            bpy.context.view_layer.objects.active = ob
+    return {'FINISHED'}
+
 def empty_trash(self, context):
 
     for block in bpy.data.meshes:
@@ -389,11 +569,16 @@ def empty_trash(self, context):
 
 class BR_OT_nuke_bsdf(bpy.types.Operator):
     """Nuke Selected Object 50% Gray"""
-    bl_idname = "view3d.spiraloid_nuke_bsdf"
+    bl_idname = "object.spiraloid_nuke_bsdf"
     bl_label = "Nuke BSDF"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def execute(self, context):                
+    def execute(self, context):
+        shared_material = True
+
+        # bpy.data.palettes["Global_Palette"].name = "Global_Palette"
+
+
         selected_objects = bpy.context.selected_objects
         for ob in selected_objects:
             if ob.type == 'MESH':
@@ -401,11 +586,12 @@ class BR_OT_nuke_bsdf(bpy.types.Operator):
                     for i in range(len(ob.material_slots)):
                         bpy.ops.object.material_slot_remove({'object': ob})
                 bpy.ops.object.shade_smooth()
+                # if shared_material :
+                #     ob =  selected_objects[0]
+
 
                 assetName = ob.name
                 matName = (assetName + "Mat")
-
-
 
                 mat = bpy.data.materials.new(name=matName)
                 mat.use_nodes = True
@@ -419,7 +605,9 @@ class BR_OT_nuke_bsdf(bpy.types.Operator):
                 shader.name = "Principled BSDF"
                 shader.label = "Principled BSDF"
                 shader.inputs[0].default_value = (0.214041, 0.214041, 0.214041, 1)
-                shader.inputs[7].default_value = 0.66
+
+                shader.inputs[5].default_value = 1
+                shader.inputs[4].default_value = 0.33
                 shader.inputs[7].default_value = 0.66
 
                 mat_output = mat.node_tree.nodes.get('Material Output')
@@ -431,7 +619,15 @@ class BR_OT_nuke_bsdf(bpy.types.Operator):
                 if ob.data.materials:
                     ob.data.materials[0] = mat
                 else:
-                    ob.data.materials.append(mat)                 
+                    ob.data.materials.append(mat)
+        for ob in selected_objects:
+            ob.select_set(state=True)
+            bpy.context.view_layer.objects.active = ob
+
+        # if shared_material:
+        #     bpy.ops.object.material_slot_copy()
+            
+
         return {'FINISHED'}
 
 class BR_OT_nuke_bsdf_vertex_color(bpy.types.Operator):
@@ -1057,6 +1253,8 @@ class BR_OT_bake_collection(bpy.types.Operator):
                 if ob.type == 'MESH' : 
                     ob.select_set(state=True)
 
+            
+
             bakemesh.select_set(state=True)
             bpy.context.view_layer.objects.active = bakemesh
 
@@ -1631,64 +1829,13 @@ class BR_OT_add_cavity(bpy.types.Operator):
 
 class BR_OT_add_ao(bpy.types.Operator):
     """insert ambient occlusion node"""
-    bl_idname = "view3d.spiraloid_add_ao"
+    bl_idname = "object.spiraloid_add_ao"
     bl_label = "Insert AO"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)                
         selected_objects = bpy.context.selected_objects
-        if selected_objects is not None :
-            aob = bpy.context.view_layer.objects.active
-            for ob in selected_objects:
-                if ob.type == 'MESH':
-                    if ob.active_material is not None:
-                        mat =  ob.active_material
-                        mat.use_nodes = True
-
-                        ao = mat.node_tree.nodes.new(type='ShaderNodeAmbientOcclusion')
-                        black = mat.node_tree.nodes.new(type='ShaderNodeEmission')
-                        mix = mat.node_tree.nodes.new(type='ShaderNodeMixShader')
-                        ramp = mat.node_tree.nodes.new(type='ShaderNodeValToRGB')
-
-                        ramp.color_ramp.elements[0].position = 0.33
-                        ramp.color_ramp.elements[1].position = 0.66
-                        ramp.color_ramp.interpolation = 'B_SPLINE'
-
-
-
-                        ramp.color_ramp.elements[0].color = (0.214041, 0.214041, 0.214041, 1)
-
-                        black.inputs[0].default_value = (0, 0, 0, 1)
-
-
-                        mat_output = mat.node_tree.nodes.get('Material Output')
-                        existing_shader = mat_output.inputs[0].links[0].from_node
-
-
-                        mat.node_tree.links.new(ao.outputs[0], ramp.inputs[0])
-                        mat.node_tree.links.new(ramp.outputs[0], mix.inputs[0])
-                        mat.node_tree.links.new(black.outputs[0], mix.inputs[1])
-                        mat.node_tree.links.new(existing_shader.outputs[0], mix.inputs[2])
-                        mat.node_tree.links.new(mix.outputs[0], mat_output.inputs[0])
-
-                        matnodes = bpy.context.active_object.material_slots[0].material.node_tree.nodes
-                        imgnodes = [n for n in matnodes if n.type == 'NORMAL_MAP']
-                        for n in imgnodes:
-                            mat.node_tree.links.new(n.outputs[0], ao.inputs[2])
-
-
-                        # Assign it to object
-                        # if ob.data.materials:
-                        #     ob.data.materials[0] = mat
-                        # else:
-                        #     ob.data.materials.append(mat)
-                    else:
-                        self.report({'ERROR'}, 'You must have a material assigned first!')
-            for ob in selected_objects:
-                ob.select_set(state=True)
-                bpy.context.view_layer.objects.active = aob
-        return {'FINISHED'}
+        add_ao(self, context, selected_objects)
 
         
 class BR_OT_add_curvature(bpy.types.Operator):
@@ -1834,17 +1981,65 @@ class BR_OT_regenerate_video(bpy.types.Operator):
 
 class BR_OT_nuke(bpy.types.Operator):
     """create a new material with gray color, ao and curvature material nodes."""
-    bl_idname = "view3d.spiraloid_nuke"
+    bl_idname = "object.spiraloid_nuke"
     bl_label = "Nuke"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def execute(self, context):                
+    def execute(self, context):
+
+        # global_grayscale_palette_name = "Global Grayscale Palette"
+        # palette_nodes = bpy.data.palettes
+        # for n in palette_nodes:
+        #     if n.name == global_grayscale_palette_name:
+        #         bpy.data.palettes.remove(n)
+        # global_grayscale_palette = bpy.ops.palette.new()
+        # global_grayscale_palette.name = global_grayscale_palette_name
+
+
+        my_areas = bpy.context.workspace.screens[0].areas
+        my_shading = 'WIREFRAME'  # 'WIREFRAME' 'SOLID' 'MATERIAL' 'RENDERED'
+        selected_objects = bpy.context.selected_objects
         BR_OT_nuke_bsdf.execute(self, context)
-        BR_OT_add_ao.execute(self, context)
-        BR_OT_add_curvature.execute(self, context)
-        BR_OT_add_cavity.execute(self, context)
+        add_ao(self, context, selected_objects)
+
+        for ob in selected_objects:
+            ob.select_set(state=True)
+            bpy.context.view_layer.objects.active = ob
+            bpy.ops.object.material_slot_copy()
+
+        # BR_OT_add_curvature.execute(self, context)
+        # BR_OT_add_cavity.execute(self, context)
+
+        if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
+            bpy.context.scene.eevee.use_gtao = True
+            bpy.context.scene.eevee.use_bloom = True
+            bpy.context.scene.eevee.use_ssr = True
+            my_shading =  'MATERIAL'
+
+        if bpy.context.scene.render.engine == 'CYCLES':
+            my_shading =  'RENDERED'
+
+        for area in my_areas:
+            for space in area.spaces:
+                if space.type == 'VIEW_3D':
+                    space.shading.type = my_shading
+                    space.overlay.show_overlays = False
+
+
         return {'FINISHED'}
 
+class BR_OT_uvmap(bpy.types.Operator):
+    """create a new material with gray color, ao and curvature material nodes."""
+    bl_idname = "view3d.spiraloid_uvmap"
+    bl_label = "Batch Unwrap"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        selected_objects = bpy.context.selected_objects
+        uvmap_mesh(selected_objects)
+        return {'FINISHED'}
 
 #------------------------------------------------------
 #------------------------------------------------------
@@ -1882,9 +2077,11 @@ class SpiraloidMenu(bpy.types.Menu):
     
     def draw(self, context):
         layout = self.layout
-        layout.operator("view3d.spiraloid_nuke")
+        layout.operator("object.spiraloid_nuke")
         layout.menu(SpiraloidSubMenuMaterials.bl_idname )
         layout.menu(SpiraloidSubMenuUtilities.bl_idname )
+        layout.separator()
+        layout.operator("view3d.spiraloid_uvmap")
         layout.separator()
 
         layout.menu(SpiraloidSubMenuHelp.bl_idname, icon="QUESTION")
@@ -1930,13 +2127,13 @@ class SpiraloidSubMenuMaterials(bpy.types.Menu):
         layout.operator("view3d.spiraloid_nuke_bsdf_uv_texture")
         layout.operator("view3d.spiraloid_nuke_bsdf_triplanar_texture")
         layout.separator()
-        layout.operator("view3d.spiraloid_nuke_bsdf")
+        layout.operator("object.spiraloid_nuke_bsdf")
         layout.operator("view3d.spiraloid_nuke_flat")
         layout.separator() 
         layout.operator("view3d.spiraloid_nuke_bsdf_vertex_color")
         layout.operator("view3d.spiraloid_nuke_flat_vertex_color")
         layout.separator()
-        layout.operator("view3d.spiraloid_add_ao")
+        layout.operator("object.spiraloid_add_ao")
         layout.operator("view3d.spiraloid_add_curvature")
         layout.operator("view3d.spiraloid_add_cavity")
 
@@ -1962,6 +2159,7 @@ def register():
     bpy.utils.register_class(BR_OT_nuke_bsdf_uv_texture)
     bpy.utils.register_class(BR_OT_nuke_bsdf_triplanar_texture)
     bpy.utils.register_class(BR_OT_nuke_flat)
+    bpy.utils.register_class(BR_OT_uvmap)
     bpy.utils.register_class(BR_OT_nuke_flat_vertex_color)
     bpy.utils.register_class(BR_OT_nuke_flat_texture)
     bpy.utils.register_class(BR_OT_nuke_diffuse_texture)
@@ -2010,6 +2208,7 @@ def unregister():
     bpy.utils.unregister_class(BR_OT_import_panel_scenes)
     bpy.utils.unregister_class(BR_OT_archive_3d_comic)
     bpy.utils.unregister_class(BR_OT_nuke)
+    bpy.utils.unregister_class(BR_OT_uvmap)
     bpy.utils.unregister_class(BR_OT_nuke_bsdf)
     bpy.utils.unregister_class(BR_OT_nuke_bsdf_vertex_color)
     bpy.utils.unregister_class(BR_OT_nuke_bsdf_uv_texture)

@@ -10,7 +10,10 @@ bl_info = {
 import bpy
 
 isToggleSubd = True
+isWireframe = False
 currentSubdLevel = 0
+previous_mode = 'EDIT'
+previous_selection = ""
 
 def main_decrease(context):
     for obj in bpy.context.scene.objects:
@@ -111,6 +114,9 @@ def main_subdivide(context):
 def main_toggle(context):
     global isToggleSubd
     global currentSubdLevel
+    global previous_mode
+    global previous_selection
+    global isWireframe
     my_areas = bpy.context.workspace.screens[0].areas
     my_shading = 'WIREFRAME'  # 'WIREFRAME' 'SOLID' 'MATERIAL' 'RENDERED'
     bpy.context.space_data.overlay.show_overlays = True
@@ -156,11 +162,12 @@ def main_toggle(context):
                         bpy.context.space_data.overlay.show_wireframes = False
 
             if isToggleSubd:
+                previous_selection = bpy.context.selected_objects
+
                 bpy.context.space_data.overlay.show_overlays = True
                 bpy.context.space_data.overlay.show_floor = False
                 bpy.context.space_data.overlay.show_axis_x = False
                 bpy.context.space_data.overlay.show_axis_y = False
-                bpy.context.space_data.overlay.show_outline_selected = False
                 bpy.context.space_data.overlay.show_cursor = False
                 bpy.context.space_data.overlay.show_extras = False
                 bpy.context.space_data.overlay.show_relationship_lines = False
@@ -170,16 +177,42 @@ def main_toggle(context):
                 bpy.context.space_data.overlay.show_annotation = False
                 bpy.context.space_data.overlay.show_text = False
                 bpy.context.space_data.overlay.show_text = False
+                bpy.context.space_data.overlay.wireframe_threshold = 1
+                if bpy.context.space_data.overlay.show_wireframes:
+                    isWireframe = True
+                else:
+                    isWireframe = False
+                bpy.context.space_data.overlay.show_outline_selected = False
+                bpy.context.space_data.overlay.show_wireframes = False
 
                 if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
                     bpy.context.scene.eevee.use_gtao = True
                     bpy.context.scene.eevee.use_bloom = True
                     bpy.context.scene.eevee.use_ssr = True
-                    bpy.context.space_data.overlay.show_overlays = False
                     my_shading =  'MATERIAL'
 
                 if bpy.context.scene.render.engine == 'CYCLES':
                     my_shading =  'RENDERED'
+
+                if bpy.context.mode == 'OBJECT':
+                    previous_mode =  'OBJECT'
+                if bpy.context.mode == 'EDIT_MESH':
+                    previous_mode =  'EDIT'
+                    bpy.context.space_data.overlay.show_overlays = False
+                if bpy.context.mode == 'POSE':
+                    previous_mode =  'POSE'
+                if bpy.context.mode == 'SCULPT':
+                    previous_mode =  'SCULPT'
+                if bpy.context.mode == 'PAINT_VERTEX':
+                    previous_mode =  'VERTEX_PAINT'
+                if bpy.context.mode == 'WEIGHT_PAINT':
+                    previous_mode =  'WEIGHT_PAINT'
+                if bpy.context.mode == 'TEXTURE_PAINT':
+                    previous_mode =  'TEXTURE_PAINT'
+
+
+                # bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
 
                 
             if not isToggleSubd:    
@@ -187,7 +220,6 @@ def main_toggle(context):
                 bpy.context.space_data.overlay.show_floor = True
                 bpy.context.space_data.overlay.show_axis_x = True
                 bpy.context.space_data.overlay.show_axis_y = True
-                bpy.context.space_data.overlay.show_outline_selected = True
                 bpy.context.space_data.overlay.show_cursor = True
                 bpy.context.space_data.overlay.show_extras = True
                 bpy.context.space_data.overlay.show_relationship_lines = True
@@ -197,14 +229,43 @@ def main_toggle(context):
                 bpy.context.space_data.overlay.show_annotation = True
                 bpy.context.space_data.overlay.show_text = True
                 bpy.context.space_data.overlay.show_text = True
+                bpy.context.space_data.overlay.wireframe_threshold = 1
+                if isWireframe:
+                    bpy.context.space_data.overlay.show_wireframes = True
+                else:
+                    bpy.context.space_data.overlay.show_wireframes = False
                 bpy.context.space_data.shading.color_type = 'RANDOM'
 
-                my_shading = 'SOLID'
+                if previous_mode == 'EDIT' or previous_mode == 'OBJECT' or previous_mode == 'POSE':
+                    my_shading = 'SOLID'
+
+                if previous_mode == 'EDIT':
+                    if not len(bpy.context.selected_objects):
+                        bpy.ops.object.editmode_toggle()
+                    # else:
+                    #     for ob in previous_selection :
+                    #         # if ob.type == 'MESH' : 
+                    #         ob.select_set(state=True)
+                    #         bpy.context.view_layer.objects.active = ob
+                    #     bpy.ops.object.editmode_toggle()
+
+
+
+                if previous_mode == 'VERTEX_PAINT':
+                    my_shading = 'SOLID'
+                    bpy.context.space_data.shading.light = 'FLAT'
+
+
+    
+    
+                bpy.ops.object.mode_set(mode=previous_mode, toggle=False)
+
 
             for area in my_areas:
                 for space in area.spaces:
                     if space.type == 'VIEW_3D':
                         space.shading.type = my_shading
+
 
 
 

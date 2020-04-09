@@ -88,7 +88,6 @@ def main_subdivide(context):
             bpy.ops.object.shade_smooth()
             bpy.ops.object.mode_set(mode='SCULPT', toggle=False)
             main_toggle(context)
-            main_toggle(context)
 
     for obj in bpy.context.scene.objects:
         for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
@@ -164,12 +163,10 @@ def main_toggle(context):
             if isToggleSubd:
                 previous_selection = bpy.context.selected_objects
 
-                bpy.context.space_data.overlay.show_overlays = True
                 bpy.context.space_data.overlay.show_floor = False
                 bpy.context.space_data.overlay.show_axis_x = False
                 bpy.context.space_data.overlay.show_axis_y = False
                 bpy.context.space_data.overlay.show_cursor = False
-                bpy.context.space_data.overlay.show_extras = False
                 bpy.context.space_data.overlay.show_relationship_lines = False
                 bpy.context.space_data.overlay.show_bones = False
                 bpy.context.space_data.overlay.show_motion_paths = False
@@ -177,13 +174,21 @@ def main_toggle(context):
                 bpy.context.space_data.overlay.show_annotation = False
                 bpy.context.space_data.overlay.show_text = False
                 bpy.context.space_data.overlay.show_text = False
+                bpy.context.space_data.overlay.show_outline_selected = False
+                bpy.context.space_data.overlay.show_extras = False
+                bpy.context.space_data.overlay.show_overlays = True
+
                 bpy.context.space_data.overlay.wireframe_threshold = 1
                 if bpy.context.space_data.overlay.show_wireframes:
                     isWireframe = True
+                    bpy.context.space_data.overlay.show_outline_selected = True
+                    bpy.context.space_data.overlay.show_extras = True
                 else:
                     isWireframe = False
-                bpy.context.space_data.overlay.show_outline_selected = False
-                bpy.context.space_data.overlay.show_wireframes = False
+                    bpy.context.space_data.overlay.show_outline_selected = False
+                    bpy.context.space_data.overlay.show_extras = False
+
+                # bpy.context.space_data.overlay.show_wireframes = False
 
                 if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
                     bpy.context.scene.eevee.use_gtao = True

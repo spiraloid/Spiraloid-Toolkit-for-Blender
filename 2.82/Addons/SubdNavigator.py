@@ -137,28 +137,29 @@ def main_toggle(context):
     for obj in bpy.context.scene.objects:
         # if obj.visible_get and obj.type == 'MESH':
         if obj.visible_get :
-            for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
-                mod_max_level = mod.render_levels
-                if isToggleSubd:
-                    currentSubdLevel = mod.levels
-                    mod.levels = mod_max_level
-                    mod.sculpt_levels = mod_max_level
-                if not isToggleSubd:
-                    mod.levels = currentSubdLevel
-                    mod.sculpt_levels = currentSubdLevel
-                    if currentSubdLevel != 0:
-                        bpy.context.space_data.overlay.show_wireframes = False
+            
+            # for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
+            #     mod_max_level = mod.render_levels
+            #     if isToggleSubd:
+            #         currentSubdLevel = mod.levels
+            #         mod.levels = mod_max_level
+            #         mod.sculpt_levels = mod_max_level
+            #     if not isToggleSubd:
+            #         mod.levels = currentSubdLevel
+            #         mod.sculpt_levels = currentSubdLevel
+            #         if currentSubdLevel != 0:
+            #             bpy.context.space_data.overlay.show_wireframes = False
 
 
-            for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
-                mod_max_level = mod.render_levels
-                if isToggleSubd:
-                    currentSubdLevel = mod.levels
-                    mod.levels = mod_max_level
-                if not isToggleSubd:
-                    mod.levels = currentSubdLevel
-                    if currentSubdLevel != 0:
-                        bpy.context.space_data.overlay.show_wireframes = False
+            # for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
+            #     mod_max_level = mod.render_levels
+            #     if isToggleSubd:
+            #         currentSubdLevel = mod.levels
+            #         mod.levels = mod_max_level
+            #     if not isToggleSubd:
+            #         mod.levels = currentSubdLevel
+            #         if currentSubdLevel != 0:
+            #             bpy.context.space_data.overlay.show_wireframes = False
 
             if isToggleSubd:
                 previous_selection = bpy.context.selected_objects

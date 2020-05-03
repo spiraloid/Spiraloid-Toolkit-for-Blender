@@ -86,9 +86,10 @@ def main_subdivide(context):
             if level > 0:
                 for i in range(0, level):
                     bpy.ops.object.multires_subdivide(modifier="Multires")
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
             bpy.ops.object.shade_smooth()
             bpy.ops.object.mode_set(mode='SCULPT', toggle=False)
-            toggle_workmode(context)
+            toggle_workmode(self,context)
 
     for obj in bpy.context.scene.objects:
         for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
@@ -272,7 +273,25 @@ def toggle_workmode(self, context):
                     bpy.context.space_data.shading.light = 'FLAT'
 
 
-    
+                if previous_mode == 'SCULPT':
+                    my_shading =  'SOLID'
+                    bpy.context.space_data.shading.color_type = 'MATERIAL'
+                    bpy.context.space_data.overlay.show_floor = False
+                    bpy.context.space_data.overlay.show_axis_x = False
+                    bpy.context.space_data.overlay.show_axis_y = False
+                    bpy.context.space_data.overlay.show_cursor = False
+                    bpy.context.space_data.overlay.show_relationship_lines = False
+                    bpy.context.space_data.overlay.show_bones = False
+                    bpy.context.space_data.overlay.show_motion_paths = False
+                    bpy.context.space_data.overlay.show_object_origins = False
+                    bpy.context.space_data.overlay.show_annotation = False
+                    bpy.context.space_data.overlay.show_text = False
+                    bpy.context.space_data.overlay.show_text = False
+                    bpy.context.space_data.overlay.show_outline_selected = False
+                    bpy.context.space_data.overlay.show_extras = False
+                    bpy.context.space_data.overlay.show_overlays = True
+                    bpy.context.space_data.show_gizmo = False
+        
     
                 # bpy.ops.object.mode_set(mode=previous_mode, toggle=False)
 

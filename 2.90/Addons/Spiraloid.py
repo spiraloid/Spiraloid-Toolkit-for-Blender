@@ -884,6 +884,12 @@ def nuke_diffuse_texture(objects, width, height):
                 bpy.data.images.remove(old_image)
             bpy.ops.image.new(name=texName_albedo, width=width, height=height, color=(0.5, 0.5, 0.5, 1.0), alpha=False, generated_type='BLANK', float=False, use_stereo_3d=False, tiled=False)
             texture.image = bpy.data.images[texName_albedo] 
+            new_image = bpy.data.images[texName_albedo]
+            bpy.ops.image.pack({‘edit_image’: new_image})
+
+
+
+
             # texture.image = bpy.ops.image.new('INVOKE_AREA',texName_albedo, width=1024, height=1024, color=[0.5, 0.5, 0.5, 1.0], alpha=True,)
             mat.node_tree.links.new(texture.outputs[0], shader.inputs[0])
 

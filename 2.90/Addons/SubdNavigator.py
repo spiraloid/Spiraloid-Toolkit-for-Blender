@@ -52,7 +52,7 @@ def main_increase(context):
 
 
 
-def main_subdivide(context):
+def main_subdivide(self, context):
     s = bpy.context.object
     if bpy.context.mode == 'OBJECT' or bpy.context.mode == 'POSE':
         for obj in bpy.context.scene.objects:
@@ -82,7 +82,7 @@ def main_subdivide(context):
             mod.subdivision_type = 'CATMULL_CLARK'
             mod.show_only_control_edges = True
             mod.use_creases = False
-            level = 4
+            level = 5
             if level > 0:
                 for i in range(0, level):
                     bpy.ops.object.multires_subdivide(modifier="Multires")
@@ -90,6 +90,8 @@ def main_subdivide(context):
             bpy.ops.object.shade_smooth()
             bpy.ops.object.mode_set(mode='SCULPT', toggle=False)
             toggle_workmode(self,context)
+            toggle_workmode(self,context)
+            mod.sculpt_levels = 5
 
     for obj in bpy.context.scene.objects:
         for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
@@ -97,12 +99,13 @@ def main_subdivide(context):
             mod_next_level = mod.levels + 1
             if mod_next_level <= mod_max_level:
                 mod.levels = mod_next_level
-                mod.sculpt_levels = mod_next_level
+                mod.sculpt_levels = mod_max_level
         for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
             mod_max_level = mod.render_levels
             mod_next_level = mod.levels + 1
             if mod_next_level <= mod_max_level:
                 mod.levels = mod_next_level
+                
 
 
     if bpy.context.mode == 'OBJECT' or bpy.context.mode == 'POSE':
@@ -317,7 +320,7 @@ class BR_OT_subdivide_visible(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        main_subdivide(context)
+        main_subdivide(self,context)
         return {'FINISHED'}
                 
 class BR_OT_subd_decrease(bpy.types.Operator):

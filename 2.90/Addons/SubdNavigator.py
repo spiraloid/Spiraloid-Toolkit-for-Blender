@@ -54,8 +54,10 @@ def main_increase(context):
 
 def main_subdivide(self, context):
     s = bpy.context.object
+    # selected_objects = bpy.context.scene.objects
+    selected_objects = bpy.context.selected_objects
     if bpy.context.mode == 'OBJECT' or bpy.context.mode == 'POSE':
-        for obj in bpy.context.scene.objects:
+        for obj in selected_objects:
             if obj.visible_get and  obj.type == 'MESH':
                 s_modifier_count = len([m for m in obj.modifiers if m.type == 'SUBSURF'])
                 m_modifier_count = len([m for m in obj.modifiers if m.type == 'MULTIRES']) 
@@ -313,10 +315,10 @@ def toggle_workmode(self, context):
     isToggleSubd = not isToggleSubd
     return {'FINISHED'}
 
-class BR_OT_subdivide_visible(bpy.types.Operator):
+class BR_OT_subdivide_selected(bpy.types.Operator):
     """increase sudvision levels for visible objects"""
-    bl_idname = "view3d.subdivide_visible"
-    bl_label = "Subdivide Visible"
+    bl_idname = "view3d.subdivide_selected"
+    bl_label = "Subdivide Selected"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -362,21 +364,21 @@ class BR_OT_subd_toggle(bpy.types.Operator):
 def menu_draw(self, context):
     layout = self.layout
     layout.separator()
-    self.layout.operator(BR_OT_subdivide_visible.bl_idname)
+    self.layout.operator(BR_OT_subdivide_selected.bl_idname)
     self.layout.operator(BR_OT_subd_increase.bl_idname)
     self.layout.operator(BR_OT_subd_decrease.bl_idname)
     self.layout.operator(BR_OT_subd_toggle.bl_idname)
 
 
 def register():
-    bpy.utils.register_class(BR_OT_subdivide_visible)
+    bpy.utils.register_class(BR_OT_subdivide_selected)
     bpy.utils.register_class(BR_OT_subd_increase)
     bpy.utils.register_class(BR_OT_subd_decrease)
     bpy.utils.register_class(BR_OT_subd_toggle)
     bpy.types.VIEW3D_MT_view.append(menu_draw)  
 
 def unregister():
-    bpy.utils.unregister_class(BR_OT_subdivide_visible)
+    bpy.utils.unregister_class(BR_OT_subdivide_selected)
     bpy.utils.unregister_class(BR_OT_subd_increase)
     bpy.utils.unregister_class(BR_OT_subd_decrease)
     bpy.utils.unregister_class(BR_OT_subd_toggle)

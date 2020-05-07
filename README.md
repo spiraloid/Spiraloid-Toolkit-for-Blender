@@ -33,6 +33,9 @@ Next
 Install blender 2.82 (if you have not already done so)
 https://www.blender.org/download/releases/2-82/
 
+if you're feeling brave, the 2.90 alpha is up and I'm setting up my sculpt hotkeys so I can use the new cloth, pose, multires etc in the sculpt room.
+https://builder.blender.org/download/
+
 Open Blender and edit  “file > User Preferences”.
 Under the add on tab, use button at Bottom that says “install add on from file”
 

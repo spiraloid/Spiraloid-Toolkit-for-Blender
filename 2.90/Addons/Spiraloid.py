@@ -885,7 +885,7 @@ def nuke_diffuse_texture(objects, width, height):
             bpy.ops.image.new(name=texName_albedo, width=width, height=height, color=(0.5, 0.5, 0.5, 1.0), alpha=False, generated_type='BLANK', float=False, use_stereo_3d=False, tiled=False)
             texture.image = bpy.data.images[texName_albedo] 
             new_image = bpy.data.images[texName_albedo]
-            bpy.ops.image.pack({‘edit_image’: new_image})
+            new_image.pack()
 
 
 

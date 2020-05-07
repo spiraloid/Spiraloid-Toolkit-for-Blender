@@ -43,6 +43,15 @@ Browse to this folder where this README.txt file is and install all add-ons in t
 
 Be sure to activate them immediately after you install them (it’s a long list to search through)
 
+here are the addons I have installed.
+
+
+
+
+
+
+
+
 Next
 
 Go to the input tab, use button 
@@ -193,6 +202,10 @@ This adds a property to selected bones to simulate physics overlap.  great for f
 
 I also strongly suggest these paid addons:
 
+box select Xray
+https://gumroad.com/l/daldj
+
+Voxel heat diffuse skinning
 https://blendermarket.com/products/voxel-heat-diffuse-skinning
 
 https://blendermarket.com/products/auto-rig-pro
@@ -215,6 +228,7 @@ https://www.blendernation.com/2016/06/15/addon-zaloopok/
 ---
 
 good luck with your art.
+
 
 -b
 

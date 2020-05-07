@@ -127,6 +127,21 @@ ctrl+alt+shift+E selects boundary edge loop
 shift+MMB shirnk/fatten selection
 ctrl+shift+MMB crease/uncrease edges
 
+q now toggles soft modification  (I got tired of reaching for o)
+tab toggles workmode (for render only viewing, too many yeards of muscle memory)
+e toggles editmode  (you can still switch modes w ctrl+tab)
+D and Shift D for up and down subdivs
+alt+D to subdivide selected
+S and F wave for bush size.
+[ and ] for brush size
+ctrl+numpad0 to nuke material/polypaint/texture
+ctrl+shift+LMB to lasso mask
+alt+ctrl+shift+LMB to lasso mask deselect
+ctrl+i invert mask
+ctrl+b blur mask
+ctrl+h hide mask
+
+
 ---
 ---
 

@@ -33,12 +33,24 @@ Next
 Install blender 2.82 (if you have not already done so)
 https://www.blender.org/download/releases/2-82/
 
+if you're feeling brave, the 2.90 alpha is up and I'm setting up my sculpt hotkeys so I can use the new cloth, pose, multires etc in the sculpt room.
+https://builder.blender.org/download/
+
 Open Blender and edit  “file > User Preferences”.
 Under the add on tab, use button at Bottom that says “install add on from file”
 
 Browse to this folder where this README.txt file is and install all add-ons in the addon folder as you would normally.
 
 Be sure to activate them immediately after you install them (it’s a long list to search through)
+
+here are the addons I have installed.
+
+
+
+
+
+
+
 
 Next
 
@@ -124,6 +136,21 @@ ctrl+alt+shift+E selects boundary edge loop
 shift+MMB shirnk/fatten selection
 ctrl+shift+MMB crease/uncrease edges
 
+q now toggles soft modification  (I got tired of reaching for o)
+tab toggles workmode (for render only viewing, too many yeards of muscle memory)
+e toggles editmode  (you can still switch modes w ctrl+tab)
+D and Shift D for up and down subdivs
+alt+D to subdivide selected
+S and F wave for bush size.
+[ and ] for brush size
+ctrl+numpad0 to nuke material/polypaint/texture
+ctrl+shift+LMB to lasso mask
+alt+ctrl+shift+LMB to lasso mask deselect
+ctrl+i invert mask
+ctrl+b blur mask
+ctrl+h hide mask
+
+
 ---
 ---
 
@@ -175,6 +202,10 @@ This adds a property to selected bones to simulate physics overlap.  great for f
 
 I also strongly suggest these paid addons:
 
+box select Xray
+https://gumroad.com/l/daldj
+
+Voxel heat diffuse skinning
 https://blendermarket.com/products/voxel-heat-diffuse-skinning
 
 https://blendermarket.com/products/auto-rig-pro
@@ -197,6 +228,7 @@ https://www.blendernation.com/2016/06/15/addon-zaloopok/
 ---
 
 good luck with your art.
+
 
 -b
 

@@ -67,6 +67,12 @@ class SpiraloidPreferences(AddonPreferences):
         layout.label(text="Location for Spiraloid Template Assets")
         layout.prop(self, "assets_folder")
 
+def in_1_seconds():
+    global previous_color
+    previous_color = (1,1,1,1)
+    print ("Resetting Previous color")
+
+
 def smart_nuke_bsdf(self, context, nukeInvert):
     global previous_selected_faces
     global previous_color
@@ -128,12 +134,18 @@ def smart_nuke_bsdf(self, context, nukeInvert):
                     shader = mat.node_tree.nodes.new(type='ShaderNodeBsdfPrincipled')
                     shader.name = "Principled BSDF"
                     shader.label = "Principled BSDF"
-                    shader.inputs[0].default_value = (0.214041, 0.214041, 0.214041, 1)
-                    shader.inputs[5].default_value = 1
-                    shader.inputs[4].default_value = 0.33
-                    shader.inputs[7].default_value = 0.66
+                    shader.inputs[0].default_value = (0.214041, 0.214041, 0.214041, 1) # base color
+                    shader.inputs[5].default_value = 1 # specular
+                    shader.inputs[4].default_value = 0.33 # metallic
+                    shader.inputs[7].default_value = 0.66 # roughness
+                    shader.inputs[12].default_value = 1  # clearcoat
+                    shader.inputs[13].default_value = 0.33 # clearcoat roughness
+                    
                     mat_output = mat.node_tree.nodes.get('Material Output')
                     mat.node_tree.links.new(shader.outputs[0], mat_output.inputs[0])
+
+
+
 
                     # Assign it to object
                     if ob.data.materials:
@@ -197,6 +209,7 @@ def smart_nuke_bsdf(self, context, nukeInvert):
                 if previous_color == (1.0,1.0,1.0,1.0):
                     applyColor = (0.0,0.0,0.0,1.0)
                 previous_color = applyColor
+                bpy.app.timers.register(in_1_seconds, first_interval=1)
 
                 bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
                 for f in ob.data.polygons:
@@ -215,14 +228,20 @@ def smart_nuke_bsdf(self, context, nukeInvert):
 
                 mat_output = mat.node_tree.nodes.get('Material Output')
                 shader = mat_output.inputs[0].links[0].from_node
+
+                for node in mat.node_tree.nodes:
+                    if "BSDF" in node.name: 
+                        shader = node
+
                 if shader:
                     base_color_node =  mat.node_tree.nodes.get("Attribute")
                     if base_color_node is not None:
                         mat.node_tree.nodes.remove( base_color_node )
                     colorNode = mat.node_tree.nodes.new('ShaderNodeAttribute')
-                    colorNode.attribute_name = vertexColorName            
+                    colorNode.attribute_name = vertexColorName
                     mat.node_tree.links.new(shader.inputs[0], colorNode.outputs[0])
                     
+
 
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
         if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
@@ -238,7 +257,6 @@ def smart_nuke_bsdf(self, context, nukeInvert):
         for ob in selected_objects:
             ob.select_set(state=True)
             bpy.context.view_layer.objects.active = ob
-
 
     if (bpy.context.mode == 'OBJECT'):
             # bpy.ops.wm.call_menu(name=BR_OT_PalletColorMenu.bl_idname)
@@ -284,13 +302,14 @@ def smart_nuke_bsdf(self, context, nukeInvert):
                     shader = mat.node_tree.nodes.new(type='ShaderNodeBsdfPrincipled')
                     shader.name = "Principled BSDF"
                     shader.label = "Principled BSDF"
-                    shader.inputs[0].default_value = (0.214041, 0.214041, 0.214041, 1)
-                    shader.inputs[5].default_value = 1
-                    shader.inputs[4].default_value = 0.33
-                    shader.inputs[7].default_value = 0.66
+                    shader.inputs[0].default_value = (0.214041, 0.214041, 0.214041, 1) # base color
+                    shader.inputs[5].default_value = 1 # specular
+                    shader.inputs[4].default_value = 0.33 # metallic
+                    shader.inputs[7].default_value = 0.66 # roughness
+                    shader.inputs[12].default_value = 1  # clearcoat
+                    shader.inputs[13].default_value = 0.33 # clearcoat roughness
                     mat_output = mat.node_tree.nodes.get('Material Output')
                     mat.node_tree.links.new(shader.outputs[0], mat_output.inputs[0])
-
                     mat.use_backface_culling = True
 
                     # Assign it to object
@@ -406,6 +425,163 @@ def smart_nuke_bsdf(self, context, nukeInvert):
                 # count = count + 1
             # bpy.context.area.type = original_type
 
+
+    if bpy.context.mode == 'PAINT_VERTEX':
+        for ob in selected_objects:
+            print ("----------------------------------------------")
+            if ob.type == 'MESH':
+                assetName = ob.name
+                mat =  ob.active_material
+                mesh = context.object.data
+                matName = (assetName + "Mat")
+                me = ob.data
+
+                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+
+                bm = bmesh.new()
+                bm.from_mesh(mesh)        
+                
+
+                if ob.active_material is not None:
+                    mat =  ob.active_material
+                    print ("Using existing material" + mat.name)
+                else:
+                    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                    for i in range(len(ob.material_slots)):
+                        bpy.ops.object.material_slot_remove({'object': ob})
+                        for block in bpy.data.materials:
+                            if block.users == 0:
+                                bpy.data.materials.remove(block)
+                    assetName = ob.name
+                    matName = (assetName + "Mat")
+                    mat = bpy.data.materials.new(name=matName)
+                    mat.use_nodes = True
+                    mat_output = mat.node_tree.nodes.get('Material Output')
+                    shader = mat_output.inputs[0].links[0].from_node
+                    nodes = mat.node_tree.nodes
+                    for node in nodes:
+                        if node.type != 'OUTPUT_MATERIAL': # skip the material output node as we'll need it later
+                            nodes.remove(node) 
+                    shader = mat.node_tree.nodes.new(type='ShaderNodeBsdfPrincipled')
+                    shader.name = "Principled BSDF"
+                    shader.label = "Principled BSDF"
+                    shader.inputs[0].default_value = (0.214041, 0.214041, 0.214041, 1) # base color
+                    shader.inputs[5].default_value = 1 # specular
+                    shader.inputs[4].default_value = 0.33 # metallic
+                    shader.inputs[7].default_value = 0.66 # roughness
+                    shader.inputs[12].default_value = 1  # clearcoat
+                    shader.inputs[13].default_value = 0.33 # clearcoat roughness
+                    mat_output = mat.node_tree.nodes.get('Material Output')
+                    mat.node_tree.links.new(shader.outputs[0], mat_output.inputs[0])
+
+
+
+
+                    # Assign it to object
+                    if ob.data.materials:
+                        ob.data.materials[0] = mat
+                    else:
+                        ob.data.materials.append(mat)
+
+                    bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+
+
+                #create new vertex color group if none exist
+                if not ob.data.vertex_colors:
+                    bpy.ops.mesh.vertex_color_add()
+                vertexColorName = ob.data.vertex_colors[0].name
+
+
+                selected_faces = []
+                # for f in bm.faces:
+                #     if f.select:
+                #         selected_faces.append(f)
+
+                # bpy.ops.paint.vertex_color_set()
+                # bpy.ops.paint.vertex_color_set.poll()
+
+                # bpy.context.scene.tool_settings.unified_paint_settings.color = appliedColor
+
+                # apply color to faces
+                # i = 0
+                # for poly in selected_faces:
+                #     for idx in poly.loop_indices:
+                #         # rgb = [random.random() for i in range(3)]
+                #         me.vertex_colors[vertexColorName].data[i].color = applyColor
+                #         i += 1
+
+
+                for f in bm.faces:
+                    if f.select:
+                        selected_faces.append(f)
+
+                # print("selected_faces is " + str(len(selected_faces)))
+                # if len(selected_faces) == len(previous_selected_faces) :
+                # isSameSelection = bool(set(selected_faces).intersection(previous_selected_faces))
+                # if isSameSelection :
+                    # print ("same selection detected!")
+                # if colorIndex < maxColorIndex : 
+                #     colorIndex += 1
+                # else:
+                #     colorIndex = 0
+                # else:
+                #     colorIndex = 0
+
+
+
+                if len(selected_faces) == 0: 
+                    bpy.ops.mesh.select_all(action='SELECT')
+
+                # applyColor = colorSwatch[colorIndex]
+
+                if previous_color == (0.0,0.0,0.0,1.0):
+                    applyColor = (1.0,1.0,1.0,1.0)
+                if previous_color == (1.0,1.0,1.0,1.0):
+                    applyColor = (0.0,0.0,0.0,1.0)
+                previous_color = applyColor
+                bpy.app.timers.register(in_1_seconds, first_interval=1)
+
+                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                for f in ob.data.polygons:
+                    if f.select:
+                        for vert_idx, loop_idx in zip(f.vertices, f.loop_indices):
+                            if nukeInvert:
+                                col = ob.data.vertex_colors[vertexColorName].data[loop_idx].color
+                                ob.data.vertex_colors[vertexColorName].data[loop_idx].color = tuple(1-x for x in col)
+                            else:
+                                ob.data.vertex_colors[vertexColorName].data[loop_idx].color = applyColor
+
+
+                previous_selected_faces = selected_faces
+
+                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+
+                mat_output = mat.node_tree.nodes.get('Material Output')
+                shader = mat_output.inputs[0].links[0].from_node
+                if shader:
+                    base_color_node =  mat.node_tree.nodes.get("Attribute")
+                    if base_color_node is not None:
+                        mat.node_tree.nodes.remove( base_color_node )
+                    colorNode = mat.node_tree.nodes.new('ShaderNodeAttribute')
+                    colorNode.attribute_name = vertexColorName
+                    mat.node_tree.links.new(shader.inputs[0], colorNode.outputs[0])
+                    
+
+        bpy.ops.object.mode_set(mode='VERTEX_PAINT', toggle=False)
+        
+        if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
+            bpy.context.scene.eevee.use_gtao = True
+            bpy.context.scene.eevee.use_bloom = True
+            bpy.context.scene.eevee.use_ssr = True
+            my_shading =  'MATERIAL'
+            
+        if bpy.context.scene.render.engine == 'CYCLES':
+            my_shading =  'RENDERED'
+
+
+        for ob in selected_objects:
+            ob.select_set(state=True)
+            bpy.context.view_layer.objects.active = ob
 
 
     # if shared_material:
@@ -642,6 +818,7 @@ def operator_exists(idname):
 
 def uvmap_mesh(mesh_objects):
     current_mode = bpy.context.mode
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
     # bpy.ops.object.select_all(action='DESELECT')
     # for ob in mesh_objects:
@@ -706,6 +883,7 @@ def uvmap_mesh(mesh_objects):
             ob.select_set(state=True)
             bpy.context.view_layer.objects.active = ob
             if not len( ob.data.uv_layers ):
+                bpy.ops.mesh.uv_texture_add()
                 bpy.ops.object.mode_set(mode='EDIT', toggle=False)
                 bpy.ops.mesh.select_all(action='SELECT')
                 bpy.ops.uv.smart_project(angle_limit=66, island_margin=0.02, user_area_weight=0.75, use_aspect=True, stretch_to_bounds=True)
@@ -1125,6 +1303,11 @@ def empty_trash(self, context):
         if block.users == 0:
             bpy.data.fonts.remove(block)
 
+    for block in bpy.data.worlds:
+        if block.users == 0:
+            bpy.data.worlds.remove(block)
+
+    # outliner.orphans_purge
     return {'FINISHED'}
 
 class BR_OT_nuke_bsdf_uv_texture(bpy.types.Operator):
@@ -1148,7 +1331,6 @@ class BR_OT_nuke_bsdf_triplanar_texture(bpy.types.Operator):
         selected_objects = bpy.context.selected_objects
         nuke_bsdf_textures(selected_objects, 1024, 1024)
         return {'FINISHED'}  
-
 
 class BR_OT_nuke_flat(bpy.types.Operator):
     """Nuke Selected Object 50% Gray"""
@@ -1285,7 +1467,6 @@ class BR_OT_nuke_diffuse_texture(bpy.types.Operator):
         selected_objects = bpy.context.selected_objects
         nuke_diffuse_texture(selected_objects, 1024, 1024)
         return {'FINISHED'}           
-
 
 class BR_OT_empty_trash(bpy.types.Operator):
     """Purge all data blocks with 0 users"""

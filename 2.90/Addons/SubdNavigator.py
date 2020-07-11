@@ -63,7 +63,11 @@ def main_subdivide(self, context):
                 m_modifier_count = len([m for m in obj.modifiers if m.type == 'MULTIRES']) 
                 modifier_count = m_modifier_count + s_modifier_count
                 if modifier_count == 0:
-                        mod = obj.modifiers.new(name = 'Subdivision', type = 'SUBSURF')
+                        # mod = obj.modifiers.new(name = 'Subdivision', type = 'SUBSURF')
+                        mod = obj.modifiers.new(name = 'Multires', type = 'MULTIRES')
+                        bpy.ops.object.multires_subdivide(modifier="Multires", mode='CATMULL_CLARK')
+                        bpy.ops.object.multires_subdivide(modifier="Multires", mode='CATMULL_CLARK')
+
                         mod.uv_smooth = 'NONE'
                         bpy.ops.object.select_all(action='DESELECT')
                         obj.select_set(state=True)
@@ -167,10 +171,20 @@ def toggle_workmode(self, context):
             #         mod.levels = currentSubdLevel
             #         if currentSubdLevel != 0:
             #             bpy.context.space_data.overlay.show_wireframes = False
+            is_toon_shaded = obj.get("is_toon_shaded")
+            if is_toon_shaded:
+                for mod in obj.modifiers:
+                    if 'InkThickness' in mod.name:
+                        obj.modifiers["InkThickness"].show_viewport = True
+                    if 'WhiteOutline' in mod.name:
+                        obj.modifiers["WhiteOutline"].show_viewport = True
+                    if 'BlackOutline' in mod.name:
+                        obj.modifiers["BlackOutline"].show_viewport = True
 
             if isToggleSubd:
                 previous_selection = bpy.context.selected_objects
 
+                bpy.context.space_data.overlay.show_overlays = True
                 bpy.context.space_data.overlay.show_floor = False
                 bpy.context.space_data.overlay.show_axis_x = False
                 bpy.context.space_data.overlay.show_axis_y = False
@@ -184,8 +198,12 @@ def toggle_workmode(self, context):
                 bpy.context.space_data.overlay.show_text = False
                 bpy.context.space_data.overlay.show_outline_selected = False
                 bpy.context.space_data.overlay.show_extras = False
-                bpy.context.space_data.overlay.show_overlays = True
                 bpy.context.space_data.show_gizmo = False
+
+                selected_objects = bpy.context.selected_objects
+                if not selected_objects:
+                    bpy.context.space_data.overlay.show_outline_selected = True
+
 
                 bpy.context.space_data.overlay.wireframe_threshold = 1
                 if bpy.context.space_data.overlay.show_wireframes:
@@ -195,7 +213,7 @@ def toggle_workmode(self, context):
                     # bpy.context.space_data.overlay.show_cursor = True
                 else:
                     isWireframe = False
-                    bpy.context.space_data.overlay.show_outline_selected = False
+                    # bpy.context.space_data.overlay.show_outline_selected = False
                     # bpy.context.space_data.overlay.show_extras = False
 
                 # bpy.context.space_data.overlay.show_wireframes = False
@@ -221,6 +239,7 @@ def toggle_workmode(self, context):
                     bpy.context.space_data.overlay.show_overlays = False
                 if bpy.context.mode == 'POSE':
                     previous_mode =  'POSE'
+                    bpy.context.space_data.overlay.show_bones = True
                 if bpy.context.mode == 'SCULPT':
                     previous_mode =  'SCULPT'
                 if bpy.context.mode == 'PAINT_VERTEX':
@@ -260,6 +279,23 @@ def toggle_workmode(self, context):
 
                 if previous_mode == 'EDIT' or previous_mode == 'OBJECT' or previous_mode == 'POSE':
                     my_shading = 'SOLID'
+                    for ob in bpy.context.scene.objects:
+                        if ob.type == 'MESH':
+                            if ob.data.vertex_colors:
+                                bpy.context.space_data.shading.color_type = 'VERTEX'
+                            else:
+                                bpy.context.space_data.shading.color_type = 'RANDOM'
+
+                is_toon_shaded = obj.get("is_toon_shaded")
+                if is_toon_shaded:
+                    for mod in obj.modifiers:
+                        if 'InkThickness' in mod.name:
+                            obj.modifiers["InkThickness"].show_viewport = False
+                        if 'WhiteOutline' in mod.name:
+                            obj.modifiers["WhiteOutline"].show_viewport = False
+                        if 'BlackOutline' in mod.name:
+                            obj.modifiers["BlackOutline"].show_viewport = False
+                        
 
                 if previous_mode == 'EDIT':
                     if not len(bpy.context.selected_objects):
@@ -297,17 +333,29 @@ def toggle_workmode(self, context):
                     bpy.context.space_data.overlay.show_overlays = True
                     bpy.context.space_data.show_gizmo = False
         
-    
+
                 # bpy.ops.object.mode_set(mode=previous_mode, toggle=False)
 
 
-            for area in my_areas:
-                for space in area.spaces:
-                    if space.type == 'VIEW_3D':
-                        space.shading.type = my_shading
+            scene = bpy.context.scene
+            # for area in my_areas:
+            #     for space in area.spaces:
+            #         if space.type == 'VIEW_3D':
+            #             space.shading.type = my_shading
+
+            # set viewport display
+            for area in  bpy.context.screen.areas:  # iterate through areas in current screen
+                if area.type == 'VIEW_3D':
+                    for space in area.spaces:  # iterate through spaces in current VIEW_3D area
+                        if space.type == 'VIEW_3D':  # check if space is a 3D view
+                            # space.shading.type = 'MATERIAL'  # set the viewport shading to material
+                            space.shading.type = my_shading
+                            if scene.world is not None:
+                                space.shading.use_scene_world = True
+                                space.shading.use_scene_lights = True
 
 
-
+                            
 
             for image in bpy.data.images:
                 image.reload()

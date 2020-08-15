@@ -3,7 +3,7 @@
 [Demo Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4)
 
 
-READ ME:  Spiraloid Blender 2.8x essentials setup
+READ ME:  Spiraloid Blender 2.90 beta essentials setup
 
 misc Blender utilities
 
@@ -19,57 +19,54 @@ Installation:
 
 WARNING!!!:  Blender users may wish to backup your current configuration before installing in case something goes wrong you can undo.  For example on a Mac,  creating a compressed zip archive of this folder:
 
-~/Library/Application Support/Blender/2.82
+~/Library/Application Support/Blender/2.90
 
 (or on windows 10)
 
-%APPDATA%\Roaming\Blender Foundation\Blender\2.82
+%APPDATA%\Roaming\Blender Foundation\Blender\2.90
 
  is a good idea.  
 (This is where blender stores all your preference data)
 
 Next
 
-Install blender 2.82 (if you have not already done so)
-https://www.blender.org/download/releases/2-82/
+Install blender 2.90 (if you have not already done so)
+https://builder.blender.org/download/blender-2.90.0-c300fc56c3cc-windows64.zip
 
-if you're feeling brave, the 2.90 alpha is up and I'm setting up my sculpt hotkeys so I can use the new cloth, pose, multires etc in the sculpt room.
-https://builder.blender.org/download/
 
 Open Blender and edit  “file > User Preferences”.
 Under the add on tab, use button at Bottom that says “install add on from file”
 
-Browse to this folder where this README.txt file is and install all add-ons in the addon folder as you would normally.
+Browse to this folder where this README.txt file is and every *.py file in the addon folder as you would normally.
 
-Be sure to activate them immediately after you install them (it’s a long list to search through)
+(Remember to activate each them immediately after you install them, otherwise it’s a long list to search through)
 
-here are the addons I have installed.
+You might also need to buy your own copy of this paid addon for xray box select.  My hotkeys assume this is installed.
 
-
-
-
-
-
-
+box select Xray
+https://gumroad.com/l/daldj
 
 Next
 
-Go to the input tab, use button 
-“import key configuration”
-
-Browse to this folder and import “spiraloid_hotkeys.py”
+In the preferences Go to the "Keymap", use the button “import key configuration” and browse to this folder and import “spiraloid_hotkeys.py”
 
 Save user preferences.
 
 Next
 
-Open the startup_scene.blend file in this folder.
+Open the startup_scene.blend file in this folder.  (don't touch anything at this point unless you know what you're doing and want the state saved as your startup overriding my startup state. 
+
+hit “ctrl U” and say yes to save the startup scene.  This will store the state of all the UI and settings so that every time your launch blender or hit file new, this is what you get. This is your Home state.
 
 If everything went according to plan, everything should be installed.  if everything worked, hit the spacebar and the mirrored subdiv cube in front of you should bounce. 
 
 This is the fast preview playback script I wrote.  Hit spacebar to stop playing time and note that the current frame has returned whatever frame you were editing before you hit spacebar.
 
-CONGRATS!  Everything is installed.  hit “ctrl U” to save the startup scene and all the UI and settings so that every time your launch blender or hit file new, this is what you get.   Home state.
+CONGRATS!  Everything is installed. 
+
+checkout the walkthrough video and look at the hotkey overlay to get a feel.  
+
+
 
 --
 
@@ -202,8 +199,6 @@ This adds a property to selected bones to simulate physics overlap.  great for f
 
 I also strongly suggest these paid addons:
 
-box select Xray
-https://gumroad.com/l/daldj
 
 Voxel heat diffuse skinning
 https://blendermarket.com/products/voxel-heat-diffuse-skinning

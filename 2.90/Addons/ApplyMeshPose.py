@@ -118,10 +118,10 @@ def main(self, context):
                     bpy.ops.object.multires_base_apply(modifier="Multires")
                     _mod.sculpt_levels = 0
                     _mod.levels = 0
-                    bpy.ops.object.modifier_apply(apply_as='DATA', modifier=_mod.name)                
+                    bpy.ops.object.modifier_apply( modifier=_mod.name)                
                     self.report({'WARNING'}, 'Warning: applied Multires')
 
-                bpy.ops.object.modifier_apply(apply_as='DATA', modifier=mod.name)                
+                bpy.ops.object.modifier_apply( modifier=mod.name)                
                 self.report({'WARNING'}, 'Warning:  applied shrinkwrap ')
 
 
@@ -134,7 +134,7 @@ def main(self, context):
             for mod in [m for m in ob.modifiers if m.type == 'ARMATURE']:
                 while ob.modifiers[0].name != mod.name:
                     bpy.ops.object.modifier_move_up(modifier= mod.name)
-                bpy.ops.object.modifier_apply(apply_as='DATA', modifier=mod.name)
+                bpy.ops.object.modifier_apply( modifier=mod.name)
                 
             bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
             bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
@@ -348,13 +348,74 @@ class BR_OT_bone_straighten(bpy.types.Operator):
 
 
 class BR_OT_toggle_bone_inherit(bpy.types.Operator):
-    """Set current pose and shape as rest bind shape"""
+    """Toggle if all child bones inherit rotation or not"""
     bl_idname = "view3d.toggle_bone_inherit"
-    bl_label = "Inherit Toggle All"
+    bl_label = "Inherit Rotation All"
 
     def execute(self, context):
         bone_inherit(self, context)
         return {'FINISHED'}
+
+
+class BR_OT_toggle_child_lock(bpy.types.Operator):
+    """Toggle if child bones inherit rotation or not"""
+    bl_idname = "wm.toggle_child_lock"
+    bl_label ="Toggle Child Lock"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        global isChildLock
+        obj = bpy.context.object
+        selected_bones = bpy.context.selected_pose_bones
+        
+        if obj is not None :
+            if obj.type == 'ARMATURE':
+                if selected_bones is None:
+                    for poseBone in obj.pose.bones:
+                        bpy.ops.pose.select_all(action='DESELECT')
+                        poseBone.bone.select = True
+                        matrix_final = obj.matrix_world @ poseBone.matrix
+                        if not isChildLock:
+                            self.report({'INFO'}, 'Bone Rotations Locked!')
+                            bpy.ops.wm.context_collection_boolean_set(data_path_iter="selected_pose_bones", data_path_item="bone.use_inherit_rotation", type='DISABLE')
+                            poseBone.matrix_world = matrix_final
+                        else:
+                            self.report({'INFO'}, 'Bone Rotations Unlocked!')
+                            bpy.ops.wm.context_collection_boolean_set(data_path_iter="selected_pose_bones", data_path_item="bone.use_inherit_rotation", type='ENABLE')
+                            poseBone.matrix_world = matrix_final
+                else:
+                    child_bones = []
+                    for SelectedPoseBone in selected_bones:
+                        for poseBone in obj.pose.bones:
+                            if poseBone.parent ==  SelectedPoseBone:
+                                child_bones.append(poseBone)
+                    for c in child_bones:
+                        bpy.ops.pose.select_all(action='DESELECT')
+                        c.bone.select = True
+                        matrix_final = obj.matrix_world @ c.matrix
+                        if not isChildLock:
+                            self.report({'INFO'}, 'Bone Rotations Locked!')
+                            bpy.ops.wm.context_collection_boolean_set(data_path_iter="selected_pose_bones", data_path_item="bone.use_inherit_rotation", type='DISABLE')
+                            c.matrix_world = matrix_final
+                        else:
+                            self.report({'INFO'}, 'Bone Rotations Unlocked!')
+                            bpy.ops.wm.context_collection_boolean_set(data_path_iter="selected_pose_bones", data_path_item="bone.use_inherit_rotation", type='ENABLE')
+                            c.matrix_world = matrix_final
+
+                if selected_bones is not None:
+                    bpy.ops.pose.select_all(action='DESELECT')
+                    for b in selected_bones:
+                        b.bone.select = True
+
+
+            isChildLock = not isChildLock
+
+        return {'FINISHED'}
+
+
+
+
+
 
 
 class BR_OT_apply_mesh_pose(bpy.types.Operator):
@@ -374,6 +435,7 @@ def menu_draw_apply(self, context):
 
 def menu_draw_bone_settings(self, context):
     self.layout.operator(BR_OT_toggle_bone_inherit.bl_idname)
+    self.layout.operator(BR_OT_toggle_child_lock.bl_idname)
 
 def menu_draw_bone_context_menu(self, context):
     self.layout.operator(BR_OT_bone_straighten.bl_idname)
@@ -381,6 +443,7 @@ def menu_draw_bone_context_menu(self, context):
 def register():
     bpy.utils.register_class(BR_OT_apply_mesh_pose)
     bpy.utils.register_class(BR_OT_toggle_bone_inherit)
+    bpy.utils.register_class(BR_OT_toggle_child_lock)
     bpy.utils.register_class(BR_OT_bone_straighten)
 
     bpy.types.VIEW3D_MT_pose_apply.prepend(menu_draw_apply)
@@ -391,6 +454,7 @@ def register():
 def unregister():
     bpy.utils.unregister_class(BR_OT_apply_mesh_pose)
     bpy.utils.unregister_class(BR_OT_toggle_bone_inherit)
+    bpy.utils.unregister_class(BR_OT_toggle_child_lock)
     bpy.utils.unregister_class(BR_OT_bone_straighten)
     bpy.types.VIEW3D_MT_pose_apply.remove(menu_draw_apply)
     bpy.types.VIEW3D_MT_bone_options_toggle.remove(menu_draw_bone_settings)

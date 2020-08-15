@@ -1,7 +1,5 @@
 
 
-[Demo Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
-
 
 READ ME:  Spiraloid Blender 2.90 beta essentials setup
 
@@ -64,8 +62,10 @@ This is the fast preview playback script I wrote.  Hit spacebar to stop playing 
 
 CONGRATS!  Everything is installed. 
 
-checkout the walkthrough video and look at the hotkey overlay to get a feel.  
+checkout the walkthrough video and look at the hotkey overlay.    
 
+
+[Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
 
 
 --

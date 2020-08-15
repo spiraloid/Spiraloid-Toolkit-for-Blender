@@ -40,11 +40,10 @@ Browse to this folder where this README.txt file is and every *.py file in the a
 
 (Remember to activate each them immediately after you install them, otherwise it’s a long list to search through)
 
-You might also need to buy your own copy of this paid addon for xray box select.  My hotkeys assume this is installed.
+You might also need to buy your own copy of these paid addons as my hotkeys assume they are installed.
 
-box select Xray
 https://gumroad.com/l/daldj
-
+https://gum.co/dolly_zoom_truck_shift?recommended_by=library
 Next
 
 In the preferences Go to the "Keymap", use the button “import key configuration” and browse to this folder and import “spiraloid_hotkeys.py”

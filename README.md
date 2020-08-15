@@ -110,8 +110,8 @@ Up Arrow goes to first frame
 Down Arrow goes to last frame
 Left Arrow goes to next keyframe for selected object.
 Right Arrow goes to previous keyframe for selected object.
-Alt Right Arrow goes to next frame
-Alt Left Arrow goes to previous frame
+Shift Right Arrow goes to next frame
+Shift Left Arrow goes to previous frame
 
 Ctrl Return does a playblast of whatever window is under your mouse.
 
@@ -119,6 +119,11 @@ Ctrl Return does a playblast of whatever window is under your mouse.
 WEIGHT PAINT Mode
 Ctrl shift Drag will drag a radial gradient of the current weight, tool and strength.
 Ctrl ALT Drag will drag a radial gradient of the current weight, tool and strength.
+X will toggle 0.0 or 1.0 weight
+
+Image Paint mode
+X will toggle black or white color
+
 
 EDIT Mode
 E edges
@@ -146,6 +151,7 @@ alt+ctrl+shift+LMB to lasso mask deselect
 ctrl+i invert mask
 ctrl+b blur mask
 ctrl+h hide mask
+
 
 
 ---

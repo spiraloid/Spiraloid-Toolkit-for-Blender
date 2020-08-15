@@ -181,18 +181,21 @@ SmoothAnimationLoop.py
 
 This adds a menu to the graph editor > key > smmooth animation loop.  enter the number of frame the falloff should effect and the animation curves at the end of your selected animation will be moved to the values at the start of the animation with a falloff.
 
----
 
-SimplifyMultipleFCurves-v1_1.py
+resize_images.py
+obvious
 
-This adds a menu to the graph editor > properties panel > f-curve > Simplify multiple f-curves > By Error.  the slider to adjust error settings can be found in the 3Dviewport Tool shelf pane.  Adjust the slider to reduce the samples for selected curves.  Works great for creating animator friendly resamples for baked, mocap or puppeteered dense anim curves.
+SubdNavigator.py
+adds a subdivide modifier to add visile and lets you go up and down resolutions w D and Shift+D
 
----
+ToggleWeights.py
+allows you to use X to switch between 0.0 and 1.0 weighting.  useful for ctrl+shift+drag and ctrl+alt+drag for linear/radial gradient weighting.
 
-JiggleArmature.py
+Toggle_hide.py
+allow H store recall hide toggle to work.
 
-This adds a property to selected bones to simulate physics overlap.  great for floppy, ears, antenae etc etc.  the Jiggle Scene toggle must be set to on in the scene properties to see the results.
-
+brush_quickset.py
+lets the "[" and "]" do brush sizing like photoshop.
 
 
 ---

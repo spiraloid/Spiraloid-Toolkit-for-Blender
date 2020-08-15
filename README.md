@@ -70,7 +70,7 @@ checkout the walkthrough video and look at the hotkey overlay.
 
 --
 
-Here’s a list of basic usage of my essentials..  Wherever possible I tried to leave it the default so you could still google.  Right Mouse Button (RMB) to select, drag etc.  x to delete.  A to deselect all or Toggle.  GXYZ RXYZ SXYZ alt-S to move on normal etc all still work.
+Here’s a list of basic usage of my essentials..  Wherever possible I tried to leave it the blender defaults so googling blender shortcuts and tutorials will still kinda work.  x to delete.  A to deselect all or Toggle.  GXYZ RXYZ SXYZ alt-S to move on normal etc all still work.
 
 My adjustments to the UI or hotkeys are made for me, so bear in mind I have a lot of habits from using nearly every 3D tool for the last 25 years in major productions.  I understand that the hotkey memorization I do is abnormal, but this kind of configuration helps me switch tools and makes my work faster.
 
@@ -124,6 +124,10 @@ X will toggle 0.0 or 1.0 weight
 Image Paint mode
 X will toggle black or white color
 
+OBJECT mode
+w is the tweek tool.  I leave this tool on for everything and use the GRS shortcuts instead of the beginner gizmos.
+ctrl+e move origin to cursor
+f4 apply all transforms.
 
 EDIT Mode
 E edges

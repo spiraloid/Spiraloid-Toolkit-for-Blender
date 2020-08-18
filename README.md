@@ -1,6 +1,5 @@
 
-
-[Demo Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4)
+[Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
 
 
 READ ME:  Spiraloid Blender 2.90 beta essentials setup
@@ -41,11 +40,10 @@ Browse to this folder where this README.txt file is and every *.py file in the a
 
 (Remember to activate each them immediately after you install them, otherwise it’s a long list to search through)
 
-You might also need to buy your own copy of this paid addon for xray box select.  My hotkeys assume this is installed.
+You might also need to buy your own copy of these paid addons as my hotkeys assume they are installed.
 
-box select Xray
 https://gumroad.com/l/daldj
-
+https://gum.co/dolly_zoom_truck_shift?recommended_by=library
 Next
 
 In the preferences Go to the "Keymap", use the button “import key configuration” and browse to this folder and import “spiraloid_hotkeys.py”
@@ -64,13 +62,15 @@ This is the fast preview playback script I wrote.  Hit spacebar to stop playing 
 
 CONGRATS!  Everything is installed. 
 
-checkout the walkthrough video and look at the hotkey overlay to get a feel.  
+checkout the walkthrough video and look at the hotkey overlay.    
 
+
+[Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
 
 
 --
 
-Here’s a list of basic usage of my essentials..  Wherever possible I tried to leave it the default so you could still google.  Right Mouse Button (RMB) to select, drag etc.  x to delete.  A to deselect all or Toggle.  GXYZ RXYZ SXYZ alt-S to move on normal etc all still work.
+Here’s a list of basic usage of my essentials..  Wherever possible I tried to leave it the blender defaults so googling blender shortcuts and tutorials will still kinda work.  x to delete.  A to deselect all or Toggle.  GXYZ RXYZ SXYZ alt-S to move on normal etc all still work.
 
 My adjustments to the UI or hotkeys are made for me, so bear in mind I have a lot of habits from using nearly every 3D tool for the last 25 years in major productions.  I understand that the hotkey memorization I do is abnormal, but this kind of configuration helps me switch tools and makes my work faster.
 
@@ -110,8 +110,8 @@ Up Arrow goes to first frame
 Down Arrow goes to last frame
 Left Arrow goes to next keyframe for selected object.
 Right Arrow goes to previous keyframe for selected object.
-Alt Right Arrow goes to next frame
-Alt Left Arrow goes to previous frame
+Shift Right Arrow goes to next frame
+Shift Left Arrow goes to previous frame
 
 Ctrl Return does a playblast of whatever window is under your mouse.
 
@@ -119,6 +119,15 @@ Ctrl Return does a playblast of whatever window is under your mouse.
 WEIGHT PAINT Mode
 Ctrl shift Drag will drag a radial gradient of the current weight, tool and strength.
 Ctrl ALT Drag will drag a radial gradient of the current weight, tool and strength.
+X will toggle 0.0 or 1.0 weight
+
+Image Paint mode
+X will toggle black or white color
+
+OBJECT mode
+w is the tweek tool.  I leave this tool on for everything and use the GRS shortcuts instead of the beginner gizmos.
+ctrl+e move origin to cursor
+f4 apply all transforms.
 
 EDIT Mode
 E edges
@@ -146,6 +155,7 @@ alt+ctrl+shift+LMB to lasso mask deselect
 ctrl+i invert mask
 ctrl+b blur mask
 ctrl+h hide mask
+
 
 
 ---
@@ -181,18 +191,21 @@ SmoothAnimationLoop.py
 
 This adds a menu to the graph editor > key > smmooth animation loop.  enter the number of frame the falloff should effect and the animation curves at the end of your selected animation will be moved to the values at the start of the animation with a falloff.
 
----
 
-SimplifyMultipleFCurves-v1_1.py
+resize_images.py
+obvious
 
-This adds a menu to the graph editor > properties panel > f-curve > Simplify multiple f-curves > By Error.  the slider to adjust error settings can be found in the 3Dviewport Tool shelf pane.  Adjust the slider to reduce the samples for selected curves.  Works great for creating animator friendly resamples for baked, mocap or puppeteered dense anim curves.
+SubdNavigator.py
+adds a subdivide modifier to add visile and lets you go up and down resolutions w D and Shift+D
 
----
+ToggleWeights.py
+allows you to use X to switch between 0.0 and 1.0 weighting.  useful for ctrl+shift+drag and ctrl+alt+drag for linear/radial gradient weighting.
 
-JiggleArmature.py
+Toggle_hide.py
+allow H store recall hide toggle to work.
 
-This adds a property to selected bones to simulate physics overlap.  great for floppy, ears, antenae etc etc.  the Jiggle Scene toggle must be set to on in the scene properties to see the results.
-
+brush_quickset.py
+lets the "[" and "]" do brush sizing like photoshop.
 
 
 ---

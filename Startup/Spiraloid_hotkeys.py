@@ -8546,6 +8546,7 @@ keyconfig_data = \
      {"type": 'MIDDLEMOUSE', "value": 'ANY', "shift": True},
      {"properties":
       [("use_even_offset", True),
+       ("use_accurate", True),
        ],
       },
      ),

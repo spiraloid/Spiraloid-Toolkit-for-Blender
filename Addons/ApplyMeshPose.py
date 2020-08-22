@@ -10,6 +10,7 @@ bl_info = {
 import bpy
 
 isBoneInherit = False
+isChildLock = False
 
 def getLayerCollection(layerColl, collName):
     found = None

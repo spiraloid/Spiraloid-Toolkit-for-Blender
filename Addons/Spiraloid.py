@@ -408,20 +408,7 @@ def smart_nuke_bsdf(self, context, nukeInvert):
             #                 mat.node_tree.links.new(shader.inputs[0], colorNode.outputs[0])
 
 
-
-
-            if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
-                bpy.context.scene.eevee.use_gtao = True
-                bpy.context.scene.eevee.use_bloom = True
-                bpy.context.scene.eevee.use_ssr = True
-                my_shading =  'MATERIAL'
-
-            if bpy.context.scene.render.engine == 'CYCLES':
-                my_shading =  'RENDERED'
-
-
-
-
+            toggle_workmode(self, context)
 
                 # count = count + 1
             # bpy.context.area.type = original_type
@@ -698,7 +685,6 @@ def toggle_workmode(self, context):
                 # bpy.context.space_data.overlay.show_wireframes = False
 
                 if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
-                    # bpy.context.scene.eevee.use_gtao = True
                     # bpy.context.scene.eevee.use_bloom = True
                     # bpy.context.scene.eevee.use_ssr = True
                     my_shading =  'MATERIAL'
@@ -1264,7 +1250,7 @@ def nuke_diffuse_texture(objects, width, height):
             bpy.ops.image.new(name=texName_albedo, width=width, height=height, color=(0.5, 0.5, 0.5, 1.0), alpha=False, generated_type='BLANK', float=False, use_stereo_3d=False, tiled=False)
             texture.image = bpy.data.images[texName_albedo] 
             new_image = bpy.data.images[texName_albedo]
-            new_image.pack()
+
 
 
 
@@ -1300,6 +1286,17 @@ def nuke_diffuse_texture(objects, width, height):
                     # subprocess.call('start '+ outImageFilePathName, shell=True)
                     # print(outImageFilePathName)
                     subprocess.call('start '+ " \"" + "\" " + "\"" +  outImageFilePathName + "\"", shell=True)
+                # else:
+                #     matnodes = mat.node_tree.nodes
+                #     C=bpy.context
+                #     old_area_type = C.area.type
+                #     C.area.type='NODE_EDITOR'
+                #     texture.select = True
+                #     matnodes.active = texture
+                #     texture.image.pack()
+                #     C.area.type=old_area_type
+
+
 
         # set a temporary context to poll correctly
         context = bpy.context.copy()

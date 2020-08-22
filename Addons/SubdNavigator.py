@@ -224,12 +224,46 @@ def toggle_workmode(self, context):
                     # bpy.context.scene.eevee.use_ssr = True
                     my_shading =  'MATERIAL'
                     bpy.context.space_data.shading.use_scene_world_render = False
-                    bpy.context.space_data.shading.use_scene_lights_render = True
+
+                    lights = [o for o in bpy.context.scene.objects if o.type == 'LIGHT']
+                    if (lights):
+                        bpy.context.space_data.shading.use_scene_lights = True
+                        bpy.context.space_data.shading.use_scene_world = True
+                    else:
+                        bpy.context.space_data.shading.use_scene_lights = False
+                        bpy.context.space_data.shading.use_scene_world = False
+
+                    if bpy.context.scene.world:
+                        bpy.context.space_data.shading.use_scene_world = True
+
+
+
+
 
                 if bpy.context.scene.render.engine == 'CYCLES':
                     my_shading =  'RENDERED'
-                    bpy.context.space_data.shading.use_scene_world_render = True
-                    bpy.context.space_data.shading.use_scene_lights_render = True
+
+
+                    lights = [o for o in bpy.context.scene.objects if o.type == 'LIGHT']
+                    # if (lights):
+                    #     bpy.context.space_data.shading.use_scene_lights_render = True
+                    # else:
+                    #     bpy.context.space_data.shading.use_scene_lights = False
+                    #     bpy.context.space_data.shading.studiolight_intensity = 1
+
+
+                    if bpy.context.scene.world is None:
+                        if (lights):
+                            bpy.context.space_data.shading.use_scene_world_render = False
+                            bpy.context.space_data.shading.studiolight_intensity = 0.01
+                        else:
+                            bpy.context.space_data.shading.use_scene_world_render = False
+                            bpy.context.space_data.shading.studiolight_intensity = 1
+                    else:
+                        bpy.context.space_data.shading.use_scene_world_render = True
+                        if (lights):
+                            bpy.context.space_data.shading.use_scene_lights_render = True
+
 
 
                 if bpy.context.mode == 'OBJECT':
@@ -395,7 +429,7 @@ class BR_OT_subd_increase(bpy.types.Operator):
         return {'FINISHED'}
 
 class BR_OT_subd_toggle(bpy.types.Operator):
-    """Toggle All To Lowest/Highest Sudvision"""
+    """Toggle Workmode"""
     bl_idname = "view3d.subd_toggle"
     bl_label = "Toggle Workmode"
     bl_options = {'REGISTER', 'UNDO'}

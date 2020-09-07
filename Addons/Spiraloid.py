@@ -43,6 +43,8 @@ import bmesh
 from bpy.types import Menu
 from bl_ui.properties_paint_common import UnifiedPaintPanel
 
+# ------------------------
+# global variables
 
 previous_selected_faces = []
 wasInEditMode = False
@@ -51,9 +53,9 @@ applyColor = (0.5,0.5,0.5,1.0)
 previous_color = (0,0,0,1)
 # colorIndex = 0
 isWorkmodeToggled = True
+previous_mode =  'OBJECT'
 
-
-
+# ------------------------
 
 
 
@@ -577,15 +579,37 @@ def smart_nuke_bsdf(self, context, nukeInvert):
         nuke_diffuse_texture(selected_objects, 2048, 2048)
         # my_shading =  'MATERIAL'
         bpy.ops.object.mode_set(mode='TEXTURE_PAINT', toggle=False)
+
+
+
+
+
         for area in my_areas:
             for space in area.spaces:
                 if space.type == 'VIEW_3D':
                     space.shading.color_type = 'TEXTURE'
                     space.shading.type = 'SOLID'
 
+
+
+
     # if shared_material:
     #     bpy.ops.object.material_slot_copy()
 
+
+def toggle_mods():
+    selected_objects = bpy.context.selected_objects
+    for obj in selected_objects:
+        if obj:
+#            obj["is_modwires_on"] = not obj["is_modwires_on"]
+            for mod in obj.modifiers:
+                    mod.show_viewport = not mod.show_viewport
+    
+    if not bpy.context.selected_objects:
+        for vobj in bpy.context.view_layer.objects:
+            for mod in vobj.modifiers:
+                mod.show_viewport = not mod.show_viewport
+                
 
 def toggle_workmode(self, context):
     global isWorkmodeToggled
@@ -608,7 +632,7 @@ def toggle_workmode(self, context):
     bpy.context.space_data.overlay.show_object_origins = True
     bpy.context.space_data.overlay.show_annotation = True
     bpy.context.space_data.overlay.show_text = True
-    bpy.context.space_data.overlay.show_text = True
+    bpy.context.space_data.overlay.show_stats = True
 
 
     for obj in bpy.context.scene.objects:
@@ -665,6 +689,8 @@ def toggle_workmode(self, context):
                 bpy.context.space_data.overlay.show_outline_selected = False
                 bpy.context.space_data.overlay.show_extras = False
                 bpy.context.space_data.show_gizmo = False
+                bpy.context.space_data.overlay.show_stats = False
+
 
                 selected_objects = bpy.context.selected_objects
                 if not selected_objects:
@@ -688,7 +714,6 @@ def toggle_workmode(self, context):
                     # bpy.context.scene.eevee.use_bloom = True
                     # bpy.context.scene.eevee.use_ssr = True
                     my_shading =  'MATERIAL'
-                    bpy.context.space_data.shading.use_scene_world_render = False
 
                     lights = [o for o in bpy.context.scene.objects if o.type == 'LIGHT']
                     if (lights):
@@ -700,6 +725,8 @@ def toggle_workmode(self, context):
 
                     if bpy.context.scene.world:
                         bpy.context.space_data.shading.use_scene_world = True
+                    else:
+                        bpy.context.space_data.shading.use_scene_world = False
 
 
 
@@ -766,9 +793,10 @@ def toggle_workmode(self, context):
                 bpy.context.space_data.overlay.show_object_origins = True
                 bpy.context.space_data.overlay.show_annotation = True
                 bpy.context.space_data.overlay.show_text = True
-                bpy.context.space_data.overlay.show_text = True
+                bpy.context.space_data.overlay.show_stats = True
                 bpy.context.space_data.overlay.wireframe_threshold = 1
                 bpy.context.space_data.show_gizmo = True
+
 
                 if isWireframe:
                     bpy.context.space_data.overlay.show_wireframes = True
@@ -778,12 +806,12 @@ def toggle_workmode(self, context):
 
                 if previous_mode == 'EDIT' or previous_mode == 'OBJECT' or previous_mode == 'POSE':
                     my_shading = 'SOLID'
-                    for ob in bpy.context.scene.objects:
-                        if ob.type == 'MESH':
-                            if ob.data.vertex_colors:
-                                bpy.context.space_data.shading.color_type = 'VERTEX'
-                            else:
-                                bpy.context.space_data.shading.color_type = 'RANDOM'
+                    # for ob in bpy.context.scene.objects:
+                    #     if ob.type == 'MESH':
+                    #         if ob.data.vertex_colors:
+                    #             bpy.context.space_data.shading.color_type = 'VERTEX'
+                    #         else:
+                    #             bpy.context.space_data.shading.color_type = 'RANDOM'
 
                 is_toon_shaded = obj.get("is_toon_shaded")
                 if is_toon_shaded:
@@ -1251,7 +1279,12 @@ def nuke_diffuse_texture(objects, width, height):
             texture.image = bpy.data.images[texName_albedo] 
             new_image = bpy.data.images[texName_albedo]
 
-
+            C=bpy.context
+            old_area_type = C.area.type
+            C.area.type='IMAGE_EDITOR'
+            C.area.spaces.active.image = new_image
+            bpy.ops.image.pack()
+            C.area.type=old_area_type
 
 
 
@@ -1309,6 +1342,8 @@ def nuke_diffuse_texture(objects, width, height):
                         break
                 break
         bpy.ops.image.view_zoom_ratio(context,ratio=1)
+        bpy.ops.image.pack(context)
+
 
     return {'FINISHED'}
 
@@ -3001,6 +3036,70 @@ class BR_OT_uvmap(bpy.types.Operator):
         uvmap_mesh(selected_objects)
         return {'FINISHED'}
 
+
+
+class BR_OT_automesh(bpy.types.Operator):
+    """generate a quad mesh with multires and UV's that looks like the same mesh"""
+    bl_idname = "view3d.spiraloid_automesh"
+    bl_label = "Automesh"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        for obj in bpy.context.selected_objects:
+            if obj.visible_get and  obj.type == 'MESH':
+                print(obj.name)
+                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                bpy.ops.object.select_all(action='DESELECT')
+                obj.select_set(state=True)
+                bpy.context.view_layer.objects.active = obj
+
+                bpy.ops.qremesher.remesh()
+
+                remeshed_object = bpy.context.selected_objects
+
+                multires_mod = remeshed_object.modifiers.new(name = 'Multires', type = 'MULTIRES')
+                level = 3
+                if level > 0:
+                    for i in range(0, level):
+                        bpy.ops.object.multires_subdivide(modifier="Multires", mode='CATMULL_CLARK')
+
+                shrink_mod = remeshed_object.modifiers.new(name = 'Shrinkwrap', type = 'SHRINKWRAP')
+                shrink_mod.target = bpy.data.objects[obj.name]
+                shrink_mod.wrap_method = 'PROJECT'
+                shrink_mod.offset = 0
+                shrink_mod.project_limit = 0.2
+                shrink_mod.subsurf_levels = 0
+                shrink_mod.use_negative_direction = True
+                shrink_mod.use_positive_direction = True
+                shrink_mod.cull_face = 'OFF'
+
+                for mod in [m for m in remeshed_object.modifiers]:
+                    if 'Shrinkwrap' in mod.name:
+                        bpy.ops.object.modifier_apply( modifier=mod.name)
+
+                obj.select_set(state=True)
+                bpy.context.view_layer.objects.active = obj
+                bpy.ops.object.material_slot_copy()
+                bpy.ops.object.select_all(action='DESELECT')
+                remeshed_object.select_set(state=True)
+                bpy.context.view_layer.objects.active = remeshed_object
+
+        return {'FINISHED'}
+
+
+
+class BR_OT_toggle_mods(bpy.types.Operator):
+    """Toggle the modifiers for selected objects, otherwise toggle all visible"""
+    bl_idname = "view3d.spiraloid_toggle_mods"
+    bl_label = "Toggle Modifiers"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        toggle_mods()
+        return {'FINISHED'}
+
+
+
 #------------------------------------------------------
 #------------------------------------------------------
 
@@ -3043,8 +3142,7 @@ class SpiraloidMenu(bpy.types.Menu):
 
         layout.menu(SpiraloidSubMenuMaterials.bl_idname )
         layout.menu(SpiraloidSubMenuUtilities.bl_idname )
-        layout.separator()
-        layout.operator("view3d.spiraloid_uvmap")
+
         layout.separator()
 
         layout.menu(SpiraloidSubMenuHelp.bl_idname, icon="QUESTION")
@@ -3064,8 +3162,6 @@ class SpiraloidSubMenuHelp(bpy.types.Menu):
         layout = self.layout
         layout.operator("view3d.spiraloid_workshop")
 
-
-
 class SpiraloidSubMenuUtilities(bpy.types.Menu):
     bl_idname = 'view3d.spiraloid_utilities_submenu'
     bl_label = 'Utilities'
@@ -3073,10 +3169,12 @@ class SpiraloidSubMenuUtilities(bpy.types.Menu):
     def draw(self, context):
         layout = self.layout
         # layout.operator("view3d.spiraloid_bake_collection")
+        layout.operator("view3d.spiraloid_automesh")
+        layout.operator("view3d.spiraloid_uvmap")
+        layout.separator()
         layout.operator("view3d.spiraloid_vertex_color_to_texture")
         layout.operator("view3d.spiraloid_texture_to_vertex_color")
         layout.separator()
-
         layout.operator("view3d.spiraloid_regenerate_scene_strip")
 
 class SpiraloidSubMenuMaterials(bpy.types.Menu):
@@ -3104,6 +3202,11 @@ def draw_item(self, context):
     layout = self.layout
     layout.menu(SpiraloidMenu.bl_idname)
 
+def draw_toggle_mods_menu(self, context):
+    layout = self.layout
+    layout.separator()
+    layout.operator("view3d.spiraloid_toggle_mods", text="Toggle Modifiers")
+
 
 def add_to_render_menu(self, context):
     self.layout.operator("wm.spiraloid_toggle_workmode", 
@@ -3112,10 +3215,11 @@ def add_to_render_menu(self, context):
 
 
 def register():
+    bpy.types.VIEW3D_MT_view.append(draw_toggle_mods_menu) 
     bpy.utils.register_class(BR_OT_PalletColorMenu)
     bpy.utils.register_class(SpiraloidMenu)
     bpy.utils.register_class(SpiraloidSubMenuHelp)    
-    bpy.utils.register_class(SpiraloidSubMenuUtilities)    
+    bpy.utils.register_class(BR_OT_toggle_mods)    
     bpy.utils.register_class(SpiraloidSubMenuMaterials)    
     # bpy.utils.register_class(SpiraloidOutlinerMenu)    
 
@@ -3125,6 +3229,7 @@ def register():
     bpy.utils.register_class(BR_OT_nuke_bsdf_triplanar_texture)
     bpy.utils.register_class(BR_OT_nuke_flat)
     bpy.utils.register_class(BR_OT_uvmap)
+    bpy.utils.register_class(BR_OT_automesh)
     bpy.utils.register_class(BR_OT_nuke_flat_vertex_color)
     bpy.utils.register_class(BR_OT_nuke_flat_texture)
     bpy.utils.register_class(BR_OT_nuke_diffuse_texture)
@@ -3172,6 +3277,7 @@ def unregister():
     bpy.utils.unregister_class(SpiraloidSubMenuMaterials)
     # bpy.utils.unregister_class(SpiraloidOutlinerMenu)
     
+    bpy.utils.unregister_class(BR_OT_toggle_mods)
     bpy.utils.unregister_class(BR_OT_new_3d_comic)      
     bpy.utils.unregister_class(BR_OT_add_comic_scene)      
     bpy.utils.unregister_class(BR_OT_delete_comic_scene)      
@@ -3184,6 +3290,7 @@ def unregister():
     bpy.utils.unregister_class(BR_OT_nuke_bsdf_triplanar_texture)
     bpy.utils.unregister_class(BR_OT_nuke_flat)
     bpy.utils.unregister_class(BR_OT_uvmap)
+    bpy.utils.unregister_class(BR_OT_automesh)
     bpy.utils.unregister_class(BR_OT_nuke_flat_vertex_color)
     bpy.utils.unregister_class(BR_OT_nuke_flat_texture)
     bpy.utils.unregister_class(BR_OT_nuke_diffuse_texture)

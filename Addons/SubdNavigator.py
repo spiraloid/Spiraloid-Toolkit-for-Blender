@@ -23,13 +23,26 @@ def main_decrease(context):
                 if mod_next_level >= 0:
                     mod.levels = mod_next_level
                     mod.sculpt_levels = mod_next_level
+
+                if mod_next_level != mod.render_levels:
+                    for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                        mod.show_viewport = False
+
+
             for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
                 mod_next_level = mod.levels - 1
                 if mod_next_level >= 0:
                     mod.levels = mod_next_level
-                    bpy.context.space_data.overlay.show_wireframes = False
-                else :
+                    # bpy.context.space_data.overlay.show_wireframes = False
+
+                if mod_next_level != mod.render_levels:
+                    for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                        mod.show_viewport = False
+
+                if mod_next_level == 0:
                     bpy.context.space_data.overlay.show_wireframes = True
+                    for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                        mod.show_viewport = False
 
     return {'FINISHED'}
 
@@ -41,13 +54,24 @@ def main_increase(context):
             if mod_next_level <= mod_max_level:
                 mod.levels = mod_next_level
                 mod.sculpt_levels = mod_next_level
+
+            if mod_next_level == mod_max_level:
+                for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                    mod.show_viewport = not mod.show_viewport
+
         for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
             mod_max_level = mod.render_levels
             mod_next_level = mod.levels + 1
             if mod_next_level <= mod_max_level:
                 mod.levels = mod_next_level
+            else :
+            # if mod_next_level == mod_max_level:
+                for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                    if not mod.show_viewport :
+                        mod.show_viewport = not mod.show_viewport
 
-    bpy.context.space_data.overlay.show_wireframes = False
+
+    # bpy.context.space_data.overlay.show_wireframes = False
     return {'FINISHED'}
 
 
@@ -59,22 +83,39 @@ def main_subdivide(self, context):
     if bpy.context.mode == 'OBJECT' or bpy.context.mode == 'POSE':
         for obj in selected_objects:
             if obj.visible_get and  obj.type == 'MESH':
+                d_modifier_count = len([m for m in obj.modifiers if m.type == 'DECIMATE'])
                 s_modifier_count = len([m for m in obj.modifiers if m.type == 'SUBSURF'])
                 m_modifier_count = len([m for m in obj.modifiers if m.type == 'MULTIRES']) 
-                modifier_count = m_modifier_count + s_modifier_count
+                modifier_count = m_modifier_count + s_modifier_count + d_modifier_count
                 if modifier_count == 0:
-                        # mod = obj.modifiers.new(name = 'Subdivision', type = 'SUBSURF')
-                        mod = obj.modifiers.new(name = 'Multires', type = 'MULTIRES')
-                        bpy.ops.object.multires_subdivide(modifier="Multires", mode='CATMULL_CLARK')
-                        bpy.ops.object.multires_subdivide(modifier="Multires", mode='CATMULL_CLARK')
+                    mod = obj.modifiers.new(name = 'Subdivision', type = 'SUBSURF')
+                    mod.levels = 2
+                    mod.render_levels = 2
 
-                        mod.uv_smooth = 'NONE'
-                        bpy.ops.object.select_all(action='DESELECT')
-                        obj.select_set(state=True)
-                        bpy.context.view_layer.objects.active = obj
-                        bpy.ops.object.shade_smooth()
-                        obj.data.use_auto_smooth = True
-                        obj.data.auto_smooth_angle = 1.0472
+                    # mod = obj.modifiers.new(name = 'Multires', type = 'MULTIRES')
+                    # bpy.ops.object.multires_subdivide(modifier="Multires", mode='CATMULL_CLARK')
+                    # bpy.ops.object.multires_subdivide(modifier="Multires", mode='CATMULL_CLARK')
+
+                    mod.uv_smooth = 'NONE'
+                    bpy.ops.object.select_all(action='DESELECT')
+                    obj.select_set(state=True)
+                    bpy.context.view_layer.objects.active = obj
+                    bpy.ops.object.shade_smooth()
+                    obj.data.use_auto_smooth = True
+                    obj.data.auto_smooth_angle = 1.0472
+
+                    mod = obj.modifiers.new(name = 'Decimate', type = 'DECIMATE')
+                    mod.decimate_type = 'DISSOLVE'
+                    mod.angle_limit = 0.00349066
+                    mod.delimit = {'SEAM'}
+                    mod.use_dissolve_boundaries = False
+
+                    mod = obj.modifiers.new(name = 'Decimate', type = 'DECIMATE')
+                    mod.decimate_type = 'COLLAPSE'
+                    mod.use_collapse_triangulate = True
+                    mod.ratio = 0.33
+
+
 
     if bpy.context.mode == 'SCULPT':
         obj = s
@@ -119,7 +160,11 @@ def main_subdivide(self, context):
             bpy.ops.object.select_all(action='DESELECT')
             s.select_set(state=True)
             bpy.context.view_layer.objects.active = s
+
+
     return {'FINISHED'}
+
+
 
 def toggle_workmode(self, context):
     global isToggleSubd

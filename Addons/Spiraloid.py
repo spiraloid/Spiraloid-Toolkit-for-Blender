@@ -601,7 +601,7 @@ def toggle_mods():
     selected_objects = bpy.context.selected_objects
     for obj in selected_objects:
         if obj:
-#            obj["is_modwires_on"] = not obj["is_modwires_on"]
+            #obj["is_modwires_on"] = not obj["is_modwires_on"]
             for mod in obj.modifiers:
                     mod.show_viewport = not mod.show_viewport
     
@@ -609,6 +609,10 @@ def toggle_mods():
         for vobj in bpy.context.view_layer.objects:
             for mod in vobj.modifiers:
                 mod.show_viewport = not mod.show_viewport
+
+    # for vobj in bpy.context.view_layer.objects:
+    #     for mod in vobj.modifiers:
+    #         mod.show_viewport = not mod.show_viewport
                 
 
 def toggle_workmode(self, context):

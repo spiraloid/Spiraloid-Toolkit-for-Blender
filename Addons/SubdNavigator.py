@@ -47,28 +47,47 @@ def main_decrease(context):
     return {'FINISHED'}
 
 def main_increase(context):
+    is_decimated = False
+    is_max_subd = False
+
     for obj in bpy.context.scene.objects:
-        for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
-            mod_max_level = mod.render_levels
-            mod_next_level = mod.levels + 1
-            if mod_next_level <= mod_max_level:
-                mod.levels = mod_next_level
-                mod.sculpt_levels = mod_next_level
+        s_modifier_count = len([m for m in obj.modifiers if m.type == 'SUBSURF'])
+        d_modifier_count = len([m for m in obj.modifiers if m.type == 'DECIMATE'])
+        m_modifier_count = len([m for m in obj.modifiers if m.type == 'MULTIRES']) 
+        modifier_count = m_modifier_count + s_modifier_count + d_modifier_count
 
-            if mod_next_level == mod_max_level:
-                for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
-                    mod.show_viewport = not mod.show_viewport
+        if modifier_count != 0:
+            for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
+                mod_max_level = mod.render_levels
+                mod_next_level = mod.levels + 1
+                if mod_next_level <= mod_max_level:
+                    mod.levels = mod_next_level
+                    mod.sculpt_levels = mod_next_level
 
-        for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
-            mod_max_level = mod.render_levels
-            mod_next_level = mod.levels + 1
-            if mod_next_level <= mod_max_level:
-                mod.levels = mod_next_level
-            else :
-            # if mod_next_level == mod_max_level:
+                if mod_next_level == mod_max_level:
+                    for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                        mod.show_viewport = not mod.show_viewport
+
+            for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
+                mod_max_level = mod.render_levels
+                mod_next_level = mod.levels + 1
+                if mod_next_level <= mod_max_level:
+                    mod.levels = mod_next_level
+                else :
+                    is_max_subd = True
+                # if mod_next_level == mod_max_level:
+
+            if is_max_subd:
                 for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                    is_decimated = True
                     if not mod.show_viewport :
                         mod.show_viewport = not mod.show_viewport
+                    
+                if is_decimated:
+                    for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:              
+                            optimizexd_mod_next_level = mod.levels - 1
+                            mod.levels = optimizexd_mod_next_level
+
 
 
     # bpy.context.space_data.overlay.show_wireframes = False
@@ -83,14 +102,20 @@ def main_subdivide(self, context):
     if bpy.context.mode == 'OBJECT' or bpy.context.mode == 'POSE':
         for obj in selected_objects:
             if obj.visible_get and  obj.type == 'MESH':
+
+                for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
+                    obj.modifiers.remove(mod)
+
                 d_modifier_count = len([m for m in obj.modifiers if m.type == 'DECIMATE'])
                 s_modifier_count = len([m for m in obj.modifiers if m.type == 'SUBSURF'])
                 m_modifier_count = len([m for m in obj.modifiers if m.type == 'MULTIRES']) 
                 modifier_count = m_modifier_count + s_modifier_count + d_modifier_count
+
+
                 if modifier_count == 0:
                     mod = obj.modifiers.new(name = 'Subdivision', type = 'SUBSURF')
-                    mod.levels = 2
-                    mod.render_levels = 2
+                    mod.levels = 1
+                    mod.render_levels = 1
 
                     # mod = obj.modifiers.new(name = 'Multires', type = 'MULTIRES')
                     # bpy.ops.object.multires_subdivide(modifier="Multires", mode='CATMULL_CLARK')
@@ -114,7 +139,6 @@ def main_subdivide(self, context):
                     mod.decimate_type = 'COLLAPSE'
                     mod.use_collapse_triangulate = True
                     mod.ratio = 0.33
-
 
 
     if bpy.context.mode == 'SCULPT':

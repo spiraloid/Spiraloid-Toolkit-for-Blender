@@ -19,12 +19,14 @@ def main(context):
     
     if not isWeightToggled:
         # bpy.context.scene.tool_settings.unified_paint_settings.weight = 0
-        bpy.data.brushes['Brush'].weight = 0
+        # bpy.data.brushes['Brush'].weight = 0
+        bpy.context.scene.tool_settings.unified_paint_settings.weight = 0
 
   
     if isWeightToggled:    
         # bpy.context.scene.tool_settings.unified_paint_settings.weight = 1
-        bpy.data.brushes['Brush'].weight = 1
+        # bpy.data.brushes['Brush'].weight = 1
+        bpy.context.scene.tool_settings.unified_paint_settings.weight = 1
 
         
     isWeightToggled = not isWeightToggled

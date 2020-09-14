@@ -60,20 +60,20 @@ previous_mode =  'OBJECT'
 
 
 
-class SpiraloidPreferences(AddonPreferences):
-    # this must match the addon name, use '__package__'
-    # when defining this in a submodule of a python package.
-    bl_idname = __name__
+# class SpiraloidPreferences(AddonPreferences):
+#     # this must match the addon name, use '__package__'
+#     # when defining this in a submodule of a python package.
+#     bl_idname = __name__
 
-    assets_folder = StringProperty(
-            name="Assets Folder",
-            subtype='DIR_PATH',
-            )
+#     assets_folder = StringProperty(
+#             name="Assets Folder",
+#             subtype='DIR_PATH',
+#             )
 
-    def draw(self, context):
-        layout = self.layout
-        layout.label(text="Location for Spiraloid Template Assets")
-        layout.prop(self, "assets_folder")
+#     def draw(self, context):
+#         layout = self.layout
+#         layout.label(text="Location for Spiraloid Template Assets")
+#         layout.prop(self, "assets_folder")
 
 def in_1_seconds():
     global previous_color
@@ -3258,7 +3258,7 @@ def register():
 
     # bpy.types.TOPBAR_MT_render.append(menu_draw_bake)
     
-    bpy.utils.register_class(SpiraloidPreferences)
+    # bpy.utils.register_class(SpiraloidPreferences)
     
     # bpy.utils.register_class(BR_OT_bake_collection)
     # bpy.utils.register_class(BakeCollectionSettings)
@@ -3319,7 +3319,7 @@ def unregister():
     # bpy.types.OUTLINER_MT_collection.remove(draw_context_menus)
     # bpy.types.TOPBAR_MT_render.remove(menu_draw_bake)
 
-    bpy.utils.unregister_class(SpiraloidPreferences)
+    # bpy.utils.unregister_class(SpiraloidPreferences)
 
 
 

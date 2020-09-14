@@ -38,9 +38,10 @@ def main_decrease(context):
                 if mod_next_level != mod.render_levels:
                     for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
                         mod.show_viewport = False
+                        
 
                 if mod_next_level == 0:
-                    bpy.context.space_data.overlay.show_wireframes = True
+                    # bpy.context.space_data.overlay.show_wireframes = True
                     for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
                         mod.show_viewport = False
 
@@ -85,8 +86,9 @@ def main_increase(context):
                     
                 if is_decimated:
                     for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:              
-                            optimizexd_mod_next_level = mod.levels - 1
-                            mod.levels = optimizexd_mod_next_level
+                            # optimized_mod_next_level = mod.levels - 1
+                            optimized_mod_next_level = mod.levels
+                            mod.levels = optimized_mod_next_level
 
 
 

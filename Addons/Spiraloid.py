@@ -3257,7 +3257,7 @@ def register():
 
     
     bpy.types.TOPBAR_MT_editor_menus.append(draw_item)
-    bpy.types.TOPBAR_MT_render.append(add_to_render_menu)
+    # bpy.types.TOPBAR_MT_render.append(add_to_render_menu)
 
     # bpy.types.OUTLINER_MT_collection.append(draw_context_menus)
 
@@ -3319,7 +3319,7 @@ def unregister():
     # bpy.utils.unregister_class(BR_OT_spiraloid_toggle_workmode) 
     
     bpy.types.TOPBAR_MT_editor_menus.remove(draw_item)
-    bpy.types.TOPBAR_MT_render.remove(add_to_render_menu)
+    # bpy.types.TOPBAR_MT_render.remove(add_to_render_menu)
 
     # bpy.types.OUTLINER_MT_collection.remove(draw_context_menus)
     # bpy.types.TOPBAR_MT_render.remove(menu_draw_bake)

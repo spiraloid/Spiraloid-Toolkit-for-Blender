@@ -52,7 +52,7 @@ my_shading = 'MATERIAL'
 applyColor = (0.5,0.5,0.5,1.0)
 previous_color = (0,0,0,1)
 # colorIndex = 0
-isWorkmodeToggled = True
+# isWorkmodeToggled = True
 previous_mode =  'OBJECT'
 
 # ------------------------
@@ -410,7 +410,7 @@ def smart_nuke_bsdf(self, context, nukeInvert):
             #                 mat.node_tree.links.new(shader.inputs[0], colorNode.outputs[0])
 
 
-            toggle_workmode(self, context)
+            # toggle_workmode(self, context)
 
                 # count = count + 1
             # bpy.context.area.type = original_type
@@ -615,298 +615,298 @@ def toggle_mods():
     #         mod.show_viewport = not mod.show_viewport
                 
 
-def toggle_workmode(self, context):
-    global isWorkmodeToggled
-    global currentSubdLevel
-    global previous_mode
-    global previous_selection
-    global isWireframe
-    my_areas = bpy.context.workspace.screens[0].areas
-    my_shading = 'WIREFRAME'  # 'WIREFRAME' 'SOLID' 'MATERIAL' 'RENDERED'
-    bpy.context.space_data.overlay.show_overlays = True
-    bpy.context.space_data.overlay.show_floor = True
-    bpy.context.space_data.overlay.show_axis_x = True
-    bpy.context.space_data.overlay.show_axis_y = True
-    bpy.context.space_data.overlay.show_outline_selected = True
-    bpy.context.space_data.overlay.show_cursor = True
-    bpy.context.space_data.overlay.show_extras = True
-    bpy.context.space_data.overlay.show_relationship_lines = True
-    bpy.context.space_data.overlay.show_bones = True
-    bpy.context.space_data.overlay.show_motion_paths = True
-    bpy.context.space_data.overlay.show_object_origins = True
-    bpy.context.space_data.overlay.show_annotation = True
-    bpy.context.space_data.overlay.show_text = True
-    bpy.context.space_data.overlay.show_stats = True
+# def toggle_workmode(self, context):
+#     global isWorkmodeToggled
+#     global currentSubdLevel
+#     global previous_mode
+#     global previous_selection
+#     global isWireframe
+#     my_areas = bpy.context.workspace.screens[0].areas
+#     my_shading = 'WIREFRAME'  # 'WIREFRAME' 'SOLID' 'MATERIAL' 'RENDERED'
+#     bpy.context.space_data.overlay.show_overlays = True
+#     bpy.context.space_data.overlay.show_floor = True
+#     bpy.context.space_data.overlay.show_axis_x = True
+#     bpy.context.space_data.overlay.show_axis_y = True
+#     bpy.context.space_data.overlay.show_outline_selected = True
+#     bpy.context.space_data.overlay.show_cursor = True
+#     bpy.context.space_data.overlay.show_extras = True
+#     bpy.context.space_data.overlay.show_relationship_lines = True
+#     bpy.context.space_data.overlay.show_bones = True
+#     bpy.context.space_data.overlay.show_motion_paths = True
+#     bpy.context.space_data.overlay.show_object_origins = True
+#     bpy.context.space_data.overlay.show_annotation = True
+#     bpy.context.space_data.overlay.show_text = True
+#     bpy.context.space_data.overlay.show_stats = True
 
 
-    for obj in bpy.context.scene.objects:
-        # if obj.visible_get and obj.type == 'MESH':
-        if obj.visible_get :
+#     for obj in bpy.context.scene.objects:
+#         # if obj.visible_get and obj.type == 'MESH':
+#         if obj.visible_get :
             
-            # for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
-            #     mod_max_level = mod.render_levels
-            #     if isWorkmodeToggled:
-            #         currentSubdLevel = mod.levels
-            #         mod.levels = mod_max_level
-            #         mod.sculpt_levels = mod_max_level
-            #     if not isWorkmodeToggled:
-            #         mod.levels = currentSubdLevel
-            #         mod.sculpt_levels = currentSubdLevel
-            #         if currentSubdLevel != 0:
-            #             bpy.context.space_data.overlay.show_wireframes = False
+#             # for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
+#             #     mod_max_level = mod.render_levels
+#             #     if isWorkmodeToggled:
+#             #         currentSubdLevel = mod.levels
+#             #         mod.levels = mod_max_level
+#             #         mod.sculpt_levels = mod_max_level
+#             #     if not isWorkmodeToggled:
+#             #         mod.levels = currentSubdLevel
+#             #         mod.sculpt_levels = currentSubdLevel
+#             #         if currentSubdLevel != 0:
+#             #             bpy.context.space_data.overlay.show_wireframes = False
 
 
-            # for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
-            #     mod_max_level = mod.render_levels
-            #     if isWorkmodeToggled:
-            #         currentSubdLevel = mod.levels
-            #         mod.levels = mod_max_level
-            #     if not isWorkmodeToggled:
-            #         mod.levels = currentSubdLevel
-            #         if currentSubdLevel != 0:
-            #             bpy.context.space_data.overlay.show_wireframes = False
-            is_toon_shaded = obj.get("is_toon_shaded")
-            if is_toon_shaded:
-                for mod in obj.modifiers:
-                    if 'InkThickness' in mod.name:
-                        obj.modifiers["InkThickness"].show_viewport = True
-                    if 'WhiteOutline' in mod.name:
-                        obj.modifiers["WhiteOutline"].show_viewport = True
-                    if 'BlackOutline' in mod.name:
-                        obj.modifiers["BlackOutline"].show_viewport = True
+#             # for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
+#             #     mod_max_level = mod.render_levels
+#             #     if isWorkmodeToggled:
+#             #         currentSubdLevel = mod.levels
+#             #         mod.levels = mod_max_level
+#             #     if not isWorkmodeToggled:
+#             #         mod.levels = currentSubdLevel
+#             #         if currentSubdLevel != 0:
+#             #             bpy.context.space_data.overlay.show_wireframes = False
+#             is_toon_shaded = obj.get("is_toon_shaded")
+#             if is_toon_shaded:
+#                 for mod in obj.modifiers:
+#                     if 'InkThickness' in mod.name:
+#                         obj.modifiers["InkThickness"].show_viewport = True
+#                     if 'WhiteOutline' in mod.name:
+#                         obj.modifiers["WhiteOutline"].show_viewport = True
+#                     if 'BlackOutline' in mod.name:
+#                         obj.modifiers["BlackOutline"].show_viewport = True
 
-            if isWorkmodeToggled:
-                previous_selection = bpy.context.selected_objects
+#             if isWorkmodeToggled:
+#                 previous_selection = bpy.context.selected_objects
 
-                bpy.context.space_data.overlay.show_overlays = True
-                bpy.context.space_data.overlay.show_floor = False
-                bpy.context.space_data.overlay.show_axis_x = False
-                bpy.context.space_data.overlay.show_axis_y = False
-                bpy.context.space_data.overlay.show_cursor = False
-                bpy.context.space_data.overlay.show_relationship_lines = False
-                bpy.context.space_data.overlay.show_bones = False
-                bpy.context.space_data.overlay.show_motion_paths = False
-                bpy.context.space_data.overlay.show_object_origins = False
-                bpy.context.space_data.overlay.show_annotation = False
-                bpy.context.space_data.overlay.show_text = False
-                bpy.context.space_data.overlay.show_text = False
-                bpy.context.space_data.overlay.show_outline_selected = False
-                bpy.context.space_data.overlay.show_extras = False
-                bpy.context.space_data.show_gizmo = False
-                bpy.context.space_data.overlay.show_stats = False
-
-
-                selected_objects = bpy.context.selected_objects
-                if not selected_objects:
-                    bpy.context.space_data.overlay.show_outline_selected = True
+#                 bpy.context.space_data.overlay.show_overlays = True
+#                 bpy.context.space_data.overlay.show_floor = False
+#                 bpy.context.space_data.overlay.show_axis_x = False
+#                 bpy.context.space_data.overlay.show_axis_y = False
+#                 bpy.context.space_data.overlay.show_cursor = False
+#                 bpy.context.space_data.overlay.show_relationship_lines = False
+#                 bpy.context.space_data.overlay.show_bones = False
+#                 bpy.context.space_data.overlay.show_motion_paths = False
+#                 bpy.context.space_data.overlay.show_object_origins = False
+#                 bpy.context.space_data.overlay.show_annotation = False
+#                 bpy.context.space_data.overlay.show_text = False
+#                 bpy.context.space_data.overlay.show_text = False
+#                 bpy.context.space_data.overlay.show_outline_selected = False
+#                 bpy.context.space_data.overlay.show_extras = False
+#                 bpy.context.space_data.show_gizmo = False
+#                 bpy.context.space_data.overlay.show_stats = False
 
 
-                bpy.context.space_data.overlay.wireframe_threshold = 1
-                if bpy.context.space_data.overlay.show_wireframes:
-                    isWireframe = True
-                    bpy.context.space_data.overlay.show_outline_selected = True
-                    bpy.context.space_data.overlay.show_extras = True
-                    # bpy.context.space_data.overlay.show_cursor = True
-                else:
-                    isWireframe = False
-                    # bpy.context.space_data.overlay.show_outline_selected = False
-                    # bpy.context.space_data.overlay.show_extras = False
-
-                # bpy.context.space_data.overlay.show_wireframes = False
-
-                if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
-                    # bpy.context.scene.eevee.use_bloom = True
-                    # bpy.context.scene.eevee.use_ssr = True
-                    my_shading =  'MATERIAL'
-
-                    lights = [o for o in bpy.context.scene.objects if o.type == 'LIGHT']
-                    if (lights):
-                        bpy.context.space_data.shading.use_scene_lights = True
-                        bpy.context.space_data.shading.use_scene_world = True
-                    else:
-                        bpy.context.space_data.shading.use_scene_lights = False
-                        bpy.context.space_data.shading.use_scene_world = False
-
-                    if bpy.context.scene.world:
-                        bpy.context.space_data.shading.use_scene_world = True
-                    else:
-                        bpy.context.space_data.shading.use_scene_world = False
+#                 selected_objects = bpy.context.selected_objects
+#                 if not selected_objects:
+#                     bpy.context.space_data.overlay.show_outline_selected = True
 
 
+#                 bpy.context.space_data.overlay.wireframe_threshold = 1
+#                 if bpy.context.space_data.overlay.show_wireframes:
+#                     isWireframe = True
+#                     bpy.context.space_data.overlay.show_outline_selected = True
+#                     bpy.context.space_data.overlay.show_extras = True
+#                     # bpy.context.space_data.overlay.show_cursor = True
+#                 else:
+#                     isWireframe = False
+#                     # bpy.context.space_data.overlay.show_outline_selected = False
+#                     # bpy.context.space_data.overlay.show_extras = False
 
+#                 # bpy.context.space_data.overlay.show_wireframes = False
 
+#                 if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
+#                     # bpy.context.scene.eevee.use_bloom = True
+#                     # bpy.context.scene.eevee.use_ssr = True
+#                     my_shading =  'MATERIAL'
 
-                if bpy.context.scene.render.engine == 'CYCLES':
-                    my_shading =  'RENDERED'
+#                     lights = [o for o in bpy.context.scene.objects if o.type == 'LIGHT']
+#                     if (lights):
+#                         bpy.context.space_data.shading.use_scene_lights = True
+#                         bpy.context.space_data.shading.use_scene_world = True
+#                     else:
+#                         bpy.context.space_data.shading.use_scene_lights = False
+#                         bpy.context.space_data.shading.use_scene_world = False
 
-
-                    lights = [o for o in bpy.context.scene.objects if o.type == 'LIGHT']
-                    # if (lights):
-                    #     bpy.context.space_data.shading.use_scene_lights_render = True
-                    # else:
-                    #     bpy.context.space_data.shading.use_scene_lights = False
-                    #     bpy.context.space_data.shading.studiolight_intensity = 1
-
-
-                    if bpy.context.scene.world is None:
-                        if (lights):
-                            bpy.context.space_data.shading.use_scene_world_render = False
-                            bpy.context.space_data.shading.studiolight_intensity = 0.01
-                        else:
-                            bpy.context.space_data.shading.use_scene_world_render = False
-                            bpy.context.space_data.shading.studiolight_intensity = 1
-                    else:
-                        bpy.context.space_data.shading.use_scene_world_render = True
-                        if (lights):
-                            bpy.context.space_data.shading.use_scene_lights_render = True
+#                     if bpy.context.scene.world:
+#                         bpy.context.space_data.shading.use_scene_world = True
+#                     else:
+#                         bpy.context.space_data.shading.use_scene_world = False
 
 
 
-                if bpy.context.mode == 'OBJECT':
-                    previous_mode =  'OBJECT'
-                if bpy.context.mode == 'EDIT_MESH':
-                    previous_mode =  'EDIT'
-                    bpy.context.space_data.overlay.show_overlays = False
-                if bpy.context.mode == 'POSE':
-                    previous_mode =  'POSE'
-                    bpy.context.space_data.overlay.show_bones = True
-                if bpy.context.mode == 'SCULPT':
-                    previous_mode =  'SCULPT'
-                if bpy.context.mode == 'PAINT_VERTEX':
-                    previous_mode =  'VERTEX_PAINT'
-                if bpy.context.mode == 'WEIGHT_PAINT':
-                    previous_mode =  'WEIGHT_PAINT'
-                if bpy.context.mode == 'TEXTURE_PAINT':
-                    previous_mode =  'TEXTURE_PAINT'
 
 
-                # bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+#                 if bpy.context.scene.render.engine == 'CYCLES':
+#                     my_shading =  'RENDERED'
+
+
+#                     lights = [o for o in bpy.context.scene.objects if o.type == 'LIGHT']
+#                     # if (lights):
+#                     #     bpy.context.space_data.shading.use_scene_lights_render = True
+#                     # else:
+#                     #     bpy.context.space_data.shading.use_scene_lights = False
+#                     #     bpy.context.space_data.shading.studiolight_intensity = 1
+
+
+#                     if bpy.context.scene.world is None:
+#                         if (lights):
+#                             bpy.context.space_data.shading.use_scene_world_render = False
+#                             bpy.context.space_data.shading.studiolight_intensity = 0.01
+#                         else:
+#                             bpy.context.space_data.shading.use_scene_world_render = False
+#                             bpy.context.space_data.shading.studiolight_intensity = 1
+#                     else:
+#                         bpy.context.space_data.shading.use_scene_world_render = True
+#                         if (lights):
+#                             bpy.context.space_data.shading.use_scene_lights_render = True
+
+
+
+#                 if bpy.context.mode == 'OBJECT':
+#                     previous_mode =  'OBJECT'
+#                 if bpy.context.mode == 'EDIT_MESH':
+#                     previous_mode =  'EDIT'
+#                     bpy.context.space_data.overlay.show_overlays = False
+#                 if bpy.context.mode == 'POSE':
+#                     previous_mode =  'POSE'
+#                     bpy.context.space_data.overlay.show_bones = True
+#                 if bpy.context.mode == 'SCULPT':
+#                     previous_mode =  'SCULPT'
+#                 if bpy.context.mode == 'PAINT_VERTEX':
+#                     previous_mode =  'VERTEX_PAINT'
+#                 if bpy.context.mode == 'WEIGHT_PAINT':
+#                     previous_mode =  'WEIGHT_PAINT'
+#                 if bpy.context.mode == 'TEXTURE_PAINT':
+#                     previous_mode =  'TEXTURE_PAINT'
+
+
+#                 # bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
 
                 
-            if not isWorkmodeToggled:    
-                bpy.context.space_data.overlay.show_overlays = True
-                bpy.context.space_data.overlay.show_cursor = True
-                bpy.context.space_data.overlay.show_floor = True
-                bpy.context.space_data.overlay.show_axis_x = True
-                bpy.context.space_data.overlay.show_axis_y = True
-                bpy.context.space_data.overlay.show_extras = True
-                bpy.context.space_data.overlay.show_relationship_lines = True
-                bpy.context.space_data.overlay.show_bones = True
-                bpy.context.space_data.overlay.show_motion_paths = True
-                bpy.context.space_data.overlay.show_object_origins = True
-                bpy.context.space_data.overlay.show_annotation = True
-                bpy.context.space_data.overlay.show_text = True
-                bpy.context.space_data.overlay.show_stats = True
-                bpy.context.space_data.overlay.wireframe_threshold = 1
-                bpy.context.space_data.show_gizmo = True
+#             if not isWorkmodeToggled:    
+#                 bpy.context.space_data.overlay.show_overlays = True
+#                 bpy.context.space_data.overlay.show_cursor = True
+#                 bpy.context.space_data.overlay.show_floor = True
+#                 bpy.context.space_data.overlay.show_axis_x = True
+#                 bpy.context.space_data.overlay.show_axis_y = True
+#                 bpy.context.space_data.overlay.show_extras = True
+#                 bpy.context.space_data.overlay.show_relationship_lines = True
+#                 bpy.context.space_data.overlay.show_bones = True
+#                 bpy.context.space_data.overlay.show_motion_paths = True
+#                 bpy.context.space_data.overlay.show_object_origins = True
+#                 bpy.context.space_data.overlay.show_annotation = True
+#                 bpy.context.space_data.overlay.show_text = True
+#                 bpy.context.space_data.overlay.show_stats = True
+#                 bpy.context.space_data.overlay.wireframe_threshold = 1
+#                 bpy.context.space_data.show_gizmo = True
 
 
-                if isWireframe:
-                    bpy.context.space_data.overlay.show_wireframes = True
-                else:
-                    bpy.context.space_data.overlay.show_wireframes = False
-                bpy.context.space_data.shading.color_type = 'RANDOM'
+#                 if isWireframe:
+#                     bpy.context.space_data.overlay.show_wireframes = True
+#                 else:
+#                     bpy.context.space_data.overlay.show_wireframes = False
+#                 bpy.context.space_data.shading.color_type = 'RANDOM'
 
-                if previous_mode == 'EDIT' or previous_mode == 'OBJECT' or previous_mode == 'POSE':
-                    my_shading = 'SOLID'
-                    # for ob in bpy.context.scene.objects:
-                    #     if ob.type == 'MESH':
-                    #         if ob.data.vertex_colors:
-                    #             bpy.context.space_data.shading.color_type = 'VERTEX'
-                    #         else:
-                    #             bpy.context.space_data.shading.color_type = 'RANDOM'
+#                 if previous_mode == 'EDIT' or previous_mode == 'OBJECT' or previous_mode == 'POSE':
+#                     my_shading = 'SOLID'
+#                     # for ob in bpy.context.scene.objects:
+#                     #     if ob.type == 'MESH':
+#                     #         if ob.data.vertex_colors:
+#                     #             bpy.context.space_data.shading.color_type = 'VERTEX'
+#                     #         else:
+#                     #             bpy.context.space_data.shading.color_type = 'RANDOM'
 
-                is_toon_shaded = obj.get("is_toon_shaded")
-                if is_toon_shaded:
-                    for mod in obj.modifiers:
-                        if 'InkThickness' in mod.name:
-                            obj.modifiers["InkThickness"].show_viewport = False
-                        if 'WhiteOutline' in mod.name:
-                            obj.modifiers["WhiteOutline"].show_viewport = False
-                        if 'BlackOutline' in mod.name:
-                            obj.modifiers["BlackOutline"].show_viewport = False
+#                 is_toon_shaded = obj.get("is_toon_shaded")
+#                 if is_toon_shaded:
+#                     for mod in obj.modifiers:
+#                         if 'InkThickness' in mod.name:
+#                             obj.modifiers["InkThickness"].show_viewport = False
+#                         if 'WhiteOutline' in mod.name:
+#                             obj.modifiers["WhiteOutline"].show_viewport = False
+#                         if 'BlackOutline' in mod.name:
+#                             obj.modifiers["BlackOutline"].show_viewport = False
                         
 
-                if previous_mode == 'EDIT':
-                    if not len(bpy.context.selected_objects):
-                        bpy.ops.object.editmode_toggle()
-                    # else:
-                    #     for ob in previous_selection :
-                    #         # if ob.type == 'MESH' : 
-                    #         ob.select_set(state=True)
-                    #         bpy.context.view_layer.objects.active = ob
-                    #     bpy.ops.object.editmode_toggle()
+#                 if previous_mode == 'EDIT':
+#                     if not len(bpy.context.selected_objects):
+#                         bpy.ops.object.editmode_toggle()
+#                     # else:
+#                     #     for ob in previous_selection :
+#                     #         # if ob.type == 'MESH' : 
+#                     #         ob.select_set(state=True)
+#                     #         bpy.context.view_layer.objects.active = ob
+#                     #     bpy.ops.object.editmode_toggle()
 
 
 
-                if previous_mode == 'VERTEX_PAINT':
-                    my_shading = 'SOLID'
-                    bpy.context.space_data.shading.light = 'FLAT'
+#                 if previous_mode == 'VERTEX_PAINT':
+#                     my_shading = 'SOLID'
+#                     bpy.context.space_data.shading.light = 'FLAT'
 
 
-                if previous_mode == 'SCULPT':
-                    my_shading =  'SOLID'
-                    bpy.context.space_data.shading.color_type = 'MATERIAL'
-                    bpy.context.space_data.overlay.show_floor = False
-                    bpy.context.space_data.overlay.show_axis_x = False
-                    bpy.context.space_data.overlay.show_axis_y = False
-                    bpy.context.space_data.overlay.show_cursor = False
-                    bpy.context.space_data.overlay.show_relationship_lines = False
-                    bpy.context.space_data.overlay.show_bones = False
-                    bpy.context.space_data.overlay.show_motion_paths = False
-                    bpy.context.space_data.overlay.show_object_origins = False
-                    bpy.context.space_data.overlay.show_annotation = False
-                    bpy.context.space_data.overlay.show_text = False
-                    bpy.context.space_data.overlay.show_text = False
-                    bpy.context.space_data.overlay.show_outline_selected = False
-                    bpy.context.space_data.overlay.show_extras = False
-                    bpy.context.space_data.overlay.show_overlays = True
-                    bpy.context.space_data.show_gizmo = False
+#                 if previous_mode == 'SCULPT':
+#                     my_shading =  'SOLID'
+#                     bpy.context.space_data.shading.color_type = 'MATERIAL'
+#                     bpy.context.space_data.overlay.show_floor = False
+#                     bpy.context.space_data.overlay.show_axis_x = False
+#                     bpy.context.space_data.overlay.show_axis_y = False
+#                     bpy.context.space_data.overlay.show_cursor = False
+#                     bpy.context.space_data.overlay.show_relationship_lines = False
+#                     bpy.context.space_data.overlay.show_bones = False
+#                     bpy.context.space_data.overlay.show_motion_paths = False
+#                     bpy.context.space_data.overlay.show_object_origins = False
+#                     bpy.context.space_data.overlay.show_annotation = False
+#                     bpy.context.space_data.overlay.show_text = False
+#                     bpy.context.space_data.overlay.show_text = False
+#                     bpy.context.space_data.overlay.show_outline_selected = False
+#                     bpy.context.space_data.overlay.show_extras = False
+#                     bpy.context.space_data.overlay.show_overlays = True
+#                     bpy.context.space_data.show_gizmo = False
         
 
-                # bpy.ops.object.mode_set(mode=previous_mode, toggle=False)
+#                 # bpy.ops.object.mode_set(mode=previous_mode, toggle=False)
 
 
-            scene = bpy.context.scene
-            # for area in my_areas:
-            #     for space in area.spaces:
-            #         if space.type == 'VIEW_3D':
-            #             space.shading.type = my_shading
+#             scene = bpy.context.scene
+#             # for area in my_areas:
+#             #     for space in area.spaces:
+#             #         if space.type == 'VIEW_3D':
+#             #             space.shading.type = my_shading
 
-            # set viewport display
-            for area in  bpy.context.screen.areas:  # iterate through areas in current screen
-                if area.type == 'VIEW_3D':
-                    for space in area.spaces:  # iterate through spaces in current VIEW_3D area
-                        if space.type == 'VIEW_3D':  # check if space is a 3D view
-                            # space.shading.type = 'MATERIAL'  # set the viewport shading to material
-                            space.shading.type = my_shading
-                            if scene.world is not None:
-                                space.shading.use_scene_world = True
-                                space.shading.use_scene_lights = True
+#             # set viewport display
+#             for area in  bpy.context.screen.areas:  # iterate through areas in current screen
+#                 if area.type == 'VIEW_3D':
+#                     for space in area.spaces:  # iterate through spaces in current VIEW_3D area
+#                         if space.type == 'VIEW_3D':  # check if space is a 3D view
+#                             # space.shading.type = 'MATERIAL'  # set the viewport shading to material
+#                             space.shading.type = my_shading
+#                             if scene.world is not None:
+#                                 space.shading.use_scene_world = True
+#                                 space.shading.use_scene_lights = True
 
 
                             
 
-            for image in bpy.data.images:
-                image.reload()
+#             for image in bpy.data.images:
+#                 image.reload()
 
-    isWorkmodeToggled = not isWorkmodeToggled
-    return {'FINISHED'}
+#     isWorkmodeToggled = not isWorkmodeToggled
+#     return {'FINISHED'}
 
-class BR_OT_spiraloid_toggle_workmode(bpy.types.Operator):
-    """Toggle Workmode"""
-    bl_idname = "wm.spiraloid_toggle_workmode"
-    bl_label = "Toggle Workmode"
-    bl_options = {'REGISTER', 'UNDO'}
+# class BR_OT_spiraloid_toggle_workmode(bpy.types.Operator):
+#     """Toggle Workmode"""
+#     bl_idname = "wm.spiraloid_toggle_workmode"
+#     bl_label = "Toggle Workmode"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    @classmethod
-    def poll(cls, context):
-        return True #context.space_data.type == 'VIEW_3D'
+#     @classmethod
+#     def poll(cls, context):
+#         return True #context.space_data.type == 'VIEW_3D'
 
-    def execute(self, context):
-        toggle_workmode(self, context)
-        return {'FINISHED'}
+#     def execute(self, context):
+#         toggle_workmode(self, context)
+#         return {'FINISHED'}
 
 
 
@@ -1655,6 +1655,10 @@ def empty_trash(self, context):
     for block in bpy.data.worlds:
         if block.users == 0:
             bpy.data.worlds.remove(block)
+
+    for block in bpy.data.particles:
+        if block.users == 0:
+            bpy.data.particles.remove(block)
 
     # outliner.orphans_purge
     return {'FINISHED'}
@@ -3212,9 +3216,9 @@ def draw_toggle_mods_menu(self, context):
     layout.operator("view3d.spiraloid_toggle_mods", text="Toggle Modifiers")
 
 
-def add_to_render_menu(self, context):
-    self.layout.operator("wm.spiraloid_toggle_workmode", 
-        text="Toggle Workmode")
+# def add_to_render_menu(self, context):
+#     self.layout.operator("wm.spiraloid_toggle_workmode", 
+#         text="Toggle Workmode")
 
 
 
@@ -3224,6 +3228,7 @@ def register():
     bpy.utils.register_class(SpiraloidMenu)
     bpy.utils.register_class(SpiraloidSubMenuHelp)    
     bpy.utils.register_class(BR_OT_toggle_mods)    
+    bpy.utils.register_class(SpiraloidSubMenuUtilities)    
     bpy.utils.register_class(SpiraloidSubMenuMaterials)    
     # bpy.utils.register_class(SpiraloidOutlinerMenu)    
 
@@ -3248,7 +3253,7 @@ def register():
     bpy.utils.register_class(BR_OT_regenerate_video) 
 
     bpy.utils.register_class(BR_OT_empty_trash) 
-    bpy.utils.register_class(BR_OT_spiraloid_toggle_workmode) 
+    # bpy.utils.register_class(BR_OT_spiraloid_toggle_workmode) 
 
     
     bpy.types.TOPBAR_MT_editor_menus.append(draw_item)
@@ -3299,7 +3304,7 @@ def unregister():
     bpy.utils.unregister_class(BR_OT_nuke_flat_texture)
     bpy.utils.unregister_class(BR_OT_nuke_diffuse_texture)
     
-    bpy.utils.unregister_class(BR_OT_add_wordballoon) 
+    # bpy.utils.unregister_class(BR_OT_add_wordballoon) 
     bpy.utils.unregister_class(BR_OT_build_3d_comic) 
     bpy.utils.unregister_class(BR_OT_spiraloid_workshop) 
     # bpy.utils.unregister_class(BR_OT_bake_collection) 
@@ -3311,7 +3316,7 @@ def unregister():
     bpy.utils.unregister_class(BR_OT_regenerate_video) 
 
     bpy.utils.unregister_class(BR_OT_empty_trash) 
-    bpy.utils.unregister_class(BR_OT_spiraloid_toggle_workmode) 
+    # bpy.utils.unregister_class(BR_OT_spiraloid_toggle_workmode) 
     
     bpy.types.TOPBAR_MT_editor_menus.remove(draw_item)
     bpy.types.TOPBAR_MT_render.remove(add_to_render_menu)

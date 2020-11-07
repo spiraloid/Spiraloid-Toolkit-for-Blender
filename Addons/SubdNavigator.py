@@ -121,6 +121,10 @@ def main_subdivide(self, context):
                 for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
                     obj.modifiers.remove(mod)
 
+                for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                    obj.modifiers.remove(mod)
+
+
                 d_modifier_count = len([m for m in obj.modifiers if m.type == 'DECIMATE'])
                 s_modifier_count = len([m for m in obj.modifiers if m.type == 'SUBSURF'])
                 m_modifier_count = len([m for m in obj.modifiers if m.type == 'MULTIRES']) 
@@ -485,7 +489,7 @@ def main_subdivide(self, context):
 #     return {'FINISHED'}
 
 class BR_OT_subdivide_selected(bpy.types.Operator):
-    """increase sudvision levels for visible objects"""
+    """increase sudvision levels for selected objects and add decimation modifiers"""
     bl_idname = "view3d.subdivide_selected"
     bl_label = "Subdivide Selected"
     bl_options = {'REGISTER', 'UNDO'}
@@ -495,7 +499,7 @@ class BR_OT_subdivide_selected(bpy.types.Operator):
         return {'FINISHED'}
                 
 class BR_OT_subd_decrease(bpy.types.Operator):
-    """decrease sudvision levels for visible objects"""
+    """decrease sudvision levels for visible objects with smart decimator toggle"""
     bl_idname = "view3d.subd_decrease"
     bl_label = "SubD Less"
     bl_options = {'REGISTER', 'UNDO'}
@@ -506,7 +510,7 @@ class BR_OT_subd_decrease(bpy.types.Operator):
 
 
 class BR_OT_subd_increase(bpy.types.Operator):
-    """increase sudvision levels for visible objects"""
+    """increase sudvision levels for visible objects with smart decimator toggle"""
     bl_idname = "view3d.subd_increase"
     bl_label = "SubD More"
     bl_options = {'REGISTER', 'UNDO'}

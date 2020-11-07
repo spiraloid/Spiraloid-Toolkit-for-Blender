@@ -25729,8 +25729,9 @@ keyconfig_data = \
  ("Sculpt",
   {"space_type": 'EMPTY', "region_type": 'WINDOW'},
   {"items":
-   [("brush.modal_quickset",
-     {"type": 'RIGHTMOUSE', "value": 'PRESS'},
+   [("sculpt.wheel", {"type": 'RIGHTMOUSE', "value": 'RELEASE'}, None),
+    ("brush.modal_quickset",
+     {"type": 'RIGHTMOUSE', "value": 'CLICK_DRAG'},
      {"properties":
       [("axisaffect", 'YSTR'),
        ("slider", 'SMALL'),

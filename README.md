@@ -224,16 +224,13 @@ https://blendermarket.com/products/auto-rig-pro
 
 http://renderhjs.net/textools/blender/
 
-
 https://lollypopman.com/2016/08/09/addon-shapekey-helpers/
 
 https://en.blender.org/index.php/Extensions:2.6/Py/Scripts/Animation/Corrective_Shape_Key
 
-https://blendermarket.com/products/asset-management?ref=2
-
 https://www.blendernation.com/2016/06/15/addon-zaloopok/
 
-
+https://gitlab.com/AquaticNightmare/space_switcher/-/wikis/home
 
 ---
 

@@ -242,7 +242,7 @@ good luck with your art.
 
 -b
 
-my 3D Graphic Novel "Nanite Fulcrum"
-http://spiraloid.net/nanitefulcrum
+my 3D Comics can be found at:
+http://3dcomic.shop
 
 

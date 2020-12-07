@@ -1208,11 +1208,19 @@ def uvmap_mesh(mesh_objects):
                 bpy.ops.mesh.uv_texture_add()
                 bpy.ops.object.mode_set(mode='EDIT', toggle=False)
                 bpy.ops.mesh.select_all(action='SELECT')
-                bpy.ops.uv.smart_project(angle_limit=66, island_margin=0.02, user_area_weight=0.75, use_aspect=True, stretch_to_bounds=True)
+                bpy.ops.uv.smart_project(angle_limit=66, island_margin=0.02, area_weight=0.75, correct_aspect=True, scale_to_bounds=True)
                 bpy.ops.uv.seams_from_islands()
                 bpy.ops.uv.unwrap(method='ANGLE_BASED', margin=0.001)
-                bpy.ops.uv.minimize_stretch(iterations=1024)
-                bpy.ops.uv.average_islands_scale()
+                for area in bpy.context.screen.areas:
+                        if area.type == 'VIEW_3D':
+                            for region in area.regions:
+                                if region.type == 'WINDOW':
+                                    override = {'area': area, 'region': region, 'edit_object': bpy.context.edit_object}
+                                    bpy.ops.uv.select_all(action='SELECT')
+                                    bpy.ops.uv.average_islands_scale(override)
+                                    bpy.ops.uv.minimize_stretch(override, iterations=300)
+                                    bpy.ops.uv.pack_islands(override , margin=0.05)
+
 
             #select all meshes and pack into one UV set together
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
@@ -1222,11 +1230,25 @@ def uvmap_mesh(mesh_objects):
                 bpy.context.view_layer.objects.active = ob
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
             bpy.ops.mesh.select_all(action='SELECT')
-            C=bpy.context
-            old_area_type = C.area.type
-            C.area.type='GRAPH_EDITOR'
-            bpy.ops.uv.pack_islands(margin=0.017)
-            C.area.type=old_area_type
+            # C=bpy.context
+            # old_area_type = C.area.type
+            # C.area.type='GRAPH_EDITOR'
+            # bpy.ops.uv.pack_islands(margin=0.017)
+            # C.area.type=old_area_type
+
+            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+            for area in bpy.context.screen.areas:
+                    if area.type == 'VIEW_3D':
+                        for region in area.regions:
+                            if region.type == 'WINDOW':
+                                override = {'area': area, 'region': region, 'edit_object': bpy.context.edit_object}
+                                bpy.ops.uv.select_all(action='SELECT')
+                                bpy.ops.uv.average_islands_scale(override)
+                                bpy.ops.uv.minimize_stretch(override, iterations=300)
+                                bpy.ops.uv.pack_islands(override , margin=0.05)
+
+
+
 
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
     bpy.ops.object.mode_set(mode=current_mode, toggle=False)
@@ -1659,6 +1681,39 @@ def empty_trash(self, context):
     for block in bpy.data.particles:
         if block.users == 0:
             bpy.data.particles.remove(block)
+
+    selected_objects = bpy.context.selected_objects
+    for mesh_object in selected_objects:
+        try:
+            del mesh_object["cycles"]     
+        except:
+            pass
+
+        try:
+            del mesh_object["b_painter_active_material"]     
+        except:
+            pass
+
+        try:
+            del mesh_object["ant_landscape"]     
+        except:
+            pass
+
+        try:
+            del mesh_object["free_ik"]     
+        except:
+            pass
+
+        try:
+            del mesh_object["cycles_visibility"]     
+        except:
+            pass
+
+        try:
+            del mesh_object["ht_props"]     
+        except:
+            pass
+
 
     # outliner.orphans_purge
     return {'FINISHED'}

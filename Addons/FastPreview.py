@@ -78,15 +78,15 @@ def menu_draw(self, context):
 def register():
     from bpy.utils import register_class
     register_class(BR_OT_fastPreview)
-    bpy.types.TIME_HT_editor_buttons.prepend(menu_draw)
+    bpy.types.TIME_MT_view.prepend(menu_draw)
 
 def unregister():
     from bpy.utils import unregister_class
     unregister_class(BR_OT_fastPreview)
-    bpy.types.TIME_HT_editor_buttons.remove(menu_draw)
+    bpy.types.TIME_MT_view.remove(menu_draw)
 
     if __name__ != "__main__":
-        bpy.types.TIME_HT_editor_buttons.remove(menu_draw)
+        bpy.types.TIME_MT_view.remove(menu_draw)
                 
 if __name__ == "__main__":
     register()

@@ -22,7 +22,7 @@ WARNING!!!:  Blender users may wish to backup your current configuration before 
 
 (or on windows 10)
 
-%APPDATA%\Roaming\Blender Foundation\Blender\2.90
+%APPDATA%\Roaming\Blender Foundation\Blender\2.91
 
  is a good idea.  
 (This is where blender stores all your preference data)
@@ -39,7 +39,7 @@ Browse to this folder where this README.txt file is and every *.py file in the a
 
 (Remember to activate each them immediately after you install them, otherwise it’s a long list to search through)
 
-You might also need to buy your own copy of these paid addons as my hotkeys assume they are installed.
+I strongly you buy your own copy of these paid addons as my hotkeys assume they are installed. xray box select especially
 
 https://gumroad.com/l/daldj
 https://gum.co/dolly_zoom_truck_shift?recommended_by=library

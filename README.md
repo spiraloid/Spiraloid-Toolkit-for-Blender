@@ -29,12 +29,11 @@ WARNING!!!:  Blender users may wish to backup your current configuration before 
 
 Next
 
-Install blender 2.90 (if you have not already done so)
-https://builder.blender.org/download/blender-2.90.0-c300fc56c3cc-windows64.zip
+Install blender 2.91 (if you have not already done so)
+https://www.blender.org/download/releases/2-91/
 
-
-Open Blender and edit  “file > User Preferences”.
-Under the add on tab, use button at Bottom that says “install add on from file”
+Open Blender with admin priviledges and edit  “edit > User Preferences”.
+Under the addon tab, use button at Bottom that says “install add on from file”
 
 Browse to this folder where this README.txt file is and every *.py file in the addon folder as you would normally.
 

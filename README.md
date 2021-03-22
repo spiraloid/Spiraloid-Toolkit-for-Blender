@@ -2,7 +2,7 @@
 [Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
 
 
-READ ME:  Spiraloid Blender 2.90 beta essentials setup
+READ ME:  Spiraloid Blender 2.92 beta essentials setup
 
 misc Blender utilities
 
@@ -18,19 +18,19 @@ Installation:
 
 WARNING!!!:  Blender users may wish to backup your current configuration before installing in case something goes wrong you can undo.  For example on a Mac,  creating a compressed zip archive of this folder:
 
-~/Library/Application Support/Blender/2.90
+~/Library/Application Support/Blender/2.92
 
 (or on windows 10)
 
-%APPDATA%\Roaming\Blender Foundation\Blender\2.91
+%APPDATA%\Roaming\Blender Foundation\Blender\2.92
 
  is a good idea.  
 (This is where blender stores all your preference data)
 
 Next
 
-Install blender 2.91 (if you have not already done so)
-https://www.blender.org/download/releases/2-91/
+Install blender 2.92 (if you have not already done so)
+https://www.blender.org/download/releases/2-92/
 
 Open Blender with admin priviledges and edit  “edit > User Preferences”.
 Under the addon tab, use button at Bottom that says “install add on from file”
@@ -154,6 +154,12 @@ alt+ctrl+shift+LMB to lasso mask deselect
 ctrl+i invert mask
 ctrl+b blur mask
 ctrl+h hide mask
+
+SCULPT mode
+ctrl+right sets voxel remesh grid size
+ctrl+r sets remeshes
+ctrl+alt+r uses remeshit from exoside
+
 
 
 

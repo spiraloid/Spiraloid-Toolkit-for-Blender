@@ -1211,6 +1211,7 @@ def uvmap_mesh(mesh_objects):
                 bpy.ops.uv.smart_project(angle_limit=66, island_margin=0.02, area_weight=0.75, correct_aspect=True, scale_to_bounds=True)
                 bpy.ops.uv.seams_from_islands()
                 bpy.ops.uv.unwrap(method='ANGLE_BASED', margin=0.001)
+                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
                 for area in bpy.context.screen.areas:
                         if area.type == 'VIEW_3D':
                             for region in area.regions:
@@ -1714,6 +1715,10 @@ def empty_trash(self, context):
         except:
             pass
 
+        try:
+            del mesh_object["ant_landscape"]     
+        except:
+            pass
 
     # outliner.orphans_purge
     return {'FINISHED'}

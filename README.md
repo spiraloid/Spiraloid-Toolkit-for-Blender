@@ -2,7 +2,7 @@
 [Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
 
 
-READ ME:  Spiraloid Blender 2.92 beta essentials setup
+READ ME:  Spiraloid Blender 2.93 setup
 
 misc Blender utilities
 
@@ -18,11 +18,11 @@ Installation:
 
 WARNING!!!:  Blender users may wish to backup your current configuration before installing in case something goes wrong you can undo.  For example on a Mac,  creating a compressed zip archive of this folder:
 
-~/Library/Application Support/Blender/2.92
+~/Library/Application Support/Blender/2.93
 
 (or on windows 10)
 
-%APPDATA%\Roaming\Blender Foundation\Blender\2.92
+%APPDATA%\Roaming\Blender Foundation\Blender\2.93
 
  is a good idea.  
 (This is where blender stores all your preference data)
@@ -30,7 +30,7 @@ WARNING!!!:  Blender users may wish to backup your current configuration before 
 Next
 
 Install blender 2.92 (if you have not already done so)
-https://www.blender.org/download/releases/2-92/
+https://www.blender.org/download/Blender2.93/blender-2.93.1-windows-x64.msi/
 
 Open Blender with admin priviledges and edit  “edit > User Preferences”.
 Under the addon tab, use button at Bottom that says “install add on from file”

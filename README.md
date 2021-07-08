@@ -29,7 +29,8 @@ WARNING!!!:  Blender users may wish to backup your current configuration before 
 
 Next
 
-Install blender 2.92 (if you have not already done so)
+Install blender 2.93 (if you have not already done so)
+
 https://www.blender.org/download/Blender2.93/blender-2.93.1-windows-x64.msi/
 
 Open Blender with admin priviledges and edit  “edit > User Preferences”.

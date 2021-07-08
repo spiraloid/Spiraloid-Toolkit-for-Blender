@@ -2,12 +2,13 @@ import bpy
 from mathutils import Vector
 
 bl_info = {    
-    'name': 'Playback Preview',
+    'name': 'Quick Play',
     'author': 'Bay Raitt',
     'version': (0, 1),
     'blender': (2, 80, 0),
     'category': 'Animation',
-    'location': 'Timeline  > Preview Toggle',
+    'location': 'Timeline  > Quick Play Button',
+    'description': 'play from first frame, stop returns to current frame',
     'wiki_url': ''}
 
 playing = "False"
@@ -17,7 +18,7 @@ brEndRange = 72
 
 class BR_OT_fastPreview(bpy.types.Operator):
     """play range and return to current frame on stop"""
-    bl_idname   = "screen.fast_preview"
+    bl_idname   = "wm.quick_play"
     bl_label   = "Preview"
     bl_description = "start playback from the first frame"
     def execute(self, context):
@@ -50,22 +51,16 @@ class BR_OT_fastPreview(bpy.types.Operator):
             bpy.context.scene.frame_preview_end =  previewEnd
             bpy.context.scene.frame_current = previewStart
 
-
             #bpy.context.scene.frame_current = bpy.context.scene.frame_start            
             bpy.ops.screen.animation_play()
             playing = "True"   
         elif playing == "True":
             brCurframe
-
             bpy.context.scene.frame_preview_start =  bpy.context.scene.frame_start
             bpy.context.scene.frame_preview_end =  bpy.context.scene.frame_end
-
             bpy.context.scene.use_preview_range = False
-
-            
             bpy.ops.screen.animation_cancel(restore_frame=False)
             bpy.context.scene.frame_current = brCurframe
-                                    
             playing = "False"  
             print ("woo")   
           
@@ -73,20 +68,20 @@ class BR_OT_fastPreview(bpy.types.Operator):
 
 
 def menu_draw(self, context):
-    self.layout.operator(BR_OT_fastPreview.bl_idname)
+    self.layout.operator(BR_OT_fastPreview.bl_idname, text="Quick Play" )
 
 def register():
     from bpy.utils import register_class
     register_class(BR_OT_fastPreview)
-    bpy.types.TIME_MT_view.prepend(menu_draw)
+    bpy.types.DOPESHEET_HT_header.append(menu_draw)
 
 def unregister():
     from bpy.utils import unregister_class
     unregister_class(BR_OT_fastPreview)
-    bpy.types.TIME_MT_view.remove(menu_draw)
+    bpy.types.DOPESHEET_HT_header.remove(menu_draw)
 
     if __name__ != "__main__":
-        bpy.types.TIME_MT_view.remove(menu_draw)
+        bpy.types.DOPESHEET_HT_header.remove(menu_draw)
                 
 if __name__ == "__main__":
     register()

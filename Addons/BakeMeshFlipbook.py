@@ -112,10 +112,10 @@ class BakeFlipbookPanelSettings(bpy.types.PropertyGroup):
 
 class BR_OT_bake_mesh_flipbook(bpy.types.Operator):
     """Bake selected object as a mesh per frame with animated visibility like a flipbook"""
-    bl_idname = "view3d.bake_mesh_flipbook"
+    bl_idname = "BR_OT_bake_mesh_flipbook"
     bl_label = "Bake Mesh Flipbook..."
     bl_options = {'REGISTER', 'UNDO'}
-    config: bpy.props.PointerProperty(type=BakeFlipbookPanelSettings)
+    config = bpy.props.PointerProperty(type=BakeFlipbookPanelSettings)
 
     def draw(self, context):
         layout = self.layout
@@ -371,8 +371,9 @@ def menu_draw(self, context):
 def register():
     bpy.utils.register_class(BR_OT_bake_mesh_flipbook)
     bpy.types.VIEW3D_MT_object_animation.append(menu_draw)  
+
     bpy.utils.register_class(BakeFlipbookPanelSettings)
-    bpy.types.Scene.bake_flipbook_panel_settings = bpy.props.PointerProperty(type=BakeFlipbookPanelSettings)
+    bpy.types.Scene.bake_flipbook_panel_settings = bpy.props.CollectionProperty(type=BakeFlipbookPanelSettings)
 
 def unregister():
     bpy.utils.unregister_class(BR_OT_bake_mesh_flipbook)

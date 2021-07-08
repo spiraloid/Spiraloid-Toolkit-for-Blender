@@ -1,9 +1,8 @@
 
+[Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
 
-[Demo Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4)
 
-
-READ ME:  Spiraloid Blender 2.8x essentials setup
+READ ME:  Spiraloid Blender 2.92 beta essentials setup
 
 misc Blender utilities
 
@@ -19,61 +18,58 @@ Installation:
 
 WARNING!!!:  Blender users may wish to backup your current configuration before installing in case something goes wrong you can undo.  For example on a Mac,  creating a compressed zip archive of this folder:
 
-~/Library/Application Support/Blender/2.82
+~/Library/Application Support/Blender/2.92
 
 (or on windows 10)
 
-%APPDATA%\Roaming\Blender Foundation\Blender\2.82
+%APPDATA%\Roaming\Blender Foundation\Blender\2.92
 
  is a good idea.  
 (This is where blender stores all your preference data)
 
 Next
 
-Install blender 2.82 (if you have not already done so)
-https://www.blender.org/download/releases/2-82/
+Install blender 2.92 (if you have not already done so)
+https://www.blender.org/download/releases/2-92/
 
-if you're feeling brave, the 2.90 alpha is up and I'm setting up my sculpt hotkeys so I can use the new cloth, pose, multires etc in the sculpt room.
-https://builder.blender.org/download/
+Open Blender with admin priviledges and edit  “edit > User Preferences”.
+Under the addon tab, use button at Bottom that says “install add on from file”
 
-Open Blender and edit  “file > User Preferences”.
-Under the add on tab, use button at Bottom that says “install add on from file”
+Browse to this folder where this README.txt file is and every *.py file in the addon folder as you would normally.
 
-Browse to this folder where this README.txt file is and install all add-ons in the addon folder as you would normally.
+(Remember to activate each them immediately after you install them, otherwise it’s a long list to search through)
 
-Be sure to activate them immediately after you install them (it’s a long list to search through)
+I strongly you buy your own copy of these paid addons as my hotkeys assume they are installed. xray box select especially
 
-here are the addons I have installed.
-
-
-
-
-
-
-
-
+https://gumroad.com/l/daldj
+https://gum.co/dolly_zoom_truck_shift?recommended_by=library
 Next
 
-Go to the input tab, use button 
-“import key configuration”
-
-Browse to this folder and import “spiraloid_hotkeys.py”
+In the preferences Go to the "Keymap", use the button “import key configuration” and browse to this folder and import “spiraloid_hotkeys.py”
 
 Save user preferences.
 
 Next
 
-Open the startup_scene.blend file in this folder.
+Open the startup_scene.blend file in this folder.  (don't touch anything at this point unless you know what you're doing and want the state saved as your startup overriding my startup state. 
+
+hit “ctrl U” and say yes to save the startup scene.  This will store the state of all the UI and settings so that every time your launch blender or hit file new, this is what you get. This is your Home state.
 
 If everything went according to plan, everything should be installed.  if everything worked, hit the spacebar and the mirrored subdiv cube in front of you should bounce. 
 
 This is the fast preview playback script I wrote.  Hit spacebar to stop playing time and note that the current frame has returned whatever frame you were editing before you hit spacebar.
 
-CONGRATS!  Everything is installed.  hit “ctrl U” to save the startup scene and all the UI and settings so that every time your launch blender or hit file new, this is what you get.   Home state.
+CONGRATS!  Everything is installed. 
+
+checkout the walkthrough video and look at the hotkey overlay.    
+
+
+[Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
+
 
 --
 
-Here’s a list of basic usage of my essentials..  Wherever possible I tried to leave it the default so you could still google.  Right Mouse Button (RMB) to select, drag etc.  x to delete.  A to deselect all or Toggle.  GXYZ RXYZ SXYZ alt-S to move on normal etc all still work.
+Here’s a list of basic usage of my essentials..  Wherever possible I tried to leave it the blender defaults so googling blender shortcuts and tutorials will still kinda work.  x to delete.  A to deselect all or Toggle.  GXYZ RXYZ SXYZ alt-S to move on normal etc all still work.
 
 My adjustments to the UI or hotkeys are made for me, so bear in mind I have a lot of habits from using nearly every 3D tool for the last 25 years in major productions.  I understand that the hotkey memorization I do is abnormal, but this kind of configuration helps me switch tools and makes my work faster.
 
@@ -113,8 +109,8 @@ Up Arrow goes to first frame
 Down Arrow goes to last frame
 Left Arrow goes to next keyframe for selected object.
 Right Arrow goes to previous keyframe for selected object.
-Alt Right Arrow goes to next frame
-Alt Left Arrow goes to previous frame
+Shift Right Arrow goes to next frame
+Shift Left Arrow goes to previous frame
 
 Ctrl Return does a playblast of whatever window is under your mouse.
 
@@ -122,6 +118,15 @@ Ctrl Return does a playblast of whatever window is under your mouse.
 WEIGHT PAINT Mode
 Ctrl shift Drag will drag a radial gradient of the current weight, tool and strength.
 Ctrl ALT Drag will drag a radial gradient of the current weight, tool and strength.
+X will toggle 0.0 or 1.0 weight
+
+Image Paint mode
+X will toggle black or white color
+
+OBJECT mode
+w is the tweek tool.  I leave this tool on for everything and use the GRS shortcuts instead of the beginner gizmos.
+ctrl+e move origin to cursor
+f4 apply all transforms.
 
 EDIT Mode
 E edges
@@ -149,6 +154,13 @@ alt+ctrl+shift+LMB to lasso mask deselect
 ctrl+i invert mask
 ctrl+b blur mask
 ctrl+h hide mask
+
+SCULPT mode
+ctrl+right sets voxel remesh grid size
+ctrl+r sets remeshes
+ctrl+alt+r uses remeshit from exoside
+
+
 
 
 ---
@@ -184,46 +196,46 @@ SmoothAnimationLoop.py
 
 This adds a menu to the graph editor > key > smmooth animation loop.  enter the number of frame the falloff should effect and the animation curves at the end of your selected animation will be moved to the values at the start of the animation with a falloff.
 
----
 
-SimplifyMultipleFCurves-v1_1.py
+resize_images.py
+obvious
 
-This adds a menu to the graph editor > properties panel > f-curve > Simplify multiple f-curves > By Error.  the slider to adjust error settings can be found in the 3Dviewport Tool shelf pane.  Adjust the slider to reduce the samples for selected curves.  Works great for creating animator friendly resamples for baked, mocap or puppeteered dense anim curves.
+SubdNavigator.py
+adds a subdivide modifier to add visile and lets you go up and down resolutions w D and Shift+D
 
----
+ToggleWeights.py
+allows you to use X to switch between 0.0 and 1.0 weighting.  useful for ctrl+shift+drag and ctrl+alt+drag for linear/radial gradient weighting.
 
-JiggleArmature.py
+Toggle_hide.py
+allow H store recall hide toggle to work.
 
-This adds a property to selected bones to simulate physics overlap.  great for floppy, ears, antenae etc etc.  the Jiggle Scene toggle must be set to on in the scene properties to see the results.
-
+brush_quickset.py
+lets the "[" and "]" do brush sizing like photoshop.
 
 
 ---
 
 I also strongly suggest these paid addons:
 
-box select Xray
-https://gumroad.com/l/daldj
 
 Voxel heat diffuse skinning
 https://blendermarket.com/products/voxel-heat-diffuse-skinning
+
+https://gumroad.com/l/mfGbS
+
+https://gumroad.com/l/uvpackmaster
 
 https://blendermarket.com/products/auto-rig-pro
 
 http://renderhjs.net/textools/blender/
 
-https://gumroad.com/l/uvpackmaster
-
 https://lollypopman.com/2016/08/09/addon-shapekey-helpers/
 
 https://en.blender.org/index.php/Extensions:2.6/Py/Scripts/Animation/Corrective_Shape_Key
 
-https://blendermarket.com/products/asset-management?ref=2
-
-https://github.com/knekke/blender_addons
-
 https://www.blendernation.com/2016/06/15/addon-zaloopok/
 
+https://gitlab.com/AquaticNightmare/space_switcher/-/wikis/home
 
 ---
 
@@ -232,7 +244,7 @@ good luck with your art.
 
 -b
 
-my 3D Graphic Novel "Nanite Fulcrum"
-http://spiraloid.net/nanitefulcrum
+my 3D Comics can be found at:
+http://3dcomic.shop
 
 

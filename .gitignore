@@ -1,2 +1,8 @@
 
 2.82/Startup/startup_scene.blend1
+*.blend1
+.idea/vcs.xml
+.idea/Spiraloid-Toolkit-for-Blender.iml
+.idea/modules.xml
+.idea/misc.xml
+.idea/inspectionProfiles/profiles_settings.xml

@@ -172,13 +172,13 @@ def main_subdivide(self, context):
             mod = obj.modifiers.new(name = 'Multires', type = 'MULTIRES')
             mod.quality = 6
             mod.uv_smooth = 'NONE'
-            mod.subdivision_type = 'CATMULL_CLARK'
-            mod.show_only_control_edges = True
+            # mod.show_only_control_edges = True
             mod.use_creases = False
             level = 5
             if level > 0:
                 for i in range(0, level):
-                    bpy.ops.object.multires_subdivide(modifier="Multires")
+                    bpy.ops.object.multires_subdivide(modifier="Multires", mode='CATMULL_CLARK')
+
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
             bpy.ops.object.shade_smooth()
             bpy.ops.object.mode_set(mode='SCULPT', toggle=False)

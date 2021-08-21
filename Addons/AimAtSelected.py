@@ -26,33 +26,39 @@ def main_aim(context):
         ob = bpy.context.active_object
 
         if ob.type == 'MESH':
-            bm = bmesh.from_edit_mesh(ob.data)
-            returnToEdgeMode = False
-            returnToFaceMode = False
-            old_cursor_loc =  bpy.context.scene.cursor.location.copy()
 
-            activElem = bm.select_history.active
-            if (activElem != None and type(activElem).__name__ == 'BMEdge'):
-                returnToEdgeMode = True
-                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
+            if bpy.context.active_object.data.total_vert_sel != 0:
+                bm = bmesh.from_edit_mesh(ob.data)
+                returnToEdgeMode = False
+                returnToFaceMode = False
+                old_cursor_loc =  bpy.context.scene.cursor.location.copy()
 
-            if (activElem != None and type(activElem).__name__ == 'BMFace'):
-                returnToFaceMode = True
-                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
+                activElem = bm.select_history.active
+                if (activElem != None and type(activElem).__name__ == 'BMEdge'):
+                    returnToEdgeMode = True
+                    bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
 
-            for v in bm.verts:
-                if (v.select == True):
-                    bpy.ops.view3d.snap_cursor_to_selected()
-                    if  bpy.context.scene.cursor.location ==  old_cursor_loc :
-                        bpy.ops.view3d.snap_cursor_to_center()
-                    else :
-                        bpy.ops.view3d.view_center_cursor()
-            
-            if returnToFaceMode :
-                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
+                if (activElem != None and type(activElem).__name__ == 'BMFace'):
+                    returnToFaceMode = True
+                    bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
 
-            if returnToEdgeMode :
-                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
+                for v in bm.verts:
+                    if (v.select == True):
+                        bpy.ops.view3d.snap_cursor_to_selected()
+                        if  bpy.context.scene.cursor.location ==  old_cursor_loc :
+                            bpy.ops.view3d.snap_cursor_to_center()
+                        else :
+                            bpy.ops.view3d.view_center_cursor()
+                
+                if returnToFaceMode :
+                    bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
+
+                if returnToEdgeMode :
+                    bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
+            else:
+                bpy.ops.view3d.view_center_cursor()
+
+
 
         if ob.type == 'ARMATURE':
             old_cursor_loc =  bpy.context.scene.cursor.location.copy()

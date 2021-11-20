@@ -169,7 +169,7 @@ ctrl+alt+r uses remeshit from exoside
 
 Addon notes:
 
-(unless the addon states I wrote it, these are grabbed from elsewhere online and copyrtight, support etc stays with the original author.  I'm just collecting them in this repo to have them in once place.  See source code documentation of each addon for more info)
+(unless the addon states I wrote it, these are grabbed from elsewhere online and copyrtight, support etc stays with the original author.  I'm just collecting them in this repo to have them in once place.  See source code documentation of each addon for more info.  DISCLAIMER: my code for all of these was written very messily as I learned each new version of blender, updated dying scripts and hone my instrument)
 
 ---
 

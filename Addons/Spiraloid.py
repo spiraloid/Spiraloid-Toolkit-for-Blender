@@ -80,6 +80,76 @@ def in_1_seconds():
     previous_color = (1,1,1,1)
     print ("Resetting Previous color")
 
+def smart_nuke_vertex_color(self, context):
+    if bpy.context.mode == 'EDIT_MESH':
+        for ob in bpy.context.selected_objects:
+            if ob.type == 'MESH':
+                assetName = ob.name
+                mat =  ob.active_material
+                mesh = bpy.context.object.data
+                matName = (assetName + "Mat")
+                me = ob.data
+
+                bm = bmesh.new()
+                bm.from_mesh(mesh)        
+
+
+                # Assign it to object
+                if ob.data.materials:
+                    ob.data.materials[0] = mat
+                else:
+                    ob.data.materials.append(mat)
+
+                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+
+
+                #create new vertex color group if none exist
+                if not ob.data.vertex_colors:
+                    bpy.ops.mesh.vertex_color_add()
+                vertexColorName = ob.data.vertex_colors[0].name
+
+
+                selected_faces = []
+                for f in bm.faces:
+                    if f.select:
+                        selected_faces.append(f)
+                if len(selected_faces) == 0: 
+                    bpy.ops.mesh.select_all(action='SELECT')
+
+                if previous_color == (0.0,0.0,0.0,1.0):
+                    applyColor = (1.0,1.0,1.0,1.0)
+                if previous_color == (1.0,1.0,1.0,1.0):
+                    applyColor = (0.0,0.0,0.0,1.0)
+                previous_color = applyColor
+                bpy.app.timers.register(in_1_seconds, first_interval=1)
+                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                for f in ob.data.polygons:
+                    if f.select:
+                        for vert_idx, loop_idx in zip(f.vertices, f.loop_indices):
+                            if nukeInvert:
+                                col = ob.data.vertex_colors[vertexColorName].data[loop_idx].color
+                                ob.data.vertex_colors[vertexColorName].data[loop_idx].color = tuple(1-x for x in col)
+                            else:
+                                ob.data.vertex_colors[vertexColorName].data[loop_idx].color = applyColor
+
+                previous_selected_faces = selected_faces
+                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+
+                mat_output = mat.node_tree.nodes.get('Material Output')
+                shader = mat_output.inputs[0].links[0].from_node
+
+                for node in mat.node_tree.nodes:
+                    if "BSDF" in node.name: 
+                        shader = node
+
+                if shader:
+                    base_color_node =  mat.node_tree.nodes.get("Attribute")
+                    if base_color_node is not None:
+                        mat.node_tree.nodes.remove( base_color_node )
+                    colorNode = mat.node_tree.nodes.new('ShaderNodeAttribute')
+                    colorNode.attribute_name = vertexColorName
+                    mat.node_tree.links.new(shader.inputs[0], colorNode.outputs[0])
+    return {'FINISHED'}
 
 def smart_nuke_bsdf(self, context, nukeInvert):
     global previous_selected_faces
@@ -113,137 +183,36 @@ def smart_nuke_bsdf(self, context, nukeInvert):
                 bm = bmesh.new()
                 bm.from_mesh(mesh)        
                 
-
-                if ob.active_material is not None:
-                    mat =  ob.active_material
-                    print ("Using existing material" + mat.name)
-                else:
-                    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-                    for i in range(len(ob.material_slots)):
-                        bpy.ops.object.material_slot_remove({'object': ob})
-                        for block in bpy.data.materials:
-                            if block.users == 0:
-                                bpy.data.materials.remove(block)
-                    assetName = ob.name
-                    matName = (assetName + "Mat")
-                    mat = bpy.data.materials.new(name=matName)
-                    mat.use_nodes = True
-                    mat_output = mat.node_tree.nodes.get('Material Output')
-                    shader = mat_output.inputs[0].links[0].from_node
-                    nodes = mat.node_tree.nodes
-                    for node in nodes:
-                        if node.type != 'OUTPUT_MATERIAL': # skip the material output node as we'll need it later
-                            nodes.remove(node) 
-                    shader = mat.node_tree.nodes.new(type='ShaderNodeBsdfPrincipled')
-                    shader.name = "Principled BSDF"
-                    shader.label = "Principled BSDF"
-                    shader.inputs[0].default_value = (0.214041, 0.214041, 0.214041, 1) # base color
-                    shader.inputs[5].default_value = 1 # specular
-                    shader.inputs[4].default_value = 0.33 # metallic
-                    shader.inputs[7].default_value = 0.66 # roughness
-                    shader.inputs[12].default_value = 0.5  # clearcoat
-                    shader.inputs[13].default_value = 0.5 # clearcoat roughness
-
-                    mat_output = mat.node_tree.nodes.get('Material Output')
-                    mat.node_tree.links.new(shader.outputs[0], mat_output.inputs[0])
+                bpy.ops.object.material_slot_add()
+                assetName = ob.name
+                matName = (assetName + "Mat")
+                mat = bpy.data.materials.new(name=matName)
+                new_material_slot_index =  len(ob.data.materials) -1
+                ob.data.materials[new_material_slot_index] = mat
 
 
-
-
-                    # Assign it to object
-                    if ob.data.materials:
-                        ob.data.materials[0] = mat
-                    else:
-                        ob.data.materials.append(mat)
-
-                    bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-
-
-                #create new vertex color group if none exist
-                if not ob.data.vertex_colors:
-                    bpy.ops.mesh.vertex_color_add()
-                vertexColorName = ob.data.vertex_colors[0].name
-
-
-                selected_faces = []
-                # for f in bm.faces:
-                #     if f.select:
-                #         selected_faces.append(f)
-
-                # bpy.ops.paint.vertex_color_set()
-                # bpy.ops.paint.vertex_color_set.poll()
-
-                # bpy.context.scene.tool_settings.unified_paint_settings.color = appliedColor
-
-                # apply color to faces
-                # i = 0
-                # for poly in selected_faces:
-                #     for idx in poly.loop_indices:
-                #         # rgb = [random.random() for i in range(3)]
-                #         me.vertex_colors[vertexColorName].data[i].color = applyColor
-                #         i += 1
-
-
-                for f in bm.faces:
-                    if f.select:
-                        selected_faces.append(f)
-
-                # print("selected_faces is " + str(len(selected_faces)))
-                # if len(selected_faces) == len(previous_selected_faces) :
-                # isSameSelection = bool(set(selected_faces).intersection(previous_selected_faces))
-                # if isSameSelection :
-                    # print ("same selection detected!")
-                # if colorIndex < maxColorIndex : 
-                #     colorIndex += 1
-                # else:
-                #     colorIndex = 0
-                # else:
-                #     colorIndex = 0
-
-
-
-                if len(selected_faces) == 0: 
-                    bpy.ops.mesh.select_all(action='SELECT')
-
-                # applyColor = colorSwatch[colorIndex]
-
-                if previous_color == (0.0,0.0,0.0,1.0):
-                    applyColor = (1.0,1.0,1.0,1.0)
-                if previous_color == (1.0,1.0,1.0,1.0):
-                    applyColor = (0.0,0.0,0.0,1.0)
-                previous_color = applyColor
-                bpy.app.timers.register(in_1_seconds, first_interval=1)
-
-                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-                for f in ob.data.polygons:
-                    if f.select:
-                        for vert_idx, loop_idx in zip(f.vertices, f.loop_indices):
-                            if nukeInvert:
-                                col = ob.data.vertex_colors[vertexColorName].data[loop_idx].color
-                                ob.data.vertex_colors[vertexColorName].data[loop_idx].color = tuple(1-x for x in col)
-                            else:
-                                ob.data.vertex_colors[vertexColorName].data[loop_idx].color = applyColor
-
-
-                previous_selected_faces = selected_faces
-
-                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-
+                mat.use_nodes = True
                 mat_output = mat.node_tree.nodes.get('Material Output')
                 shader = mat_output.inputs[0].links[0].from_node
+                nodes = mat.node_tree.nodes
+                for node in nodes:
+                    if node.type != 'OUTPUT_MATERIAL': # skip the material output node as we'll need it later
+                        nodes.remove(node) 
+                shader = mat.node_tree.nodes.new(type='ShaderNodeBsdfPrincipled')
+                shader.name = "Principled BSDF"
+                shader.label = "Principled BSDF"
+                shader.inputs[0].default_value = (0.214041, 0.214041, 0.214041, 1) # base color
+                shader.inputs[5].default_value = 1 # specular
+                shader.inputs[4].default_value = 0.33 # metallic
+                shader.inputs[7].default_value = 0.66 # roughness
+                shader.inputs[12].default_value = 0.5  # clearcoat
+                shader.inputs[13].default_value = 0.5 # clearcoat roughness
 
-                for node in mat.node_tree.nodes:
-                    if "BSDF" in node.name: 
-                        shader = node
+                mat_output = mat.node_tree.nodes.get('Material Output')
+                mat.node_tree.links.new(shader.outputs[0], mat_output.inputs[0])
 
-                if shader:
-                    base_color_node =  mat.node_tree.nodes.get("Attribute")
-                    if base_color_node is not None:
-                        mat.node_tree.nodes.remove( base_color_node )
-                    colorNode = mat.node_tree.nodes.new('ShaderNodeAttribute')
-                    colorNode.attribute_name = vertexColorName
-                    mat.node_tree.links.new(shader.inputs[0], colorNode.outputs[0])
-                    
+                bpy.ops.object.material_slot_assign()
+
 
 
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
@@ -267,13 +236,13 @@ def smart_nuke_bsdf(self, context, nukeInvert):
             # bpy.data.palettes["Global_Palette"].name = "Global_Palette"
             selected_objects = bpy.context.selected_objects
             for ob in selected_objects:
-                if ob.type == 'MESH':
+                if ob.type == 'MESH' or ob.type == 'CURVE':
                     # if not wasInEditMode:
 
-                    #clear out and remake a new material
                     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
                     bpy.ops.object.shade_smooth()
 
+                    #clear out and remake a new material
                     for i in range(len(ob.material_slots)):
                         bpy.ops.object.material_slot_remove({'object': ob})
                         for block in bpy.data.materials:
@@ -595,6 +564,69 @@ def smart_nuke_bsdf(self, context, nukeInvert):
 
     # if shared_material:
     #     bpy.ops.object.material_slot_copy()
+
+
+def nuke_smoke(self, context):
+    selected_objects = bpy.context.selected_objects
+    if selected_objects:
+        if (bpy.context.mode != 'OBJECT'):
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+            for ob in selected_objects:
+                if ob.type == 'VOLUME':
+                    #clear out and remake a new material
+                    for i in range(len(ob.material_slots)):
+                        bpy.ops.object.material_slot_remove({'object': ob})
+                        for block in bpy.data.materials:
+                            if block.users == 0:
+                                bpy.data.materials.remove(block)
+
+                    assetName = ob.name
+                    matName = (assetName + "Mat")
+                    mat = bpy.data.materials.new(name=matName)
+                    mat.use_nodes = True
+                    mat_output = mat.node_tree.nodes.get('Material Output')
+                    nodes = mat.node_tree.nodes
+                    for node in nodes:
+                        if node.type != 'OUTPUT_MATERIAL': # skip the material output node as we'll need it later
+                            nodes.remove(node) 
+
+                    scatter = mat.node_tree.nodes.new(type='ShaderNodeVolumeScatter')
+                    mix = mat.node_tree.nodes.new(type='ShaderNodeMixShader')
+                    volume_info = mat.node_tree.nodes.new(type='ShaderNodeVolumeInfo')
+                    math_power_1 = mat.node_tree.nodes.new(type='ShaderNodeMath')
+                    math_power_2 = mat.node_tree.nodes.new(type='ShaderNodeMath')
+                    math_mult_2 = mat.node_tree.nodes.new(type='ShaderNodeMath')
+                    math_mult_3 = mat.node_tree.nodes.new(type='ShaderNodeMath')
+                    math_mult_4 = mat.node_tree.nodes.new(type='ShaderNodeMath')
+                    ramp = mat.node_tree.nodes.new(type='ColorRamp')
+                    shader = mat.node_tree.nodes.new(type='ShaderNodeVolumePrincipled')
+
+                    texture_coord = mat.node_tree.nodes.new(type='ShaderNodeTexCoord')
+                    mapping = mat.node_tree.nodes.new(type='ShaderNodeMapping')
+                    noise_tex = mat.node_tree.nodes.new(type='ShaderNodeTexNoise')
+                    math_add_1 = mat.node_tree.nodes.new(type='ShaderNodeMath')
+                    gradient_tex = mat.node_tree.nodes.new(type='ShaderNodeTexGradient')
+                    math_mult_1 = mat.node_tree.nodes.new(type='ShaderNodeMath')
+
+
+                    shader.name = "Principled BSDF"
+                    shader.label = "Principled BSDF"
+                    shader.inputs[0].default_value = (0.214041, 0.214041, 0.214041, 1) # base color
+                    shader.inputs[5].default_value = 1 # specular
+                    shader.inputs[4].default_value = 0.33 # metallic
+                    shader.inputs[7].default_value = 0.66 # roughness
+                    shader.inputs[12].default_value = 0.5  # clearcoat
+                    shader.inputs[13].default_value = 0.5 # clearcoat roughness
+                    mat_output = mat.node_tree.nodes.get('Material Output')
+                    mat.node_tree.links.new(shader.outputs[0], mat_output.inputs[0])
+                    mat.use_backface_culling = True
+
+                    # Assign it to object
+                    if ob.data.materials:
+                        ob.data.materials[0] = mat
+                    else:
+                        ob.data.materials.append(mat)
+
 
 
 def toggle_mods():
@@ -1137,6 +1169,87 @@ def operator_exists(idname):
         print(e)
         return False
     return True
+
+
+def quadrant_map(mesh_objects):
+    # UV map target_object if no UV's present
+    for mesh_object in mesh_objects:
+        if mesh_object.type == 'MESH':
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+            bpy.ops.object.select_all(action='DESELECT')
+            mesh_object.select_set(state=True)
+            bpy.context.view_layer.objects.active = mesh_object
+            bpy.ops.mesh.uv_texture_add()
+            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+            bpy.ops.mesh.select_all(action='SELECT')
+
+            bpy.ops.mesh.mark_seam(clear=True)
+
+            bpy.ops.mesh.bisect(plane_co=(0, 0, 0), plane_no=(1, 0, 0), xstart=mesh_object.dimensions[1], xend=mesh_object.dimensions[1], ystart=mesh_object.dimensions[2], yend=mesh_object.dimensions[2])
+            bpy.ops.mesh.mark_seam(clear=False)
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.mesh.bisect(plane_co=(0, 0, 0), plane_no=(0, 1, 0), xstart=mesh_object.dimensions[1], xend=mesh_object.dimensions[1], ystart=mesh_object.dimensions[2], yend=mesh_object.dimensions[2])
+            bpy.ops.mesh.mark_seam(clear=False)
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.mesh.bisect(plane_co=(0, 0, 0), plane_no=(0, 0, 1), xstart=mesh_object.dimensions[1], xend=mesh_object.dimensions[1], ystart=mesh_object.dimensions[2], yend=mesh_object.dimensions[2])
+            bpy.ops.mesh.mark_seam(clear=False)
+            bpy.ops.mesh.select_all(action='SELECT')
+
+            # bpy.ops.uv.cube_project(cube_size=10, scale_to_bounds=True)
+            bpy.ops.uv.unwrap(method='CONFORMAL', margin=0.015)
+
+
+    #select all meshes and pack into one UV set together
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+    bpy.ops.object.select_all(action='DESELECT')
+    for mesh_object in mesh_objects:
+        mesh_object.select_set(state=True)
+        bpy.context.view_layer.objects.active = mesh_object
+
+    bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+    for area in bpy.context.screen.areas:
+            if area.type == 'IMAGE_EDITOR':
+                area.ui_type = 'UV'
+                for region in area.regions:
+                    if region.type == 'WINDOW':
+                        override = {'area': area, 'region': region, 'edit_object': bpy.context.edit_object}
+                        bpy.context.scene.tool_settings.use_uv_select_sync = True
+                        bpy.ops.uv.select_all(action='SELECT')
+                        bpy.ops.mesh.select_all(action='SELECT')
+                        # bpy.ops.uv.minimize_stretch(override, iterations=100)
+                        if operator_exists("uvpackmaster2"):
+                            bpy.context.scene.uvp2_props.pack_to_others = False
+                            bpy.context.scene.uvp2_props.margin = 0.01
+                            bpy.context.scene.uvp2_props.rot_step = 5
+                            bpy.ops.uvpackmaster2.uv_measure_area()
+                            bpy.ops.uv.average_islands_scale()
+                            bpy.ops.uv.pack_islands(override , margin=0.015)
+                            bpy.ops.uvpackmaster2.uv_pack()
+                        else:
+                            bpy.ops.uv.average_islands_scale(override)
+                            bpy.ops.uv.pack_islands(override , margin=0.015)
+
+
+
+
+            # bpy.ops.mesh.select_all(action='SELECT')
+            # C=bpy.context
+            # old_area_type = C.area.type
+            # C.area.type='IMAGE_EDITOR'
+            # bpy.ops.uv.pack_islands(margin=0.017)
+            # C.area.type=old_area_type
+
+
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+        # raise Exception('stopping script')
+
+    return {'FINISHED'} 
+
+
+
+
+
 
 
 
@@ -1707,6 +1820,71 @@ def add_ao(self, context, objects):
         for ob in selected_objects:
             ob.select_set(state=True)
             bpy.context.view_layer.objects.active = ob
+
+        if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
+            bpy.context.scene.eevee.use_gtao = True
+            bpy.context.scene.eevee.gtao_distance = 2
+
+
+    return {'FINISHED'}
+
+def add_gradient(self, context):
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)                
+    selected_objects = bpy.context.selected_objects
+    if (bpy.context.mode == 'OBJECT'):
+            selected_objects = bpy.context.selected_objects
+            for ob in selected_objects:
+                if ob.type == 'MESH' or ob.type == 'CURVE':
+                    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+                    if ob.active_material is not None:
+                        mat = ob.active_material
+                    else:
+                        assetName = ob.name
+                        matName = (assetName + "Mat")
+                        mat = bpy.data.materials.new(name=matName)
+                        mat.use_nodes = True
+
+                    mat_output = mat.node_tree.nodes.get('Material Output')
+                    shader = mat_output.inputs[0].links[0].from_node
+                    tex_coord = mat.node_tree.nodes.new(type='ShaderNodeTexCoord')
+                    mapping = mat.node_tree.nodes.new(type='ShaderNodeMapping')
+                    sep_xyz = mat.node_tree.nodes.new(type='ShaderNodeSeparateXYZ')
+                    ramp = mat.node_tree.nodes.new(type='ShaderNodeValToRGB')
+
+                    mat.node_tree.links.new(tex_coord.outputs[0], mapping.inputs[0])
+                    mat.node_tree.links.new(mapping.outputs[0], sep_xyz.inputs[0])
+                    mat.node_tree.links.new(sep_xyz.outputs[2], ramp.inputs[0])
+                    mat.node_tree.links.new(ramp.outputs[0], shader.inputs[0])
+
+                    # change shader properties
+                    ramp.color_ramp.elements[0].position = 0.1
+                    ramp.color_ramp.elements[0].color = (0.1, 0.1, 0.1, 1)
+                    ramp.color_ramp.interpolation = 'EASE'
+
+                                    
+                                
+                    # Assign it to object
+                    if ob.data.materials:
+                        ob.data.materials[0] = mat
+                    else:
+                        ob.data.materials.append(mat)
+
+            for ob in selected_objects:
+                ob.select_set(state=True)
+                bpy.context.view_layer.objects.active = ob
+            for area in bpy.context.screen.areas:
+                if area.type == 'VIEW_3D':
+                    # #types = {'VIEW_3D', 'TIMELINE', 'GRAPH_EDITOR', 'DOPESHEET_EDITOR', 'NLA_EDITOR', 'IMAGE_EDITOR', 'SEQUENCE_EDITOR', 'CLIP_EDITOR', 'TEXT_EDITOR', 'NODE_EDITOR', 'LOGIC_EDITOR', 'PROPERTIES', 'OUTLINER', 'USER_PREFERENCES', 'INFO', 'FILE_BROWSER', 'CONSOLE'}
+                    area.type='NODE_EDITOR'
+                    area.ui_type='ShaderNodeTree'
+                    override = bpy.context.copy()
+                    override['area'] = area
+                    # do the stuff
+                    # bpy.ops.node_relax.arrange(override)    
+                    bpy.ops.node.nw_del_unused(override)
+                    # set the pane back to a 3Dview
+                    area.type = 'VIEW_3D'
     return {'FINISHED'}
 
 def empty_trash(self, context):
@@ -2079,7 +2257,17 @@ class SPIRALOID_MT_add_ao(bpy.types.Operator):
         return {'FINISHED'}
 
 
-        
+class SPIRALOID_MT_add_gradient(bpy.types.Operator):
+    """insert gradient nodes"""
+    bl_idname = "object.spiraloid_add_gradient"
+    bl_label = "Insert Gradient"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        add_gradient(self, context)
+        return {'FINISHED'}
+
+
 class SPIRALOID_MT_add_curvature(bpy.types.Operator):
     """insert curvature nodes"""
     bl_idname = "view3d.spiraloid_add_curvature"
@@ -2235,18 +2423,43 @@ class SPIRALOID_MT_nuke(bpy.types.Operator):
         selected_objects = bpy.context.selected_objects
         wasInEditMode = False
 
-        if len(context.selected_objects) and context.object.type == 'MESH' and context.mode == 'EDIT_MESH':
-            wasInEditMode =True
+        if selected_objects:
+            if len(context.selected_objects) and context.object.type == 'MESH' and context.mode == 'EDIT_MESH':
+                wasInEditMode =True
 
-        smart_nuke_bsdf(self, context, False)
-        # SPIRALOID_MT_add_curvature.execute(self, context)
-        # SPIRALOID_MT_add_cavity.execute(self, context)
+            if context.object.type == 'MESH':
+                smart_nuke_bsdf(self, context, False)
+            # SPIRALOID_MT_add_curvature.execute(self, context)
+            # SPIRALOID_MT_add_cavity.execute(self, context)
 
-        # copy last material copy to all objects.
-        for ob in selected_objects:
-            ob.select_set(state=True)
-            bpy.context.view_layer.objects.active = ob
-            bpy.ops.object.material_slot_copy()
+            if context.object.type == 'VOLUME':
+                nuke_smoke(self, context)
+
+            # copy last material copy to all objects.
+            for ob in selected_objects:
+                ob.select_set(state=True)
+                bpy.context.view_layer.objects.active = ob
+                bpy.ops.object.material_slot_copy()
+        else:
+            bpy.ops.object.gpencil_add(align='WORLD', location=(0.688679, -0.108224, 2.18184), scale=(1, 1, 1), type='EMPTY')
+            gp_object = bpy.context.selected_objects[0]
+            gp_object_name = "GPencil.TEMPLATE"
+            gp_object.name = gp_object_name
+            bpy.ops.gpencil.layer_add()
+            gp_object.data.layers["GP_Layer"].use_lights = False
+            bpy.ops.material.new()
+            gp_mat_name = (gp_object_name + "Mat")
+            mat = bpy.data.materials.new(name=gp_mat_name)
+            bpy.data.materials.create_gpencil_data(mat)
+            gp_object.data.materials.append(mat)
+            bpy.ops.gpencil.paintmode_toggle()
+            startFrame = bpy.context.scene.frame_start
+            bpy.context.scene.frame_set(startFrame)
+            gp_object.keyframe_insert(data_path="location", index=-1, frame=startFrame)
+            bpy.context.scene.tool_settings.gpencil_stroke_placement_view3d = 'SURFACE'
+            bpy.context.scene.tool_settings.gpencil_sculpt.lock_axis = 'VIEW'
+            bpy.data.brushes["Ink Pen"].color = (0, 0, 0)
+
 
         for area in my_areas:
             for space in area.spaces:
@@ -2256,6 +2469,10 @@ class SPIRALOID_MT_nuke(bpy.types.Operator):
                             space.shading.color_type = 'VERTEX'
                     else:
                         space.shading.type = my_shading
+            
+            # bpy.context.scene.tool_settings.use_keyframe_insert_auto =    True
+
+
         return {'FINISHED'}
 
 class SPIRALOID_MT_nuke_invert(bpy.types.Operator):
@@ -2300,19 +2517,34 @@ class SPIRALOID_MT_nuke_invert(bpy.types.Operator):
 
 
 class SPIRALOID_MT_uvmap(bpy.types.Operator):
-    """create a new material with gray color, ao and curvature material nodes."""
+    """unwrap selected objects into a shared UV space"""
     bl_idname = "view3d.spiraloid_uvmap"
     bl_label = "Batch Unwrap"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-
-        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        if (bpy.context.mode != 'OBJECT'):
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
         selected_objects = bpy.context.selected_objects
+        selected_objects[0].select_set(state=True)
+        bpy.context.view_layer.objects.active = selected_objects[0]
         automap(selected_objects)
         return {'FINISHED'}
 
+class SPIRALOID_MT_uvmap_quadrants(bpy.types.Operator):
+    """unwrap selected objects into a shared UV space adding ne geometry edges on the primary axis planes"""
+    bl_idname = "view3d.spiraloid_uvmap_quadrants"
+    bl_label = "Batch Unwrap Quadrants"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    def execute(self, context):
+        if (bpy.context.mode != 'OBJECT'):
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        selected_objects = bpy.context.selected_objects
+        selected_objects[0].select_set(state=True)
+        bpy.context.view_layer.objects.active = selected_objects[0]
+        quadrant_map(selected_objects)
+        return {'FINISHED'}
 
 class SPIRALOID_MT_automesh(bpy.types.Operator):
     """generate a quad mesh with multires and UV's that looks like the same mesh"""
@@ -2361,6 +2593,109 @@ class SPIRALOID_MT_automesh(bpy.types.Operator):
                 bpy.context.view_layer.objects.active = remeshed_object
 
         return {'FINISHED'}
+
+last_visible_object_index = 0
+
+class SPIRALOID_MT_cycle_visible_next(bpy.types.Operator):
+    """Isolate each visible object one by one"""
+    bl_idname = "wm.spiraloid_cycle_visible_next"
+    bl_label = "Cycle Next Visible"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        global last_visible_object_index
+        next_visible_object_index =  last_visible_object_index
+        active_collection = ""
+        selected_objects = bpy.context.selected_objects
+
+        visible_objects = []
+        for obj in bpy.context.view_layer.objects:
+            if obj.visible_get: 
+                obj_type = obj.type
+                if obj_type == 'MESH' or obj_type == 'CURVE' or obj_type == 'Empty':
+                    obj_name = obj.name
+                    visible_objects.append(obj)
+
+        for area in bpy.context.screen.areas:
+            if area.type == 'VIEW_3D':
+                space = area.spaces[0]
+                if space.local_view: #check if using local view
+                    for region in area.regions:
+                        if region.type == 'WINDOW':
+                            override = {'area': area, 'region': region} #override context
+                            bpy.ops.view3d.localview(override, frame_selected=False) #switch to global view
+        # if selected_objects:
+        #     active_collection = selected_objects[0].users_collection[0]
+        # else:
+        #     scenee_collections = bpy.context.scene.collection.children
+        #     active_collection = scenee_collections[0]
+        # collection_objects = active_collection.all_objects
+        collection_objects = visible_objects
+        num_objects =  len(collection_objects) -1
+        if next_visible_object_index < num_objects:
+            next_visible_object_index = next_visible_object_index + 1 
+            obj = collection_objects[next_visible_object_index]
+        else:
+            obj = collection_objects[0]
+            next_visible_object_index = 0
+        bpy.ops.object.select_all(action='DESELECT')
+        obj.select_set(state=True)
+        bpy.context.view_layer.objects.active = obj
+        for area in bpy.context.screen.areas:
+            if area.type == 'VIEW_3D':
+                for region in area.regions:
+                    if region.type == 'WINDOW':
+                        override = {'area': area, 'region': region} #override context
+                        bpy.ops.view3d.localview(override, frame_selected=False)
+        last_visible_object_index = next_visible_object_index
+        return {'FINISHED'}
+
+
+class SPIRALOID_MT_cycle_visible_previous(bpy.types.Operator):
+    """Isolate each visible object one by one"""
+    bl_idname = "wm.spiraloid_cycle_visible_previous"
+    bl_label = "Cycle Previously Visible"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        global last_visible_object_index
+        next_visible_object_index =  last_visible_object_index
+        active_collection = ""
+        selected_objects = bpy.context.selected_objects
+        for area in bpy.context.screen.areas:
+            if area.type == 'VIEW_3D':
+                space = area.spaces[0]
+                if space.local_view: #check if using local view
+                    for region in area.regions:
+                        if region.type == 'WINDOW':
+                            override = {'area': area, 'region': region} #override context
+                            bpy.ops.view3d.localview(override, frame_selected=False) #switch to global view
+        if selected_objects:
+            active_collection = selected_objects[0].users_collection[0]
+        else:
+            scenee_collections = bpy.context.scene.collection.children
+            active_collection = scenee_collections[0]
+        collection_objects = active_collection.all_objects
+        num_objects =  len(collection_objects) -1
+        if next_visible_object_index > 0:
+            next_visible_object_index = next_visible_object_index - 1 
+            obj = collection_objects[next_visible_object_index]
+        else:
+            obj = collection_objects[num_objects]
+            next_visible_object_index = num_objects
+        bpy.ops.object.select_all(action='DESELECT')
+        obj.select_set(state=True)
+        bpy.context.view_layer.objects.active = obj
+        for area in bpy.context.screen.areas:
+            if area.type == 'VIEW_3D':
+                for region in area.regions:
+                    if region.type == 'WINDOW':
+                        override = {'area': area, 'region': region} #override context
+                        bpy.ops.view3d.localview(override, frame_selected=False)
+        last_visible_object_index = next_visible_object_index
+        return {'FINISHED'}
+
+
 
 
 
@@ -2423,6 +2758,9 @@ class SPIRALOID_MT_Menu(bpy.types.Menu):
 
         layout.menu(SPIRALOID_MT_SubMenuHelp.bl_idname, icon="QUESTION")
         layout.separator()
+        layout.operator("wm.spiraloid_cycle_visible_next")
+        layout.operator("wm.spiraloid_cycle_visible_previous")
+        layout.separator()
 
         layout.operator("wm.spiraloid_empty_trash")
 
@@ -2447,6 +2785,7 @@ class SPIRALOID_MT_SubMenuUtilities(bpy.types.Menu):
         # layout.operator("view3d.spiraloid_bake_collection")
         layout.operator("view3d.spiraloid_automesh")
         layout.operator("view3d.spiraloid_uvmap")
+        layout.operator("view3d.spiraloid_uvmap_quadrants")
         layout.separator()
         layout.operator("view3d.spiraloid_vertex_color_to_texture")
         layout.operator("view3d.spiraloid_texture_to_vertex_color")
@@ -2471,6 +2810,7 @@ class SPIRALOID_MT_SubMenuMaterials(bpy.types.Menu):
         layout.operator("object.spiraloid_add_ao")
         layout.operator("view3d.spiraloid_add_curvature")
         layout.operator("view3d.spiraloid_add_cavity")
+        layout.operator("object.spiraloid_add_gradient")
 
 
 
@@ -2481,8 +2821,7 @@ def draw_item(self, context):
 def draw_toggle_mods_menu(self, context):
     layout = self.layout
     layout.separator()
-    layout.operator("view3d.spiraloid_toggle_mods", text="Toggle Modifiers")
-
+    layout.operator(SPIRALOID_MT_toggle_mods.bl_idname)
 
 # def add_to_render_menu(self, context):
 #     self.layout.operator("wm.spiraloid_toggle_workmode", 
@@ -2495,6 +2834,8 @@ classes = (
     SPIRALOID_MT_Menu,
     SPIRALOID_MT_SubMenuHelp,
     SPIRALOID_MT_toggle_mods,
+    SPIRALOID_MT_cycle_visible_next,
+    SPIRALOID_MT_cycle_visible_previous,
     SPIRALOID_MT_SubMenuUtilities,
     SPIRALOID_MT_SubMenuMaterials,
     SPIRALOID_MT_nuke,
@@ -2503,6 +2844,7 @@ classes = (
     SPIRALOID_MT_nuke_bsdf_triplanar_texture,
     SPIRALOID_MT_nuke_flat,
     SPIRALOID_MT_uvmap,
+    SPIRALOID_MT_uvmap_quadrants,
     SPIRALOID_MT_automesh,
     SPIRALOID_MT_nuke_flat_vertex_color,
     SPIRALOID_MT_nuke_flat_texture,
@@ -2512,6 +2854,7 @@ classes = (
     SPIRALOID_MT_add_ao,
     SPIRALOID_MT_add_curvature,
     SPIRALOID_MT_add_cavity,
+    SPIRALOID_MT_add_gradient,
     SPIRALOID_MT_bake_texture_to_vertex_color,
     SPIRALOID_MT_regenerate_video,
     SPIRALOID_MT_empty_trash,
@@ -2522,8 +2865,8 @@ def register():
     for cls in classes:
         register_class(cls)
 
-    bpy.types.VIEW3D_MT_view.append(draw_toggle_mods_menu) 
     bpy.types.TOPBAR_MT_editor_menus.append(draw_item)
+    bpy.types.VIEW3D_MT_view.append(draw_toggle_mods_menu) 
 
     # bpy.types.TOPBAR_MT_render.append(add_to_render_menu)
     # bpy.types.OUTLINER_MT_collection.append(draw_context_menus)

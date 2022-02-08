@@ -72,7 +72,7 @@ def ready():
                                 
             
 # Resize then Save
-class BR_OT_ResizeThenSave(Operator):
+class BR_PT_ResizeThenSave(Operator):
     """Resize Images"""
     bl_idname = "resize_images.resize_then_save"
     bl_label = "Resize"
@@ -92,7 +92,7 @@ class BR_OT_ResizeThenSave(Operator):
         return {'FINISHED'}    
      
 # The UI
-class BR_OT_ResizeImages(bpy.types.Panel):
+class BR_PT_ResizeImages(bpy.types.Panel):
     bl_space_type = "IMAGE_EDITOR"
     bl_region_type = "UI"   
     bl_label = "Resize"
@@ -136,8 +136,8 @@ class BR_OT_resize_image(bpy.types.Operator):
     bl_idname = "images.resize"
     bl_label = "Choose Resolution"
 
-    width = IntProperty(name="Size", description="Width in pixels for image", min=32, max=8196, default=512)
-    all_images = BoolProperty(name="All Images", description="Resize all images", default=False)
+    width : IntProperty(name="Size", description="Width in pixels for image", min=32, max=8196, default=512)
+    all_images : BoolProperty(name="All Images", description="Resize all images", default=False)
 
 
     def execute(self, context):
@@ -178,8 +178,8 @@ def menu_draw(self, context):
 
 
 classes = (
-    BR_OT_ResizeThenSave,
-    BR_OT_ResizeImages,
+    BR_PT_ResizeThenSave,
+    BR_PT_ResizeImages,
     BR_OT_resize_image,
 )
 

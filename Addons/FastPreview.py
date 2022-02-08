@@ -50,9 +50,11 @@ class BR_OT_fastPreview(bpy.types.Operator):
             bpy.context.scene.frame_preview_start =  previewStart
             bpy.context.scene.frame_preview_end =  previewEnd
             bpy.context.scene.frame_current = previewStart
-
+            bpy.context.scene.sync_mode = 'NONE'
+            
             #bpy.context.scene.frame_current = bpy.context.scene.frame_start            
             bpy.ops.screen.animation_play()
+
             playing = "True"   
         elif playing == "True":
             brCurframe

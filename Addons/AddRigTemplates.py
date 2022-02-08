@@ -16,6 +16,7 @@ from bpy.props import FloatVectorProperty, FloatProperty
 from bpy_extras.object_utils import AddObjectHelper, object_data_add
 from mathutils import Vector
 import random
+import bmesh
 
 previous_random_object_int = 0 
 
@@ -171,6 +172,110 @@ def add_object(self, context):
     # mesh.validate(verbose=True)
     object_data_add(context, mesh, operator=self)
 
+
+def traverse_tree(t):
+    yield t
+    for child in t.children:
+        yield from traverse_tree(child)
+
+def parent_lookup(coll):
+    parent_lookup = {}
+    for coll in traverse_tree(coll):
+        for c in coll.children.keys():
+            parent_lookup.setdefault(c, coll.name)
+    return parent_lookup
+
+def get_parent_collection(coll):
+    coll_name = coll.name
+    C = bpy.context
+    coll_scene = C.scene.collection
+    coll_parents = parent_lookup(coll_scene)
+    parent_collection_name = coll_parents.get(coll_name)
+    parent_collection = bpy.data.collections.get(parent_collection_name)        
+    return parent_collection
+
+def get_mesh_selection_mode(self, context):
+    mode = context.tool_settings.mesh_select_mode[:]
+    return mode
+
+def stroke_selected(self, context):
+    if bpy.context.object:
+        starting_mode = bpy.context.object.mode
+        if "EDIT" not in starting_mode:
+            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+        for area in bpy.context.screen.areas:
+            if area.type == 'VIEW_3D':
+                old_obj = bpy.context.selected_objects[0]
+                old_obj_name =old_obj.name
+                sel_mode = get_mesh_selection_mode(self, context)
+                if not bpy.context.scene.tool_settings.mesh_select_mode[1]:
+                    bpy.ops.mesh.region_to_loop()
+                bpy.ops.mesh.duplicate()
+                bpy.ops.mesh.separate(type='SELECTED')
+                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                new_obj = bpy.context.selected_objects[1]
+                bpy.ops.object.select_all(action='DESELECT')
+                new_obj.select_set(state=True)
+                bpy.context.view_layer.objects.active = new_obj
+                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+                bpy.ops.mesh.select_all(action='SELECT')
+                bpy.ops.mesh.delete(type='ONLY_FACE')
+                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                skin_mod = new_obj.modifiers.new(name = 'Skin', type = 'SKIN')
+                skin_mod.use_smooth_shade = True
+                new_obj.data.use_auto_smooth = True
+                # subd_mod = new_obj.modifiers.new(name = 'Subdivision', type = 'SUBSURF')
+                dec_mod = new_obj.modifiers.new(name = 'Decimate', type = 'DECIMATE')
+                dec_mod.decimate_type = 'DISSOLVE'
+                dec_mod.angle_limit = 0.0349066
+                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
+                bpy.ops.mesh.select_all(action='SELECT')
+                bpy.ops.transform.skin_resize(value=(0.25, 0.25, 0.25), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
+                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+                new_obj_name = old_obj_name + "_stroke"
+                existing_stroke_mesh = ""
+                try:
+                    existing_stroke_mesh = bpy.data.objects[new_obj_name]
+                except:
+                    pass
+                if existing_stroke_mesh:
+                    bpy.ops.object.select_all(action='DESELECT')
+                    existing_stroke_mesh.select_set(state=True)
+                    new_obj.select_set(state=True)
+                    bpy.context.view_layer.objects.active = existing_stroke_mesh
+                    bpy.ops.object.join()
+                    new_obj = bpy.context.selected_objects[0]
+                else:
+                    new_obj.name = new_obj_name
+                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+                for mod in new_obj.modifiers:
+                    mod_name = mod.name
+                    if 'Skin' in mod_name:
+                        bpy.ops.object.skin_root_mark()
+                # bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+                # bpy.ops.object.select_all(action='DESELECT')
+                # old_obj.select_set(state=True)
+                # bpy.context.view_layer.objects.active = old_obj
+                # bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+                # bpy.context.tool_settings.mesh_select_mode = sel_mode
+                
+        return {'FINISHED'}
+
+
+class OBJECT_OT_stroke_selected(Operator, AddObjectHelper):
+    """Stroke Selected"""
+    bl_idname = "mesh.stroke_selected"
+    bl_label = "Stroke Selected"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        stroke_selected(self, context)
+        return {'FINISHED'}
+
+
 class OBJECT_OT_add_random_object(Operator, AddObjectHelper):
     """Create Random Object"""
     bl_idname = "mesh.add_random_object"
@@ -186,9 +291,39 @@ class OBJECT_OT_add_random_object(Operator, AddObjectHelper):
 
     def execute(self, context):
         selected_objects = bpy.context.selected_objects
+        s_objects = []
+        is_multikill = ""
+
         old_bounds = ["-1", "-1", "-1", "-1", "1", "1", "1", "1" ]
         if selected_objects:
-            for obj in selected_objects:
+            if len(selected_objects) == 1:
+                is_multikill = False
+                s_objects.append(selected_objects[0])
+            else:
+                is_multikill = True
+                active_collection = bpy.context.collection
+                active_collection_name = active_collection.name
+                active_collection_parent_collection = get_parent_collection(active_collection)
+                active_collection_parent_collection_name = active_collection_parent_collection.name 
+                col_name = selected_objects[0].name
+                count = 1 
+                collection_instances = []
+
+                col =  bpy.data.collections.new(col_name)
+                active_collection.children.link(col)
+                bpy.data.collections[col_name].objects.link(selected_objects[0])
+                try:
+                    bpy.data.collections[active_collection_name].objects.unlink(selected_objects[0])
+                except:
+                    pass
+
+                    
+                for obj in selected_objects:
+                    if obj.name is not selected_objects[0].name:
+                        s_objects.append(obj)
+
+            
+            for obj in s_objects:
                 bpy.ops.view3d.snap_cursor_to_selected()
                 bpy.context.scene.cursor.rotation_euler = obj.rotation_euler
                 # old_bound_box_corners_in_world_space = [obj.matrix_world @ Vector(corner) for corner in obj.bound_box]
@@ -205,7 +340,34 @@ class OBJECT_OT_add_random_object(Operator, AddObjectHelper):
                 bpy.data.objects.remove(bpy.data.objects[obj.name], do_unlink=True)
                 empty_trash(self, context)
 
-        object_commands = [ "bpy.ops.mesh.primitive_cube_add(", "bpy.ops.mesh.primitive_cube_add(", "bpy.ops.mesh.primitive_cube_add(", "bpy.ops.mesh.primitive_cube_add(", "bpy.ops.mesh.primitive_cube_add(", "bpy.ops.mesh.primitive_cone_add(", "bpy.ops.mesh.primitive_cross_joint_add(", "bpy.ops.mesh.primitive_cylinder_add(", "bpy.ops.mesh.primitive_diamond_add(", "bpy.ops.mesh.primitive_elbow_joint_add(", "bpy.ops.mesh.primitive_gear(", "bpy.ops.mesh.primitive_gem_add(",  "bpy.ops.mesh.primitive_ico_sphere_add(", "bpy.ops.mesh.primitive_monkey_add(",  "bpy.ops.mesh.primitive_plane_add(", "bpy.ops.mesh.primitive_round_cube_add(", "bpy.ops.mesh.primitive_star_add(", "bpy.ops.mesh.primitive_steppyramid_add(", "bpy.ops.mesh.primitive_supertoroid_add(", "bpy.ops.mesh.primitive_teapot_add(", "bpy.ops.mesh.primitive_tee_joint_add(", "bpy.ops.mesh.primitive_torus_add(", "bpy.ops.mesh.primitive_torusknot_add(",  "bpy.ops.mesh.primitive_uv_sphere_add(", "bpy.ops.mesh.primitive_wye_joint_add(" ]
+                if is_multikill:
+                    col_i_name = col.name + "_inst"
+                    bpy.ops.object.collection_instance_add(collection=col.name, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+                    i_col = bpy.context.selected_objects[0]
+                    i_col.name = col_i_name
+                    collection_instances.append(i_col)
+                
+
+
+            if is_multikill:
+                count = 1   
+                for icol in collection_instances:
+                    if 'Master Collection' in active_collection_parent_collection_name:
+                        scene = bpy.context.scene
+                        scene.collection.objects.link(icol)
+                    else:
+                        bpy.data.collections[active_collection_parent_collection_name].objects.link(icol)
+                    bpy.ops.object.select_all(action='DESELECT')
+                    icol.select_set(state=True)
+                    control_object.select_set(state=True)
+                    bpy.context.view_layer.objects.active = control_object
+                    bpy.ops.object.parent_set()
+
+            # bpy.ops.object.select_all(action='DESELECT')
+            # selected_objects[0].select_set(state=True)
+            # bpy.context.view_layer.objects.active = selected_objects[0]
+
+        object_commands = [ "bpy.ops.mesh.primitive_cube_add(", "bpy.ops.mesh.primitive_cube_add(", "bpy.ops.mesh.primitive_cube_add(", "bpy.ops.mesh.primitive_cone_add(", "bpy.ops.mesh.primitive_cross_joint_add(", "bpy.ops.mesh.primitive_cylinder_add(", "bpy.ops.mesh.primitive_diamond_add(", "bpy.ops.mesh.primitive_gear(", "bpy.ops.mesh.primitive_ico_sphere_add(", "bpy.ops.mesh.primitive_monkey_add(",  "bpy.ops.mesh.primitive_round_cube_add(", "bpy.ops.mesh.primitive_star_add(", "bpy.ops.mesh.primitive_steppyramid_add(", "bpy.ops.mesh.primitive_supertoroid_add(", "bpy.ops.mesh.primitive_teapot_add(", "bpy.ops.mesh.primitive_torusknot_add(",  "bpy.ops.mesh.primitive_uv_sphere_add("  ]
         i = len(object_commands) -1
         if i > 0:
             random_int = random.randint(0, i)
@@ -243,8 +405,8 @@ class OBJECT_OT_add_random_object(Operator, AddObjectHelper):
         bpy.ops.mesh.normals_make_consistent(inside=False)
 
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-        bpy.ops.object.shade_smooth()
-        new_random_object.data.use_auto_smooth = True
+        # bpy.ops.object.shade_smooth()
+        # new_random_object.data.use_auto_smooth = True
         # new_random_object.data.auto_smooth_angle = 0.785398 #45
         new_random_object.data.auto_smooth_angle = 1.15192 #66
 
@@ -376,9 +538,18 @@ def add_random_object(self, context):
     layout.separator()
     layout.operator(
         OBJECT_OT_add_random_object.bl_idname,
-        text="Random Object",
+        text="Cube Killer",
         icon='LIGHTPROBE_CUBEMAP')
     layout.separator()
+
+def add_to_face_menu(self, context):
+    layout = self.layout
+    layout.separator()
+    layout.operator(
+        OBJECT_OT_stroke_selected.bl_idname,
+        text="Stroke Selected")
+    layout.separator()
+
 
 
 # New Add Item Menu
@@ -394,15 +565,22 @@ def register():
     bpy.utils.register_class(OBJECT_OT_add_wire_skin)
     bpy.utils.register_class(OBJECT_OT_add_wire_skin_mirrored)
     bpy.utils.register_class(OBJECT_OT_add_random_object)
+    bpy.utils.register_class(OBJECT_OT_stroke_selected)
+    
     bpy.utils.register_manual_map(add_object_manual_map)
     bpy.types.VIEW3D_MT_mesh_add.append(add_object_button)
     bpy.types.VIEW3D_MT_add.prepend(add_random_object)
+    bpy.types.VIEW3D_MT_edit_mesh_context_menu.append(add_to_face_menu)
+
 def unregister():
     bpy.utils.unregister_class(OBJECT_OT_add_wire_skin)
     bpy.utils.unregister_class(OBJECT_OT_add_wire_skin_mirrored)
     bpy.utils.unregister_class(OBJECT_OT_add_random_object)
+    bpy.utils.unregister_class(OBJECT_OT_stroke_selected)
     bpy.utils.unregister_manual_map(add_object_manual_map)
     bpy.types.VIEW3D_MT_mesh_add.remove(add_object_button)
     bpy.types.VIEW3D_MT_add.remove(add_random_object)
+    bpy.types.VIEW3D_MT_edit_mesh_context_menu.remove(add_to_face_menu)
+
 if __name__ == "__main__":
     register()

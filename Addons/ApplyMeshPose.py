@@ -463,7 +463,7 @@ def unregister():
 
 
     if __name__ != "__main__":
-        bpy.types.VIEW3D_MT_pose_appy.remove(menu_draw)
+        bpy.types.VIEW3D_MT_pose_apply.remove(menu_draw_apply)
 
 if __name__ == "__main__":
     register()

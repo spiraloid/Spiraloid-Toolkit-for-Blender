@@ -146,14 +146,19 @@ def main(self, context):
             for obj in objects:
                     cloth_mod = obj.modifiers.new(name = 'Cloth', type = 'CLOTH')
                     cloth_mod.settings.use_pressure = True
-                    cloth_mod.settings.uniform_pressure_force = 10
+                    cloth_mod.settings.uniform_pressure_force = 1.92
+                    cloth_mod.settings.tension_stiffness = 3
+                    cloth_mod.settings.compression_stiffness = 3
+                    cloth_mod.settings.shear_stiffness = 3
+                    cloth_mod.settings.bending_stiffness = 0.1
                     cloth_mod.settings.use_sewing_springs = True
                     cloth_mod.settings.sewing_force_max = 5
                     cloth_mod.settings.fluid_density = 0.25
-                    cloth_mod.settings.effector_weights.gravity = 0
+                    cloth_mod.settings.effector_weights.gravity = 1
+                    cloth_mod.point_cache.frame_start = bpy.context.scene.frame_start
+                    cloth_mod.point_cache.frame_end = bpy.context.scene.frame_end
 
-
-
+                    bpy.context.scene.frame_end = 500 
 
         return{'FINISHED'}
 

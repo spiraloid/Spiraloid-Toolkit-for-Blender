@@ -15,6 +15,67 @@ currentSubdLevel = 0
 previous_mode = 'EDIT'
 previous_selection = ""
 
+
+def operator_exists(idname):
+    names = idname.split(".")
+    print(names)
+    a = bpy.ops
+    for prop in names:
+        a = getattr(a, prop)
+    try:
+        name = a.__repr__()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+
+def automap(mesh_objects):
+    # UV map target_object if no UV's present
+    for mesh_object in mesh_objects:
+        if mesh_object.type == 'MESH':
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+            bpy.ops.object.select_all(action='DESELECT')
+            mesh_object.select_set(state=True)
+            bpy.context.view_layer.objects.active = mesh_object
+            if not len( mesh_object.data.uv_layers ):
+                bpy.ops.mesh.uv_texture_add()
+                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+                bpy.ops.mesh.select_all(action='SELECT')
+                bpy.ops.uv.cube_project(cube_size=10, scale_to_bounds=True)
+
+    #select all meshes and pack into one UV set together
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+    bpy.ops.object.select_all(action='DESELECT')
+    for mesh_object in mesh_objects:
+        mesh_object.select_set(state=True)
+        bpy.context.view_layer.objects.active = mesh_object
+
+    bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+    for area in bpy.context.screen.areas:
+            if area.type == 'IMAGE_EDITOR':
+                area.ui_type = 'UV'
+                for region in area.regions:
+                    if region.type == 'WINDOW':
+                        override = {'area': area, 'region': region, 'edit_object': bpy.context.edit_object}
+                        bpy.context.scene.tool_settings.use_uv_select_sync = True
+                        bpy.ops.uv.select_all(action='SELECT')
+                        bpy.ops.mesh.select_all(action='SELECT')
+                        if operator_exists("uvpackmaster2"):
+                            bpy.context.scene.uvp2_props.pack_to_others = False
+                            bpy.context.scene.uvp2_props.margin = 0.01
+                            bpy.context.scene.uvp2_props.rot_step = 5
+                            bpy.ops.uvpackmaster2.uv_measure_area()
+                            bpy.ops.uv.average_islands_scale()
+                            bpy.ops.uv.pack_islands(override , margin=0.005)
+                            bpy.ops.uvpackmaster2.uv_pack()
+                        else:
+                            bpy.ops.uv.average_islands_scale(override)
+                            bpy.ops.uv.pack_islands(override , margin=0.005)
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+    return {'FINISHED'} 
+
+
 def main_decrease(context):
     is_max_subd = False
 
@@ -212,281 +273,6 @@ def main_subdivide(self, context):
 
 
 
-# def toggle_workmode(self, context):
-#     global isToggleSubd
-#     global currentSubdLevel
-#     global previous_mode
-#     global previous_selection
-#     global isWireframe
-#     my_areas = bpy.context.workspace.screens[0].areas
-#     my_shading = 'WIREFRAME'  # 'WIREFRAME' 'SOLID' 'MATERIAL' 'RENDERED'
-#     bpy.context.space_data.overlay.show_overlays = True
-#     bpy.context.space_data.overlay.show_floor = True
-#     bpy.context.space_data.overlay.show_axis_x = True
-#     bpy.context.space_data.overlay.show_axis_y = True
-#     bpy.context.space_data.overlay.show_outline_selected = True
-#     bpy.context.space_data.overlay.show_cursor = True
-#     bpy.context.space_data.overlay.show_extras = True
-#     bpy.context.space_data.overlay.show_relationship_lines = True
-#     bpy.context.space_data.overlay.show_bones = True
-#     bpy.context.space_data.overlay.show_motion_paths = True
-#     bpy.context.space_data.overlay.show_object_origins = True
-#     bpy.context.space_data.overlay.show_annotation = True
-#     bpy.context.space_data.overlay.show_text = True
-#     bpy.context.space_data.overlay.show_text = True
-
-
-#     for obj in bpy.context.scene.objects:
-#         # if obj.visible_get and obj.type == 'MESH':
-#         if obj.visible_get :
-            
-#             # for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
-#             #     mod_max_level = mod.render_levels
-#             #     if isToggleSubd:
-#             #         currentSubdLevel = mod.levels
-#             #         mod.levels = mod_max_level
-#             #         mod.sculpt_levels = mod_max_level
-#             #     if not isToggleSubd:
-#             #         mod.levels = currentSubdLevel
-#             #         mod.sculpt_levels = currentSubdLevel
-#             #         if currentSubdLevel != 0:
-#             #             bpy.context.space_data.overlay.show_wireframes = False
-
-
-#             # for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
-#             #     mod_max_level = mod.render_levels
-#             #     if isToggleSubd:
-#             #         currentSubdLevel = mod.levels
-#             #         mod.levels = mod_max_level
-#             #     if not isToggleSubd:
-#             #         mod.levels = currentSubdLevel
-#             #         if currentSubdLevel != 0:
-#             #             bpy.context.space_data.overlay.show_wireframes = False
-#             is_toon_shaded = obj.get("is_toon_shaded")
-#             if is_toon_shaded:
-#                 for mod in obj.modifiers:
-#                     if 'InkThickness' in mod.name:
-#                         obj.modifiers["InkThickness"].show_viewport = True
-#                     if 'WhiteOutline' in mod.name:
-#                         obj.modifiers["WhiteOutline"].show_viewport = True
-#                     if 'BlackOutline' in mod.name:
-#                         obj.modifiers["BlackOutline"].show_viewport = True
-
-#             if isToggleSubd:
-#                 previous_selection = bpy.context.selected_objects
-
-#                 bpy.context.space_data.overlay.show_overlays = True
-#                 bpy.context.space_data.overlay.show_floor = False
-#                 bpy.context.space_data.overlay.show_axis_x = False
-#                 bpy.context.space_data.overlay.show_axis_y = False
-#                 bpy.context.space_data.overlay.show_cursor = False
-#                 bpy.context.space_data.overlay.show_relationship_lines = False
-#                 bpy.context.space_data.overlay.show_bones = False
-#                 bpy.context.space_data.overlay.show_motion_paths = False
-#                 bpy.context.space_data.overlay.show_object_origins = False
-#                 bpy.context.space_data.overlay.show_annotation = False
-#                 bpy.context.space_data.overlay.show_text = False
-#                 bpy.context.space_data.overlay.show_text = False
-#                 bpy.context.space_data.overlay.show_outline_selected = False
-#                 bpy.context.space_data.overlay.show_extras = False
-#                 bpy.context.space_data.show_gizmo = False
-
-#                 selected_objects = bpy.context.selected_objects
-#                 if not selected_objects:
-#                     bpy.context.space_data.overlay.show_outline_selected = True
-
-
-#                 bpy.context.space_data.overlay.wireframe_threshold = 1
-#                 if bpy.context.space_data.overlay.show_wireframes:
-#                     isWireframe = True
-#                     bpy.context.space_data.overlay.show_outline_selected = True
-#                     bpy.context.space_data.overlay.show_extras = True
-#                     # bpy.context.space_data.overlay.show_cursor = True
-#                 else:
-#                     isWireframe = False
-#                     # bpy.context.space_data.overlay.show_outline_selected = False
-#                     # bpy.context.space_data.overlay.show_extras = False
-
-#                 # bpy.context.space_data.overlay.show_wireframes = False
-
-#                 if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
-#                     # bpy.context.scene.eevee.use_gtao = True
-#                     # bpy.context.scene.eevee.use_bloom = True
-#                     # bpy.context.scene.eevee.use_ssr = True
-#                     my_shading =  'MATERIAL'
-#                     bpy.context.space_data.shading.use_scene_world_render = False
-
-#                     lights = [o for o in bpy.context.scene.objects if o.type == 'LIGHT']
-#                     if (lights):
-#                         bpy.context.space_data.shading.use_scene_lights = True
-#                         bpy.context.space_data.shading.use_scene_world = True
-#                     else:
-#                         bpy.context.space_data.shading.use_scene_lights = False
-#                         bpy.context.space_data.shading.use_scene_world = False
-
-#                     if bpy.context.scene.world:
-#                         bpy.context.space_data.shading.use_scene_world = True
-
-
-
-
-
-#                 if bpy.context.scene.render.engine == 'CYCLES':
-#                     my_shading =  'RENDERED'
-
-
-#                     lights = [o for o in bpy.context.scene.objects if o.type == 'LIGHT']
-#                     # if (lights):
-#                     #     bpy.context.space_data.shading.use_scene_lights_render = True
-#                     # else:
-#                     #     bpy.context.space_data.shading.use_scene_lights = False
-#                     #     bpy.context.space_data.shading.studiolight_intensity = 1
-
-
-#                     if bpy.context.scene.world is None:
-#                         if (lights):
-#                             bpy.context.space_data.shading.use_scene_world_render = False
-#                             bpy.context.space_data.shading.studiolight_intensity = 0.01
-#                         else:
-#                             bpy.context.space_data.shading.use_scene_world_render = False
-#                             bpy.context.space_data.shading.studiolight_intensity = 1
-#                     else:
-#                         bpy.context.space_data.shading.use_scene_world_render = True
-#                         if (lights):
-#                             bpy.context.space_data.shading.use_scene_lights_render = True
-
-
-
-#                 if bpy.context.mode == 'OBJECT':
-#                     previous_mode =  'OBJECT'
-#                 if bpy.context.mode == 'EDIT_MESH':
-#                     previous_mode =  'EDIT'
-#                     bpy.context.space_data.overlay.show_overlays = False
-#                 if bpy.context.mode == 'POSE':
-#                     previous_mode =  'POSE'
-#                     bpy.context.space_data.overlay.show_bones = True
-#                 if bpy.context.mode == 'SCULPT':
-#                     previous_mode =  'SCULPT'
-#                 if bpy.context.mode == 'PAINT_VERTEX':
-#                     previous_mode =  'VERTEX_PAINT'
-#                 if bpy.context.mode == 'WEIGHT_PAINT':
-#                     previous_mode =  'WEIGHT_PAINT'
-#                 if bpy.context.mode == 'TEXTURE_PAINT':
-#                     previous_mode =  'TEXTURE_PAINT'
-
-
-#                 # bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-
-
-                
-#             if not isToggleSubd:    
-#                 bpy.context.space_data.overlay.show_overlays = True
-#                 bpy.context.space_data.overlay.show_cursor = True
-#                 bpy.context.space_data.overlay.show_floor = True
-#                 bpy.context.space_data.overlay.show_axis_x = True
-#                 bpy.context.space_data.overlay.show_axis_y = True
-#                 bpy.context.space_data.overlay.show_extras = True
-#                 bpy.context.space_data.overlay.show_relationship_lines = True
-#                 bpy.context.space_data.overlay.show_bones = True
-#                 bpy.context.space_data.overlay.show_motion_paths = True
-#                 bpy.context.space_data.overlay.show_object_origins = True
-#                 bpy.context.space_data.overlay.show_annotation = True
-#                 bpy.context.space_data.overlay.show_text = True
-#                 bpy.context.space_data.overlay.show_text = True
-#                 bpy.context.space_data.overlay.wireframe_threshold = 1
-#                 bpy.context.space_data.show_gizmo = True
-
-#                 if isWireframe:
-#                     bpy.context.space_data.overlay.show_wireframes = True
-#                 else:
-#                     bpy.context.space_data.overlay.show_wireframes = False
-#                 bpy.context.space_data.shading.color_type = 'RANDOM'
-
-#                 if previous_mode == 'EDIT' or previous_mode == 'OBJECT' or previous_mode == 'POSE':
-#                     my_shading = 'SOLID'
-#                     for ob in bpy.context.scene.objects:
-#                         if ob.type == 'MESH':
-#                             if ob.data.vertex_colors:
-#                                 bpy.context.space_data.shading.color_type = 'VERTEX'
-#                             else:
-#                                 bpy.context.space_data.shading.color_type = 'RANDOM'
-
-#                 is_toon_shaded = obj.get("is_toon_shaded")
-#                 if is_toon_shaded:
-#                     for mod in obj.modifiers:
-#                         if 'InkThickness' in mod.name:
-#                             obj.modifiers["InkThickness"].show_viewport = False
-#                         if 'WhiteOutline' in mod.name:
-#                             obj.modifiers["WhiteOutline"].show_viewport = False
-#                         if 'BlackOutline' in mod.name:
-#                             obj.modifiers["BlackOutline"].show_viewport = False
-                        
-
-#                 if previous_mode == 'EDIT':
-#                     if not len(bpy.context.selected_objects):
-#                         bpy.ops.object.editmode_toggle()
-#                     # else:
-#                     #     for ob in previous_selection :
-#                     #         # if ob.type == 'MESH' : 
-#                     #         ob.select_set(state=True)
-#                     #         bpy.context.view_layer.objects.active = ob
-#                     #     bpy.ops.object.editmode_toggle()
-
-
-
-#                 if previous_mode == 'VERTEX_PAINT':
-#                     my_shading = 'SOLID'
-#                     bpy.context.space_data.shading.light = 'FLAT'
-
-
-#                 if previous_mode == 'SCULPT':
-#                     my_shading =  'SOLID'
-#                     bpy.context.space_data.shading.color_type = 'MATERIAL'
-#                     bpy.context.space_data.overlay.show_floor = False
-#                     bpy.context.space_data.overlay.show_axis_x = False
-#                     bpy.context.space_data.overlay.show_axis_y = False
-#                     bpy.context.space_data.overlay.show_cursor = False
-#                     bpy.context.space_data.overlay.show_relationship_lines = False
-#                     bpy.context.space_data.overlay.show_bones = False
-#                     bpy.context.space_data.overlay.show_motion_paths = False
-#                     bpy.context.space_data.overlay.show_object_origins = False
-#                     bpy.context.space_data.overlay.show_annotation = False
-#                     bpy.context.space_data.overlay.show_text = False
-#                     bpy.context.space_data.overlay.show_text = False
-#                     bpy.context.space_data.overlay.show_outline_selected = False
-#                     bpy.context.space_data.overlay.show_extras = False
-#                     bpy.context.space_data.overlay.show_overlays = True
-#                     bpy.context.space_data.show_gizmo = False
-        
-
-#                 # bpy.ops.object.mode_set(mode=previous_mode, toggle=False)
-
-
-#             scene = bpy.context.scene
-#             # for area in my_areas:
-#             #     for space in area.spaces:
-#             #         if space.type == 'VIEW_3D':
-#             #             space.shading.type = my_shading
-
-#             # set viewport display
-#             for area in  bpy.context.screen.areas:  # iterate through areas in current screen
-#                 if area.type == 'VIEW_3D':
-#                     for space in area.spaces:  # iterate through spaces in current VIEW_3D area
-#                         if space.type == 'VIEW_3D':  # check if space is a 3D view
-#                             # space.shading.type = 'MATERIAL'  # set the viewport shading to material
-#                             space.shading.type = my_shading
-#                             if scene.world is not None:
-#                                 space.shading.use_scene_world = True
-#                                 space.shading.use_scene_lights = True
-
-
-                            
-
-#             for image in bpy.data.images:
-#                 image.reload()
-
-#     isToggleSubd = not isToggleSubd
-#     return {'FINISHED'}
 
 class BR_OT_subdivide_selected(bpy.types.Operator):
     """increase sudvision levels for selected objects and add decimation modifiers"""
@@ -519,24 +305,135 @@ class BR_OT_subd_increase(bpy.types.Operator):
         main_increase(context)
         return {'FINISHED'}
 
-# class BR_OT_subd_toggle(bpy.types.Operator):
-#     """Toggle Workmode"""
-#     bl_idname = "view3d.subd_toggle"
-#     bl_label = "Toggle Workmode"
-#     bl_options = {'REGISTER', 'UNDO'}
+class BR_OT_automesh(bpy.types.Operator):
+    """create a low res voxel object and add shirinkwrap a multires subdivision to it"""
+    bl_idname = "view3d.subd_automesh"
+    bl_label = "Automesh"
+    bl_options = {'REGISTER', 'UNDO'}
 
-#     @classmethod
-#     def poll(cls, context):
-#         return True #context.space_data.type == 'VIEW_3D'
+    def execute(self, context):
+        desired_polycount = 1500
+        previous_mode = ""
+        s = bpy.context.object
+        selected_objects = bpy.context.selected_objects
+        if selected_objects:
+            split_target_polycount = desired_polycount / len(selected_objects)
 
-#     def execute(self, context):
-#         toggle_workmode(self, context)
-#         return {'FINISHED'}
+            if (bpy.context.mode != 'OBJECT'):
+                previous_mode = bpy.context.mode
+                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+            for obj in selected_objects:
+                if obj.visible_get and obj.type == 'MESH':
+                    bpy.ops.object.select_all(action='DESELECT')
+                    obj.select_set(state=True)
+                    bpy.context.view_layer.objects.active = obj
+
+                    
+                    bpy.ops.object.duplicate_move()
+                    for v in bpy.context.window.screen.areas:
+                        if v.type=='VIEW_3D':                
+                            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+                            bpy.ops.mesh.select_all(action='SELECT')
+                            bpy.ops.mesh.separate(type='LOOSE')
+                            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                            # automap(bpy.context.selected_objects)
+                            bpy.ops.object.modifier_apply(modifier="Auto Boolean")
+                            bpy.ops.object.booltool_auto_union()
+
+
+                    automesh = bpy.context.selected_objects[0]
+                    obj_name = obj.name
+                    automesh.name = obj_name + "_automesh"
+                    bpy.ops.object.select_all(action='DESELECT')
+                    automesh.select_set(state=True)
+                    bpy.context.view_layer.objects.active = automesh
+
+                    shapekeys = []
+                    if automesh.data.shape_keys:
+                        shapekeys = [o for o in automesh.data.shape_keys.key_blocks]
+                    if shapekeys:
+                        for key in shapekeys:
+                            bpy.ops.object.shape_key_add(from_mix=True)
+                        for key in automesh.data.shape_keys.key_blocks:
+                            automesh.shape_key_remove(key)        
+                    bpy.ops.object.convert(target='MESH')
+
+                    # mod = automesh.modifiers.new(name = 'Remesh', type = 'REMESH')
+                    # mod.voxel_size = 0.15
+                    # mod.adaptivity = 0.015
+                    # mod.use_smooth_shade = True
+                    # bpy.ops.object.modifier_apply(modifier=mod.name)
+
+                    if operator_exists("qremesher"):
+                        print("---------------------")
+                        bpy.ops.qremesher.reset_scene_prefs()
+                        bpy.context.scene.qremesher.target_count = 1000
+                        bpy.context.scene.qremesher.adaptive_size = 50
+                        bpy.context.scene.qremesher.adapt_quad_count = True
+                        bpy.context.scene.qremesher.use_materials = True
+                        bpy.context.scene.qremesher.autodetect_hard_edges = True
+                        bpy.ops.qremesher.remesh()
+                    else:
+                        for v in bpy.context.window.screen.areas:
+                            if v.type=='VIEW_3D':                
+                                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+                                bpy.ops.mesh.select_all(action='SELECT')
+
+                                depsgraph2 = bpy.context.evaluated_depsgraph_get()
+                                ob_eval2 = automesh.evaluated_get(depsgraph2)
+                                planar_decim_polycount = len(ob_eval2.data.polygons)
+                                ratio = split_target_polycount / planar_decim_polycount 
+
+                                bpy.ops.mesh.decimate(ratio=ratio)
+                                bpy.ops.mesh.remove_doubles(threshold=0.5)
+                                bpy.ops.mesh.tris_convert_to_quads(face_threshold=3.14159, shape_threshold=3.13985, seam=False, sharp=False)
+                                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+                    mod = automesh.modifiers.new(name = 'Multires', type = 'MULTIRES')
+                    mod.quality = 6
+                    mod.uv_smooth = 'NONE'
+                    mod.use_creases = False
+                    level = 5
+                    if level > 0:
+                        for i in range(0, level):
+                            shrink_mod = automesh.modifiers.new(name = 'Shrinkwrap', type = 'SHRINKWRAP')
+                            shrink_mod.wrap_method = 'PROJECT'
+                            shrink_mod.use_negative_direction = True
+                            shrink_mod.use_positive_direction = True
+                            shrink_mod.project_limit = .5
+                            shrink_mod.target = bpy.data.objects[obj_name]
+                            bpy.ops.object.multires_subdivide(modifier="Multires", mode='CATMULL_CLARK')
+                            bpy.ops.object.modifier_apply(modifier=shrink_mod.name)
+                    mod.sculpt_levels = 5
+
+
+
+                    # raise KeyboardInterrupt()
+
+
+                    bpy.ops.object.select_all(action='DESELECT')
+                    obj.select_set(state=True)
+                    bpy.context.view_layer.objects.active = obj
+                    bpy.ops.object.delete()
+
+                    bpy.ops.object.select_all(action='DESELECT')
+                    automesh.select_set(state=True)
+                    bpy.context.view_layer.objects.active = automesh
+                    automesh.name = obj_name
+
+
+            if previous_mode:
+                bpy.ops.object.mode_set(mode= previous_mode, toggle=False)
+
+
+        return {'FINISHED'}
 
 
 def menu_draw(self, context):
     layout = self.layout
     layout.separator()
+    self.layout.operator(BR_OT_automesh.bl_idname)
     self.layout.operator(BR_OT_subdivide_selected.bl_idname)
     self.layout.operator(BR_OT_subd_increase.bl_idname)
     self.layout.operator(BR_OT_subd_decrease.bl_idname)
@@ -544,6 +441,7 @@ def menu_draw(self, context):
 
 
 def register():
+    bpy.utils.register_class(BR_OT_automesh)
     bpy.utils.register_class(BR_OT_subdivide_selected)
     bpy.utils.register_class(BR_OT_subd_increase)
     bpy.utils.register_class(BR_OT_subd_decrease)
@@ -551,6 +449,7 @@ def register():
     bpy.types.VIEW3D_MT_view.append(menu_draw)  
 
 def unregister():
+    bpy.utils.unregister_class(BR_OT_automesh)
     bpy.utils.unregister_class(BR_OT_subdivide_selected)
     bpy.utils.unregister_class(BR_OT_subd_increase)
     bpy.utils.unregister_class(BR_OT_subd_decrease)

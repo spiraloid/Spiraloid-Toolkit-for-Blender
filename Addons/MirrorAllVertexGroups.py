@@ -183,23 +183,24 @@ class BR_OT_mirror_all_vertex_groups(bpy.types.Operator):
     bl_idname = "object.mirror_all_vertexgroups"
     bl_label = "Mirror All Vertex Groups"
     bl_options = {'REGISTER', 'UNDO'}
-    action = bpy.props.StringProperty()
+
+    action : bpy.props.StringProperty()
  
-    enum_Axis = EnumProperty(name="On Which Axis?", default='X',
+    enum_Axis : EnumProperty(name="On Which Axis?", default='X',
         items = [('Z', 'Z axis', 'Z'),('Y', 'Y axis', 'Y'),('X', 'X axis', 'X')])
 
-    enum_Way = EnumProperty(name="Which Way?", default='normal',
+    enum_Way : EnumProperty(name="Which Way?", default='normal',
         items = [('reverse', '(-) to (+)', 'reverse'),('normal', '(+) to (-)', 'normal')])
 
-    enum_Pattern = EnumProperty(name="Which Pattern?", default='3',
+    enum_Pattern : EnumProperty(name="Which Pattern?", default='3',
         items = [('4', '_l and _r', '4'),('3', '_L and _R', '3'),('2', '.l and .r', '2'),('1', '.L and .R', '1')])
 
-    special_pattern = BoolProperty(name="or... Use my own patter")      
+    special_pattern : BoolProperty(name="or... Use my own patter")      
         
-    left_side = StringProperty(name="My own Patter, Left Side",default=".Left")
-    right_side = StringProperty(name="My own Patter, Right Side",default=".Right")
+    left_side : StringProperty(name="My own Patter, Left Side",default=".Left")
+    right_side : StringProperty(name="My own Patter, Right Side",default=".Right")
             
-    tolerance = FloatProperty(name="Tolerance", min=0, max=100, precision=3, default=0.001)
+    tolerance : FloatProperty(name="Tolerance", min=0, max=100, precision=3, default=0.001)
 
  
     def execute(self, context):

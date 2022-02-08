@@ -2758,10 +2758,6 @@ class SPIRALOID_MT_Menu(bpy.types.Menu):
 
         layout.menu(SPIRALOID_MT_SubMenuHelp.bl_idname, icon="QUESTION")
         layout.separator()
-        layout.operator("wm.spiraloid_cycle_visible_next")
-        layout.operator("wm.spiraloid_cycle_visible_previous")
-        layout.separator()
-
         layout.operator("wm.spiraloid_empty_trash")
 
 
@@ -2786,6 +2782,9 @@ class SPIRALOID_MT_SubMenuUtilities(bpy.types.Menu):
         layout.operator("view3d.spiraloid_automesh")
         layout.operator("view3d.spiraloid_uvmap")
         layout.operator("view3d.spiraloid_uvmap_quadrants")
+        layout.separator()
+        layout.operator("wm.spiraloid_cycle_visible_next")
+        layout.operator("wm.spiraloid_cycle_visible_previous")
         layout.separator()
         layout.operator("view3d.spiraloid_vertex_color_to_texture")
         layout.operator("view3d.spiraloid_texture_to_vertex_color")

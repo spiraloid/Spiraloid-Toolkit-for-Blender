@@ -2,7 +2,7 @@
 [Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
 
 
-READ ME:  Spiraloid Blender 2.93 setup
+READ ME:  Spiraloid Blender 3.1 setup
 
 misc Blender utilities
 
@@ -135,11 +135,16 @@ OBJECT mode
 w is the tweek tool.  I leave this tool on for everything and use the GRS shortcuts instead of the beginner gizmos.
 ctrl+e move origin to cursor
 f4 apply all transforms.
+alt+D addes a subdivide modifier and two decimat modifiers to the selected objects
+D and Shift D for up and down subdivs, if at the max is hit, the decimation modifiers are turned on/off
+M will toggle all the modifiers on or off for the visible objects.
+shift + right/left arrow will cycle through isolating the visible selected object
+
 
 EDIT Mode
-E edges
-F faces
-V vertices
+E toggle edit mode.
+double click toggle edit mode
+ctrl+enter exit edit mode (handy for lettering)
 
 shift+E Extrude edges/vertices/faces
 alt+E selects edge ring
@@ -167,8 +172,9 @@ SCULPT mode
 ctrl+right sets voxel remesh grid size
 ctrl+r sets remeshes
 ctrl+alt+r uses remeshit from exoside
-
-
+right drag horizontal adjusts brush size.
+right drag vertical adjusts brush opacity.
+if you have Quad remesher installed, alt+shift+D will automesh the current model, unwrap and shrink wrap the details onto a multires
 
 
 ---

@@ -6,7 +6,7 @@ READ ME:  Spiraloid Blender 2.93 setup
 
 misc Blender utilities
 
-Unless stated otherwise, many of these scripts and addons are a collaboration of others from the blender open source community. I am posting the python scripts here because as I have updated or modified the code to work with blender 2.82 and suit my own workflows. No warranty or support should be implied. I am merely standing on the shoulders of others.
+Unless stated otherwise, many of these scripts and addons are a collaboration of others from the blender open source community. I am posting the python scripts here because as I have updated or modified the code to work with blender 3.1 and suit my own workflows. No warranty or support should be implied. I am merely standing on the shoulders of others.
 I try to reference the original authors and link to forum posts or webpages as I can in the history.
 Any concerns, feel free to contact me and I can adjust. Just want to share as I get with other awesome blender users.
 
@@ -18,22 +18,26 @@ Installation:
 
 WARNING!!!:  Blender users may wish to backup your current configuration before installing in case something goes wrong you can undo.  For example on a Mac,  creating a compressed zip archive of this folder:
 
-~/Library/Application Support/Blender/2.93
+~/Library/Application Support/Blender/3.1
 
 (or on windows 10)
 
-%APPDATA%\Roaming\Blender Foundation\Blender\2.93
+%APPDATA%\Roaming\Blender Foundation\Blender\3.1
 
  is a good idea.  
 (This is where blender stores all your preference data)
 
 Next
 
-Install blender 2.93 (if you have not already done so)
+Install blender 3.1 (if you have not already done so)
 
-https://www.blender.org/download/Blender2.93/blender-2.93.1-windows-x64.msi/
+https://www.blender.org/download/releases/3-1/
 
 Open Blender with admin priviledges and edit  “edit > User Preferences”.
+
+if you have installed the toolkit on an earlier version of blender, just quite blender, open your %appdata% folder and drag the .py addons from the downloaded zip archive into the scripts/addons folder and overwrite all the old addons, restart blender.
+
+if you are installing for the first time:
 Under the addon tab, use button at Bottom that says “install add on from file”
 
 Browse to this folder where this README.txt file is and every *.py file in the addon folder as you would normally.
@@ -62,7 +66,7 @@ This is the fast preview playback script I wrote.  Hit spacebar to stop playing 
 
 CONGRATS!  Everything is installed. 
 
-checkout the walkthrough video and look at the hotkey overlay.    
+checkout this old walkthrough video and look at the hotkey overlay.    
 
 
 [Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
@@ -114,7 +118,10 @@ Shift Right Arrow goes to next frame
 Shift Left Arrow goes to previous frame
 
 Ctrl Return does a playblast of whatever window is under your mouse.
+Ctrl Numpad 0 nukes the selected objects materials and creates a new medium gray material.
 
+in the add object menu (shift+a)  there is now a "Cube Killer" menu item.
+this will add a random primitve to the scene.  if something is selected, it will DESTROY the selected object and make the newe primitive fit the size of the destroyed objects.  this is so that you can bind it to a hotkey (like insert) and hit it over and over again, cycling through random primitives.  if no object is selected, the primitive is created at the cursor.  Death to the default Cube!
 
 WEIGHT PAINT Mode
 Ctrl shift Drag will drag a radial gradient of the current weight, tool and strength.

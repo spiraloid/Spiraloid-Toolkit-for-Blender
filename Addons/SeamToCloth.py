@@ -52,7 +52,7 @@ def main(self, context):
 
         bpy.ops.mesh.select_all(action='SELECT') 
         bpy.ops.uv.select_all(action='SELECT')
-        bmesh.update_edit_mesh(me, False)    
+        bmesh.update_edit_mesh(me)    
 
 
 
@@ -124,7 +124,7 @@ def main(self, context):
                     pos += average_normal * 0.3 #arbitrary - should probably depend on object scale?
                     vert.co = pos;
             
-            bmesh.update_edit_mesh(me, False)
+            bmesh.update_edit_mesh(me)
             
             #resize to match previous area
             
@@ -136,7 +136,7 @@ def main(self, context):
             
         # done
             
-        bmesh.update_edit_mesh(me, False)
+        bmesh.update_edit_mesh(me)
         bpy.ops.mesh.select_all(action='SELECT') 
 
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)

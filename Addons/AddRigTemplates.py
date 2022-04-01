@@ -291,6 +291,10 @@ class OBJECT_OT_add_random_object(Operator, AddObjectHelper):
 
     def execute(self, context):
         selected_objects = bpy.context.selected_objects
+        scene_collection = bpy.context.view_layer.layer_collection
+        scene_collection_name = scene_collection.name
+        active_collection = bpy.context.collection
+        active_collection_name = active_collection.name
         s_objects = []
         is_multikill = ""
 
@@ -301,29 +305,35 @@ class OBJECT_OT_add_random_object(Operator, AddObjectHelper):
                 s_objects.append(selected_objects[0])
             else:
                 is_multikill = True
-                active_collection = bpy.context.collection
-                active_collection_name = active_collection.name
-                active_collection_parent_collection = get_parent_collection(active_collection)
-                active_collection_parent_collection_name = active_collection_parent_collection.name 
-                col_name = selected_objects[0].name
-                count = 1 
-                collection_instances = []
+                for obj in selected_objects:
+                    if scene_collection_name is not active_collection_name:
+                        active_collection_parent_collection = get_parent_collection(active_collection)
+                        if active_collection_parent_collection:
+                            active_collection_parent_collection_name = active_collection_parent_collection.name
+                        else:
+                            active_collection_parent_collection_name = scene_collection_name
+                    else:
+                        active_collection_parent_collection_name = scene_collection_name
 
-                col =  bpy.data.collections.new(col_name)
-                active_collection.children.link(col)
-                bpy.data.collections[col_name].objects.link(selected_objects[0])
-                try:
-                    bpy.data.collections[active_collection_name].objects.unlink(selected_objects[0])
-                except:
-                    pass
+                    col_name = obj.name
+
+                    count = 1 
+                    collection_instances = []
+                    col =  bpy.data.collections.new(col_name)
+                    active_collection.children.link(col)
+                    
+                    bpy.data.collections[col_name].objects.link(obj)
+                    try:
+                        bpy.data.collections[active_collection_name].objects.unlink(obj)
+                    except:
+                        pass
 
                     
-                for obj in selected_objects:
                     if obj.name is not selected_objects[0].name:
                         s_objects.append(obj)
 
             
-            for obj in s_objects:
+            for obj in selected_objects:
                 bpy.ops.view3d.snap_cursor_to_selected()
                 bpy.context.scene.cursor.rotation_euler = obj.rotation_euler
                 # old_bound_box_corners_in_world_space = [obj.matrix_world @ Vector(corner) for corner in obj.bound_box]
@@ -352,15 +362,18 @@ class OBJECT_OT_add_random_object(Operator, AddObjectHelper):
             if is_multikill:
                 count = 1   
                 for icol in collection_instances:
-                    if 'Master Collection' in active_collection_parent_collection_name:
+                    if scene_collection_name is active_collection_parent_collection_name:
                         scene = bpy.context.scene
-                        scene.collection.objects.link(icol)
+                        try:
+                            scene.collection.objects.link(icol)
+                        except:
+                            pass
                     else:
                         bpy.data.collections[active_collection_parent_collection_name].objects.link(icol)
                     bpy.ops.object.select_all(action='DESELECT')
                     icol.select_set(state=True)
-                    control_object.select_set(state=True)
-                    bpy.context.view_layer.objects.active = control_object
+                    # control_object.select_set(state=True)
+                    # bpy.context.view_layer.objects.active = control_object
                     bpy.ops.object.parent_set()
 
             # bpy.ops.object.select_all(action='DESELECT')

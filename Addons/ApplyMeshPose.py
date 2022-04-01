@@ -377,11 +377,11 @@ class BR_OT_toggle_child_lock(bpy.types.Operator):
                         poseBone.bone.select = True
                         matrix_final = obj.matrix_world @ poseBone.matrix
                         if not isChildLock:
-                            self.report({'INFO'}, 'Bone Rotations Locked!')
+                            self.report({'INFO'}, 'Inherit Rotation Off!')
                             bpy.ops.wm.context_collection_boolean_set(data_path_iter="selected_pose_bones", data_path_item="bone.use_inherit_rotation", type='DISABLE')
                             poseBone.matrix_world = matrix_final
                         else:
-                            self.report({'INFO'}, 'Bone Rotations Unlocked!')
+                            self.report({'INFO'}, 'Inherit Rotation On!')
                             bpy.ops.wm.context_collection_boolean_set(data_path_iter="selected_pose_bones", data_path_item="bone.use_inherit_rotation", type='ENABLE')
                             poseBone.matrix_world = matrix_final
                 else:
@@ -395,11 +395,11 @@ class BR_OT_toggle_child_lock(bpy.types.Operator):
                         c.bone.select = True
                         matrix_final = obj.matrix_world @ c.matrix
                         if not isChildLock:
-                            self.report({'INFO'}, 'Bone Rotations Locked!')
+                            self.report({'INFO'}, 'Inherit Rotation Off!')
                             bpy.ops.wm.context_collection_boolean_set(data_path_iter="selected_pose_bones", data_path_item="bone.use_inherit_rotation", type='DISABLE')
                             c.matrix_world = matrix_final
                         else:
-                            self.report({'INFO'}, 'Bone Rotations Unlocked!')
+                            self.report({'INFO'}, 'Inherit Rotation On!')
                             bpy.ops.wm.context_collection_boolean_set(data_path_iter="selected_pose_bones", data_path_item="bone.use_inherit_rotation", type='ENABLE')
                             c.matrix_world = matrix_final
 
@@ -434,9 +434,9 @@ class BR_OT_apply_mesh_pose(bpy.types.Operator):
 def menu_draw_apply(self, context):
     self.layout.operator(BR_OT_apply_mesh_pose.bl_idname)
 
-def menu_draw_bone_settings(self, context):
-    self.layout.operator(BR_OT_toggle_bone_inherit.bl_idname)
-    self.layout.operator(BR_OT_toggle_child_lock.bl_idname)
+# def menu_draw_bone_settings(self, context):
+    # self.layout.operator(BR_OT_toggle_bone_inherit.bl_idname)
+    # self.layout.operator(BR_OT_toggle_child_lock.bl_idname)
 
 def menu_draw_bone_context_menu(self, context):
     self.layout.operator(BR_OT_bone_straighten.bl_idname)
@@ -448,7 +448,7 @@ def register():
     bpy.utils.register_class(BR_OT_bone_straighten)
 
     bpy.types.VIEW3D_MT_pose_apply.prepend(menu_draw_apply)
-    bpy.types.VIEW3D_MT_bone_options_toggle.append(menu_draw_bone_settings)
+    # bpy.types.VIEW3D_MT_bone_options_toggle.append(menu_draw_bone_settings)
     bpy.types.VIEW3D_MT_pose_context_menu.append(menu_draw_bone_context_menu)
     
 
@@ -458,7 +458,7 @@ def unregister():
     bpy.utils.unregister_class(BR_OT_toggle_child_lock)
     bpy.utils.unregister_class(BR_OT_bone_straighten)
     bpy.types.VIEW3D_MT_pose_apply.remove(menu_draw_apply)
-    bpy.types.VIEW3D_MT_bone_options_toggle.remove(menu_draw_bone_settings)
+    # bpy.types.VIEW3D_MT_bone_options_toggle.remove(menu_draw_bone_settings)
     bpy.types.VIEW3D_MT_pose_context_menu.remove(menu_draw_bone_context_menu)
 
 

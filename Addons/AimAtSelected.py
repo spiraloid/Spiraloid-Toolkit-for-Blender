@@ -266,14 +266,16 @@ def register():
 def unregister():
     bpy.utils.unregister_class(BR_OT_aim_at_selected)
     bpy.utils.unregister_class(BR_OT_toggle_pivots)
-    bpy.types.VIEW3D_MT_view.remove(menu_draw)  
+    bpy.types.VIEW3D_MT_view.remove(menu_draw_view3d)  
+    bpy.types.VIEW3D_MT_view.remove(menu_draw_uv)  
 
     bpy.utils.unregister_class(BR_OT_surface_snap_activate)
     bpy.utils.unregister_class(BR_OT_surface_snap_deactivate)
 
 
     if __name__ != "__main__":
-        bpy.types.VIEW3D_MT_view.remove(menu_draw)
+        bpy.types.VIEW3D_MT_view.remove(menu_draw_view3d)
+        bpy.types.VIEW3D_MT_view.remove(menu_draw_uv)
 
 if __name__ == "__main__":
     register()

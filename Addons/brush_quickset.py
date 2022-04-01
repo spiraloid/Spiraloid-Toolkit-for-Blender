@@ -87,11 +87,10 @@ vertex_shader = '''
 
 fragment_shader = '''
     in vec4 col;
-
-    void main()
-    {
-        gl_FragColor = col;
-    }
+    out vec4 out_Color;
+    void main(void){
+    out_Color = vec4(col);
+}
 '''
 
 rectpoints = (
@@ -307,17 +306,17 @@ def applyChanges(self):
             
             newval = ch.value + self.radmod
             if 2000 > newval > 0:
-                ch.value = newval
+                ch.value = int(newval)
                 self.radmod_total += self.radmod
         elif self.uni_size and self.mode != 'PARTICLE':
             newval = unify_settings.size + self.radmod
             if 2000 > newval > 0:
-                unify_settings.size = newval
+                unify_settings.size =int(newval)
                 self.radmod_total += self.radmod
         else:
             newval = self.brush.size + self.radmod
             if 2000 > newval > 0:
-                self.brush.size = newval
+                self.brush.size = int(newval)
                 self.radmod_total += self.radmod
 
 def revertChanges(self):
@@ -333,11 +332,11 @@ def revertChanges(self):
     
     if self.doingrad:
         if self.mode == "SCULPT" and have_brush_channels:
-            get_channel(bpy.context, "radius").value -= self.radmod_total
+            get_channel(bpy.context, "radius").value -= int(self.radmod_total)
         elif self.uni_size:
-            unify_settings.size -= self.radmod_total
+            unify_settings.size -= int(self.radmod_total)
         else:
-            self.brush.size -= self.radmod_total
+            self.brush.size -= int(self.radmod_total)
 
 
 

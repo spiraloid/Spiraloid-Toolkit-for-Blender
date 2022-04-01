@@ -79,6 +79,24 @@ def automap(mesh_objects):
 def main_decrease(context):
     is_max_subd = False
 
+    # set any LOD properties on any objects
+    control_object = ""
+    lod_val = ""
+    has_lod_controller = ""
+    lod_property_string = "LOD"
+    objects = bpy.context.scene.objects
+    for cobj in objects:
+        has_lod_controller = cobj.get(lod_property_string)
+        if has_lod_controller is not None:
+            control_object = cobj
+            lod_val = control_object[lod_property_string]
+    if control_object :
+        lod_next_level =  lod_val -1
+        if lod_next_level >= 0:
+            control_object["LOD"] = lod_next_level
+        control_object.hide_render = control_object.hide_render
+
+
     for obj in bpy.context.scene.objects:
         if obj.visible_get and obj.type == 'MESH':
             for mod in [m for m in obj.modifiers if m.type == 'MULTIRES']:
@@ -125,6 +143,24 @@ def main_increase(context):
     is_decimated = False
     is_max_subd = False
 
+    # set any LOD properties on any objects
+    control_object = ""
+    lod_val = ""
+    has_lod_controller = ""
+    lod_property_string = "LOD"
+    objects = bpy.context.scene.objects
+    for cobj in objects:
+        has_lod_controller = cobj.get(lod_property_string)
+        if has_lod_controller is not None:
+            control_object = cobj
+            lod_val = control_object[lod_property_string]
+    if control_object :
+        lod_next_level =  lod_val + 1
+        if lod_next_level <= 2:
+            control_object["LOD"] = lod_next_level
+        control_object.hide_render = control_object.hide_render
+
+
     for obj in bpy.context.scene.objects:
         s_modifier_count = len([m for m in obj.modifiers if m.type == 'SUBSURF'])
         d_modifier_count = len([m for m in obj.modifiers if m.type == 'DECIMATE'])
@@ -164,10 +200,9 @@ def main_increase(context):
                             optimized_mod_next_level = mod.levels
                             mod.levels = optimized_mod_next_level
 
-
-
     # bpy.context.space_data.overlay.show_wireframes = False
     return {'FINISHED'}
+
 
 
 

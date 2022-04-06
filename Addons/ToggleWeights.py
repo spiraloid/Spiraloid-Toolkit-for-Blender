@@ -17,7 +17,7 @@ def main(context):
     global isWeightToggled
     
     if not isWeightToggled:
-        # bpy.context.scene.tool_settings.unified_paint_settings.weight = 0
+        bpy.context.scene.tool_settings.unified_paint_settings.weight = 0
         for b in bpy.data.brushes:
             b_name = b.name
             bpy.data.brushes[b_name].weight = 0
@@ -25,7 +25,7 @@ def main(context):
 
   
     if isWeightToggled:    
-        # bpy.context.scene.tool_settings.unified_paint_settings.weight = 1
+        bpy.context.scene.tool_settings.unified_paint_settings.weight = 1
         for b in bpy.data.brushes:
             b_name = b.name
             bpy.data.brushes[b_name].weight = 1

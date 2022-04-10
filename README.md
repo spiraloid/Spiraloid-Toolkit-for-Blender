@@ -67,115 +67,112 @@ checkout this old walkthrough video and look at the hotkey overlay.
 [Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
 
 
---
+----
+Shortcuts
+----
 
-Here’s a list of basic usage of my essentials..  Wherever possible I tried to leave it the blender defaults so googling blender shortcuts and tutorials will still kinda work.  x to delete.  A to deselect all or Toggle.  GXYZ RXYZ SXYZ alt-S to move on normal etc all still work.
+Wherever possible I tried to leave it the blender defaults so googling blender shortcuts and tutorials will still kinda work.  x to delete.  A to deselect all or Toggle.  GXYZ RXYZ SXYZ alt-S to move on normal etc all still work.
 
-My adjustments to the UI or hotkeys are made for me, so bear in mind I have a lot of habits from using nearly every 3D tool for the last 25 years in major productions.  I understand that the hotkey memorization I do is abnormal, but this kind of configuration helps me switch tools and makes my work faster.
-
-
-
-General 3D Navigation:
-
-Alt LMB. orbits the camera.
-Alt RMB dolly’s the camera
-Alt Shift pans the camera.
-(I know I know.  Trust me Maya users, alt shift drag to pan rocks.  But I did put in alt MMB too for the SGI greybeards who like fighting the mouse wheel)
-
-speaking of
-
-Alt shift mouse Wheel dolly’s the camera in and out for 3D and 2D views.  
-
-Mouse wheel over a 3D view and the view will spin around the aimpoint like a sculptors turntable.  If you have a weighted throw mouse wheel like an MX master25 this is amazing.  
-
-You can set the aimpoint by hitting alt-a 
-(or cmd-a on a Mac).   This is actually an add-on I had to write.  It moves the cursor and aims to that.  Trust me.  Every other way to do this sucked.
-
-` toggle between local global pivot placement.  (its called Accent_Grave in the demo video)
-Alt ` set view to current camera  (its called Accent_Grave in the demo video)
-Alt 1 set view to front
-Alt 2 set view to left
-Alt 3 set view to top
-Alt 4 set view to right
-Alt 5 set view to bottom
-Alt 6 set view to back
-
-Alt mouse wheel scrubs though frames
-Ctrl mouse wheel scrubs though keyframes of selected objects.
-Ctrl mouse wheel expands or shrinks selection in edit mode.
+My adjustments to the UI or hotkeys are made for me, so bear in mind I have a lot of habits from using nearly every 3D tool for the last 25 years in major productions.  I understand that the hotkey memorization I do is abnormal, but this kind of configuration helps me switch tools and makes my work faster.  You likely have your own muscle memory, but this is tuned for mine.
 
 
-Up Arrow goes to first frame
-Down Arrow goes to last frame
-Left Arrow goes to next keyframe for selected object.
-Right Arrow goes to previous keyframe for selected object.
-Shift Right Arrow goes to next frame
-Shift Left Arrow goes to previous frame
+### General 3D Navigation:
 
-Ctrl Return does a playblast of whatever window is under your mouse.
-Ctrl Numpad 0 nukes the selected objects materials and creates a new medium gray material.
+* alt+LMB orbits the camera  
+* alt+RMB dolly’s the camera  
+* alt+MMB pan the camera  
+* alt+shift+LMB pans the camera.
+* alt+v dolly zoom active camera
+* alt_shift+wheel turntable the camera.  If you have a weighted throw mouse wheel like an MX master25 this is amazing.  
+
+* alt+a aim at selected.  hit it twice to set the aimpoint to the origin.
+* ` toggle between local global pivot placement.  (its called Accent_Grave in the demo video)
+* alt+` set view to current camera  (its called Accent_Grave in the demo video)
+* alt+1 set view to front
+* alt+2 set view to left
+* alt+3 set view to top
+* alt+shift+1 set view to back
+* alt+shift+2 set view to right
+* alt+shift+3 set view to bottom
+
+* shift+wheel scrubs though frames
+* alt+wheel scrubs though keyframes of selected objects.
+* Up goes to first frame
+* Down goes to last frame
+* Left goes to next keyframe for selected object.
+* Right goes to previous keyframe for selected object.
+
+* ctrl+wheel expands or shrinks selection in edit mode.
+* ctrl+wheel cycles though poses on skinned meshes or armatures (if 3D comic toolkit installed)
+* shift+right Arrow isolates the next visible object
+* shift+left Arrow isolates the previous visible object
+
+
+* Ctrl Return does a playblast of whatever window is under your mouse.
+* Ctrl Numpad 0 nukes the selected objects materials and creates a new medium gray material.
 
 in the add object menu (shift+a)  there is now a "Cube Killer" menu item.
 this will add a random primitve to the scene.  if something is selected, it will DESTROY the selected object and make the newe primitive fit the size of the destroyed objects.  this is so that you can bind it to a hotkey (like insert) and hit it over and over again, cycling through random primitives.  if no object is selected, the primitive is created at the cursor.  Death to the default Cube!
 
-WEIGHT PAINT Mode
-Ctrl shift Drag will drag a radial gradient of the current weight, tool and strength.
-Ctrl ALT Drag will drag a radial gradient of the current weight, tool and strength.
-X will toggle 0.0 or 1.0 weight
+### WEIGHT PAINT Mode
+* Ctrl shift Drag will drag a radial gradient of the current weight, tool and strength.
+* Ctrl ALT Drag will drag a radial gradient of the current weight, tool and strength.
+* X will toggle 0.0 or 1.0 weight
 
 Image Paint mode
-X will toggle black or white color
+* X will toggle black or white color
 
-OBJECT mode
-w is the tweek tool.  I leave this tool on for everything and use the GRS shortcuts instead of the beginner gizmos.
-ctrl+e move origin to cursor
-f4 apply all transforms.
-alt+D addes a subdivide modifier and two decimat modifiers to the selected objects
-D and Shift D for up and down subdivs, if at the max is hit, the decimation modifiers are turned on/off
-M will toggle all the modifiers on or off for the visible objects.
-shift + right/left arrow will cycle through isolating the visible selected object
+### OBJECT mode
+* w is the tweek tool.  I leave this tool on for everything and use the GRS shortcuts instead of the beginner gizmos.
+* ctrl+e move origin to cursor
+* f4 apply all transforms.
+* alt+D addes a subdivide modifier and two decimat modifiers to the selected objects
+* D and Shift D for up and down subdivs, if at the max is hit, the decimation modifiers are turned on/off
+* M will toggle all the modifiers on or off for the visible objects.
+* shift + right/left arrow will cycle through isolating the visible selected object
 
 
-EDIT Mode
-E toggle edit mode.
-double click toggle edit mode
-ctrl+enter exit edit mode (handy for lettering)
+### EDIT Mode
+* E toggle edit mode.
+* double click toggle edit mode
+* ctrl+enter exit edit mode (handy for lettering)
 
-shift+E Extrude edges/vertices/faces
-alt+E selects edge ring
-alt+shift+E selects edge ring
-ctrl+alt+shift+E selects boundary edge loop
+* shift+E Extrude edges/vertices/faces
+* alt+E selects edge ring
+* alt+shift+E selects edge ring
+* ctrl+alt+shift+E selects boundary edge loop
 
-shift+MMB shirnk/fatten selection
-ctrl+shift+MMB crease/uncrease edges
+* shift+MMB shirnk/fatten selection
+* ctrl+shift+MMB crease/uncrease edges
 
-q now toggles soft modification  (I got tired of reaching for o)
-tab toggles workmode (for render only viewing, too many yeards of muscle memory)
-e toggles editmode  (you can still switch modes w ctrl+tab)
-D and Shift D for up and down subdivs
-alt+D to subdivide selected
-S and F wave for bush size.
-[ and ] for brush size
-ctrl+numpad0 to nuke material/polypaint/texture
-ctrl+shift+LMB to lasso mask
-alt+ctrl+shift+LMB to lasso mask deselect
-ctrl+i invert mask
-ctrl+b blur mask
-ctrl+h hide mask
+* q now toggles soft modification  (I got tired of reaching for o)
+* tab toggles workmode (for render only viewing, too many yeards of muscle memory)
+* e toggles editmode  (you can still switch modes w ctrl+tab)
+* D and Shift D for up and down subdivs
+* alt+D to subdivide selected
+* S and F wave for bush size.
+* [ and ] for brush size
+* ctrl+numpad0 to nuke material/polypaint/texture
+* ctrl+shift+LMB to lasso mask
+* alt+ctrl+shift+LMB to lasso mask deselect
+* ctrl+i invert mask
+* ctrl+b blur mask
+* ctrl+h hide mask
 
-SCULPT mode
-ctrl+right sets voxel remesh grid size
-ctrl+r sets remeshes
-ctrl+alt+r uses remeshit from exoside
-right drag horizontal adjusts brush size.
-right drag vertical adjusts brush opacity.
-if you have Quad remesher installed, alt+shift+D will automesh the current model, unwrap and shrink wrap the details onto a multires
+### SCULPT mode
+* ctrl+right sets voxel remesh grid size
+* ctrl+r sets remeshes
+* ctrl+alt+r uses remeshit from exoside
+* right drag horizontal adjusts brush size.
+* right drag vertical adjusts brush opacity.
+* if you have Quad remesher installed, alt+shift+D will automesh the current model, unwrap and shrink wrap the details onto a multires
 
-POSE mode
-shift+r will toggle child lock to parent/world.  handy for FK posing.
+### POSE mode
+* shift+r will toggle child lock to parent/world.  handy for FK posing.
+
 
 ---
----
+
 
 Addon notes:
 

@@ -1,31 +1,26 @@
+This is my personal setup for blender that merges my muscle memory from using maya, zbrush, mirai and the SFM.  
 
+here's an old 
 [Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
+of how I use it.
 
-
-READ ME:  Spiraloid Blender 3.1 setup
-
-misc Blender utilities
-
-Unless stated otherwise, many of these scripts and addons are a collaboration of others from the blender open source community. I am posting the python scripts here because as I have updated or modified the code to work with blender 3.1 and suit my own workflows. No warranty or support should be implied. I am merely standing on the shoulders of others.
-I try to reference the original authors and link to forum posts or webpages as I can in the history.
-Any concerns, feel free to contact me and I can adjust. Just want to share as I get with other awesome blender users.
+I am posting my python scripts here because as I have updated or modified the code to work with blender 3.1 and suit my own workflows. No warranty or support should be implied. I am merely standing on the shoulders of others.   I try to reference the original authors as I can in the history, but for the most part these are all writted from scatch.  Any concerns, feel free to contact me and I can adjust if I agree and have the time. I just want to share as I get with other awesome blender users.
 
 cheers.
 
 -bay
 
+---
+
 Installation:
 
-WARNING!!!:  Blender users may wish to backup your current configuration before installing in case something goes wrong you can undo.  For example on a Mac,  creating a compressed zip archive of this folder:
+WARNING!!!:  Blender users may wish to backup your current configuration before installing in case something goes wrong you can undo.  
 
+For example on a Mac (I don't use Mac so beware)
 ~/Library/Application Support/Blender/3.1
 
 (or on windows 10)
-
 %APPDATA%\Roaming\Blender Foundation\Blender\3.1
-
- is a good idea.  
-(This is where blender stores all your preference data)
 
 Next
 
@@ -40,11 +35,11 @@ if you have installed the toolkit on an earlier version of blender, just quite b
 if you are installing for the first time:
 Under the addon tab, use button at Bottom that says “install add on from file”
 
-Browse to this folder where this README.txt file is and every *.py file in the addon folder as you would normally.
+Browse to where you downloaded and uzipped the toolit and install every *.py file in the addon folder as you would normaly.
 
 (Remember to activate each them immediately after you install them, otherwise it’s a long list to search through)
 
-I strongly you buy your own copy of these paid addons as my hotkeys assume they are installed. xray box select especially
+I strongly urge you buy your own copy of these paid addons as my hotkeys assume they are installed. xray box select especially since I use it for all seleting.
 
 https://gumroad.com/l/daldj
 https://gum.co/dolly_zoom_truck_shift?recommended_by=library

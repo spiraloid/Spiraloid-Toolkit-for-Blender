@@ -10,63 +10,6 @@ cheers.
 
 -bay
 
----
-
-Installation:
-
-WARNING!!!:  Blender users may wish to backup your current configuration before installing in case something goes wrong you can undo.  
-
-For example on a Mac (I don't use Mac so beware)
-~/Library/Application Support/Blender/3.1
-
-(or on windows 10)
-%APPDATA%\Roaming\Blender Foundation\Blender\3.1
-
-Next
-
-Install blender 3.1 (if you have not already done so)
-
-https://www.blender.org/download/releases/3-1/
-
-Open Blender with admin priviledges and edit  “edit > User Preferences”.
-
-if you have installed the toolkit on an earlier version of blender, just quite blender, open your %appdata% folder and drag the .py addons from the downloaded zip archive into the scripts/addons folder and overwrite all the old addons, restart blender.
-
-if you are installing for the first time:
-Under the addon tab, use button at Bottom that says “install add on from file”
-
-Browse to where you downloaded and uzipped the toolit and install every *.py file in the addon folder as you would normaly.
-
-(Remember to activate each them immediately after you install them, otherwise it’s a long list to search through)
-
-I strongly urge you buy your own copy of these paid addons as my hotkeys assume they are installed. xray box select especially since I use it for all seleting.
-
-https://gumroad.com/l/daldj
-https://gum.co/dolly_zoom_truck_shift?recommended_by=library
-Next
-
-In the preferences Go to the "Keymap", use the button “import key configuration” and browse to this folder and import “spiraloid_hotkeys.py”
-
-Save user preferences.
-
-Next
-
-Open the startup_scene.blend file in this folder.  (don't touch anything at this point unless you know what you're doing and want the state saved as your startup overriding my startup state. 
-
-hit “ctrl U” and say yes to save the startup scene.  This will store the state of all the UI and settings so that every time your launch blender or hit file new, this is what you get. This is your Home state.
-
-If everything went according to plan, everything should be installed.  if everything worked, hit the spacebar and the mirrored subdiv cube in front of you should bounce. 
-
-This is the fast preview playback script I wrote.  Hit spacebar to stop playing time and note that the current frame has returned whatever frame you were editing before you hit spacebar.
-
-CONGRATS!  Everything is installed. 
-
-checkout this old walkthrough video and look at the hotkey overlay.    
-
-
-[Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
-
-
 ----
 Shortcuts
 ----
@@ -169,6 +112,59 @@ Image Paint mode
 
 ### POSE mode
 * shift+r will toggle child lock to parent/world.  handy for FK posing.
+
+
+---
+
+Installation:
+
+WARNING!!!:  Blender users may wish to backup your current configuration before installing in case something goes wrong you can undo.  
+
+For example on a Mac (I don't use Mac so beware)
+~/Library/Application Support/Blender/3.1
+
+(or on windows 10)
+%APPDATA%\Roaming\Blender Foundation\Blender\3.1
+
+Next
+
+Install blender 3.1 (if you have not already done so)
+
+https://www.blender.org/download/releases/3-1/
+
+Open Blender with admin priviledges and edit  “edit > User Preferences”.
+
+if you have installed the toolkit on an earlier version of blender, just quite blender, open your %appdata% folder and drag the .py addons from the downloaded zip archive into the scripts/addons folder and overwrite all the old addons, restart blender.
+
+if you are installing for the first time:
+Under the addon tab, use button at Bottom that says “install add on from file”
+
+Browse to where you downloaded and uzipped the toolit and install every *.py file in the addon folder as you would normaly.
+
+(Remember to activate each them immediately after you install them, otherwise it’s a long list to search through)
+
+I strongly urge you buy your own copy of these paid addons as my hotkeys assume they are installed. xray box select especially since I use it for all seleting.
+
+https://gumroad.com/l/daldj
+https://gum.co/dolly_zoom_truck_shift?recommended_by=library
+Next
+
+In the preferences Go to the "Keymap", use the button “import key configuration” and browse to this folder and import “spiraloid_hotkeys.py”
+
+Save user preferences.
+
+Next
+
+Open the startup_scene.blend file in this folder.  (don't touch anything at this point unless you know what you're doing and want the state saved as your startup overriding my startup state. 
+
+hit “ctrl U” and say yes to save the startup scene.  This will store the state of all the UI and settings so that every time your launch blender or hit file new, this is what you get. This is your Home state.
+
+If everything went according to plan, everything should be installed.  if everything worked, hit the spacebar and the mirrored subdiv cube in front of you should bounce. 
+
+This is the fast preview playback script I wrote.  Hit spacebar to stop playing time and note that the current frame has returned whatever frame you were editing before you hit spacebar.
+
+CONGRATS!  Everything is installed. 
+
 
 
 ---

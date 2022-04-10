@@ -176,6 +176,8 @@ right drag horizontal adjusts brush size.
 right drag vertical adjusts brush opacity.
 if you have Quad remesher installed, alt+shift+D will automesh the current model, unwrap and shrink wrap the details onto a multires
 
+POSE mode
+shift+r will toggle child lock to parent/world.  handy for FK posing.
 
 ---
 ---
@@ -231,6 +233,11 @@ lets the "[" and "]" do brush sizing like photoshop.
 
 I also strongly suggest these paid addons:
 
+xray select
+https://gumroad.com/l/daldj
+
+dolly zoom
+https://gum.co/dolly_zoom_truck_shift?recommended_by=library
 
 Voxel heat diffuse skinning
 https://blendermarket.com/products/voxel-heat-diffuse-skinning

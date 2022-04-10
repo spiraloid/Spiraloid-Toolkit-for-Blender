@@ -26,7 +26,7 @@ My adjustments to the UI or hotkeys are made for me, so bear in mind I have a lo
 * alt+MMB pan the camera  
 * alt+shift+LMB pans the camera.
 * alt+v dolly zoom active camera
-* alt_shift+wheel turntable the camera.  If you have a weighted throw mouse wheel like an MX master25 this is amazing.  
+* alt+shift+wheel turntable the camera.  If you have a weighted throw mouse wheel like an MX master25 this is amazing.  
 
 * alt+a aim at selected.  hit it twice to set the aimpoint to the origin.
 * ` toggle between local global pivot placement.  (its called Accent_Grave in the demo video)
@@ -40,10 +40,10 @@ My adjustments to the UI or hotkeys are made for me, so bear in mind I have a lo
 
 * shift+wheel scrubs though frames
 * alt+wheel scrubs though keyframes of selected objects.
-* Up goes to first frame
-* Down goes to last frame
-* Left goes to next keyframe for selected object.
-* Right goes to previous keyframe for selected object.
+* up goes to first frame
+* down goes to last frame
+* left goes to next keyframe for selected object.
+* right goes to previous keyframe for selected object.
 
 * ctrl+wheel expands or shrinks selection in edit mode.
 * ctrl+wheel cycles though poses on skinned meshes or armatures (if 3D comic toolkit installed)
@@ -51,39 +51,42 @@ My adjustments to the UI or hotkeys are made for me, so bear in mind I have a lo
 * shift+left Arrow isolates the previous visible object
 
 
-* Ctrl Return does a playblast of whatever window is under your mouse.
-* Ctrl Numpad 0 nukes the selected objects materials and creates a new medium gray material.
+* ctrl Return does a playblast of whatever window is under your mouse.
+* ctrl Numpad 0 nukes the selected objects materials and creates a new medium gray material.
+
+* insert cube killer
 
 in the add object menu (shift+a)  there is now a "Cube Killer" menu item.
-this will add a random primitve to the scene.  if something is selected, it will DESTROY the selected object and make the newe primitive fit the size of the destroyed objects.  this is so that you can bind it to a hotkey (like insert) and hit it over and over again, cycling through random primitives.  if no object is selected, the primitive is created at the cursor.  Death to the default Cube!
+this will add a random primitve to the scene.  if something is selected, it will DESTROY the selected object and make the new primitive fit the size of the destroyed objects.  this is so that you can bind it to a hotkey (like insert) and hit it over and over again, cycling through random primitives.  if no object is selected, the primitive is created at the cursor.  Death to the default Cube!
 
 ### WEIGHT PAINT Mode
-* Ctrl shift Drag will drag a radial gradient of the current weight, tool and strength.
-* Ctrl ALT Drag will drag a radial gradient of the current weight, tool and strength.
-* X will toggle 0.0 or 1.0 weight
+* ctrl+shift+LMB will drag a radial gradient of the current weight, tool and strength.
+* ctrl+alt+LMB will drag a radial gradient of the current weight, tool and strength.
+* x will toggle 0.0 or 1.0 weight
 
 Image Paint mode
-* X will toggle black or white color
+* x will toggle black or white color
 
 ### OBJECT mode
 * w is the tweek tool.  I leave this tool on for everything and use the GRS shortcuts instead of the beginner gizmos.
 * ctrl+e move origin to cursor
 * f4 apply all transforms.
-* alt+D addes a subdivide modifier and two decimat modifiers to the selected objects
-* D and Shift D for up and down subdivs, if at the max is hit, the decimation modifiers are turned on/off
-* M will toggle all the modifiers on or off for the visible objects.
+* alt+d addes a subdivide modifier and two decimation modifiers to the selected objects
+* d increase subdiv or LOD level. if already at max level, the decimation modifiers are turned on 
+* shift+d decrease subdivs or LOD level.  if at max level, an the decimation modifiers are turned on, they will be turned off instead of decreasing the level.
+* m toggle all the modifiers for selected object.  if not object toggle modifiers for all visible objects.
 * shift + right/left arrow will cycle through isolating the visible selected object
-
+* ctrl+tab toggle pose mode
 
 ### EDIT Mode
-* E toggle edit mode.
+* e toggle edit mode.
 * double click toggle edit mode
 * ctrl+enter exit edit mode (handy for lettering)
 
-* shift+E Extrude edges/vertices/faces
-* alt+E selects edge ring
-* alt+shift+E selects edge ring
-* ctrl+alt+shift+E selects boundary edge loop
+* shift+e Extrude edges/vertices/faces
+* alt+e selects edge ring
+* alt+shift+e selects edge ring
+* ctrl+alt+shift+e selects boundary edge loop
 
 * shift+MMB shirnk/fatten selection
 * ctrl+shift+MMB crease/uncrease edges

@@ -1,7 +1,6 @@
-This is my personal setup for blender that merges my muscle memory from using maya, zbrush, mirai and the SFM.  
+This is my personal setup for blender that merges my muscle memory from using maya, zbrush, mirai and the SFM with most of the blender defaults with some key changes.
 
-here's an old 
-[Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
+here's an [Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
 of how I use it.
 
 I am posting my python scripts here because as I have updated or modified the code to work with blender 3.1 and suit my own workflows. No warranty or support should be implied. I am merely standing on the shoulders of others.   I try to reference the original authors as I can in the history, but for the most part these are all writted from scatch.  Any concerns, feel free to contact me and I can adjust if I agree and have the time. I just want to share as I get with other awesome blender users.

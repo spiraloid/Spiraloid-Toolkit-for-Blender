@@ -3,6 +3,7 @@ This is my personal setup for blender that merges my muscle memory from using ma
 here's an [Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
 of how I use it.  Here are some additional youtube walkthroughs.
 https://youtu.be/I3a72umzCDk
+
 https://youtu.be/l6jw_nYdvIU
 
 

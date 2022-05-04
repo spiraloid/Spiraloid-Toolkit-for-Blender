@@ -6,8 +6,6 @@ https://youtu.be/I3a72umzCDk
 https://youtu.be/l6jw_nYdvIU
 
 
-
-
 I am posting my python scripts here because as I have updated or modified the code to work with blender 3.1 and suit my own workflows. No warranty or support should be implied. I am merely standing on the shoulders of others.   I try to reference the original authors as I can in the history, but for the most part these are all writted from scatch.  Any concerns, feel free to contact me and I can adjust if I agree and have the time. I just want to share as I get with other awesome blender users.
 
 cheers.
@@ -144,6 +142,9 @@ Open Blender with admin priviledges and edit  “edit > User Preferences”.
 if you have installed the toolkit on an earlier version of blender, just quite blender, open your %appdata% folder and drag the .py addons from the downloaded zip archive into the scripts/addons folder and overwrite all the old addons, restart blender.
 
 if you are installing for the first time:
+
+important: you must install the addons BEFORE the hotkeys.  Some addons like to turn on/off hotkeys, so this means if you install an addon after you've loaded the hotekys, you will need to re-install the hotkeys to get this to work!!!!! 
+
 Under the addon tab, use button at Bottom that says “install add on from file”
 
 Browse to where you downloaded and uzipped the toolit and install every *.py file in the addon folder as you would normaly.

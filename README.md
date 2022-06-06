@@ -1,9 +1,7 @@
 This is my personal setup for blender that merges my muscle memory from using maya, zbrush, mirai and the SFM with most of the blender defaults with some key changes.
 
-here's an [Walkthrough Video](https://github.com/spiraloid/Spiraloid-Toolkit-for-Blender/blob/master/blender_hotkey_walkthrough.mp4?raw=true)
+here's an [Walkthrough Video](https://youtu.be/I3a72umzCDk)
 of how I use it.  Here are some additional youtube walkthrough:
-
-https://youtu.be/I3a72umzCDk
 
 https://youtu.be/l6jw_nYdvIU
 

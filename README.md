@@ -22,6 +22,13 @@ Wherever possible I tried to leave it the blender defaults so googling blender s
 
 My adjustments to the UI or hotkeys are made for me, so bear in mind I have a lot of habits from using nearly every 3D tool for the last 25 years in major productions.  I understand that the hotkey memorization I do is abnormal, but this kind of configuration helps me switch tools and makes my work faster.  You likely have your own muscle memory, but this is tuned for mine.
 
+### Keyboard shortcuts:
+
+![Screenshot](quicksave.gif)
+
+* ctrl+shift+s Quicksave the current file with a incremental suffix. if file has not been saved yet, a random 3 word name will be generated and the file will be saved in the folder is set in the Spiraloid Addon Preferences.   
+
+* ctrl+shift+o open a windows explorer to the path of the currently open .blend file
 
 ### General 3D Navigation:
 

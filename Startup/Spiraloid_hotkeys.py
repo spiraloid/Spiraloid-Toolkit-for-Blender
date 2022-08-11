@@ -22796,10 +22796,13 @@ keyconfig_data = \
  ("Sculpt",
   {"space_type": 'EMPTY', "region_type": 'WINDOW'},
   {"items":
-   [("brush.modal_quickset", {"type": 'RIGHTMOUSE', "value": 'PRESS'}, None),
-    ("brush.modal_quickset", {"type": 'RIGHTMOUSE', "value": 'PRESS'}, None),
-    ("brush.modal_quickset", {"type": 'RIGHTMOUSE', "value": 'PRESS'}, None),
-    ("brush.modal_quickset", {"type": 'RIGHTMOUSE', "value": 'PRESS'}, None),
+   [("brush.modal_quickset",
+     {"type": 'RIGHTMOUSE', "value": 'PRESS'},
+     {"properties":
+      [("axisaffect", 'YSTR'),
+       ],
+      },
+     ),
     ("bm.tools_and_brushes_popup", {"type": 'SPACE', "value": 'PRESS', "repeat": True}, None),
     ("sculpt.wheel", {"type": 'RIGHTMOUSE', "value": 'RELEASE'}, None),
     ("brush.modal_quickset",
@@ -25548,8 +25551,8 @@ keyconfig_data = \
   {"items":
    [("CONFIRM", {"type": 'LEFTMOUSE', "value": 'RELEASE', "alt": True}, None),
     ("CONFIRM", {"type": 'ESC', "value": 'PRESS', "any": True, "repeat": True}, None),
-    ("AXIS_SNAP_ENABLE", {"type": 'LEFT_ALT', "value": 'PRESS', "any": True, "repeat": True}, None),
-    ("AXIS_SNAP_DISABLE", {"type": 'LEFT_ALT', "value": 'RELEASE', "any": True}, None),
+    ("AXIS_SNAP_ENABLE", {"type": 'LEFT_SHIFT', "value": 'PRESS', "any": True, "repeat": True}, None),
+    ("AXIS_SNAP_DISABLE", {"type": 'LEFT_SHIFT', "value": 'RELEASE', "any": True}, None),
     ],
    },
   ),

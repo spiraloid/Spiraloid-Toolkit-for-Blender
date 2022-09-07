@@ -8,6 +8,7 @@ bl_info = {
         'wiki_url': ''}
 
 import bpy
+import mathutils
 
 isBoneInherit = False
 isChildLock = False
@@ -135,7 +136,7 @@ def main(self, context):
             for mod in [m for m in ob.modifiers if m.type == 'ARMATURE']:
                 while ob.modifiers[0].name != mod.name:
                     bpy.ops.object.modifier_move_up(modifier= mod.name)
-                bpy.ops.object.modifier_apply( modifier=mod.name)
+                bpy.ops.object.modifier_apply( modifier=mod.name, single_user=True)
                 
             bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
             bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
@@ -300,6 +301,19 @@ def bone_inherit(self, context):
 
     isBoneInherit = not isBoneInherit
 
+def getClosestAxis(n):
+    if abs(n.rotation_euler[0]) > abs(n.rotation_euler[1]):
+        if abs(n.rotation_euler[0]) > abs(n.rotation_euler[2]):
+            return mathutils.Vector((1, 0, 0))
+        else:
+            return mathutils.Vector((0, 0, 1))
+    else:
+        if abs(n.rotation_euler[1]) > abs(n.rotation_euler[2]):
+            return mathutils.Vector((0, 1, 0))
+        else:
+            return mathutils.Vector((0, 0, 1))
+
+
 
 def bone_straighten(self, context):
     scene = context.scene
@@ -336,6 +350,61 @@ def bone_straighten(self, context):
                 bpy.ops.pose.select_all(action='DESELECT')
                 for b in prevBoneSelect:
                     b.bone.select = True
+
+
+def bone_align(self, context):
+    scene = context.scene
+
+    obj = bpy.context.object
+    selected_bones = bpy.context.selected_pose_bones
+    root_bone = obj.data.bones[0]
+    if obj is not None :
+        if obj.type == 'ARMATURE':
+            armt = obj.data
+            boneNames = armt.bones.keys()
+            myBones = armt.bones
+            activeBone = bpy.context.active_pose_bone
+            children = bpy.context.active_pose_bone.children
+            if activeBone is not None:
+                # for poseBone in children:
+                # for poseBone in [ activeBone ] + activeBone.children_recursive:
+                for pb in selected_bones:
+                    poseBone = obj.pose.bones[pb.name]
+                    closest_axis = getClosestAxis(poseBone)
+                    poseBone.matrix.rotation_euler[0] = closest_axis[0]
+                    poseBone.matrix.rotation_euler[1] = closest_axis[1]
+                    poseBone.matrix.rotation_euler[2] = closest_axis[2]
+
+                    # poseBone = obj.pose.bones[pb.name]
+                    # bpy.ops.pose.select_all(action='DESELECT')
+                    # poseBone.bone.select = True
+                    # const = poseBone.constraints.new('COPY_ROTATION')
+                    # const.target = obj
+                    # const.owner_space = 'LOCAL_WITH_PARENT'
+                    # const.target_space = 'LOCAL'
+                    # bpy.ops.pose.visual_transform_apply()
+                    # poseBone.constraints.remove(const)
+
+
+
+            if selected_bones is not None:
+                bpy.ops.pose.select_all(action='DESELECT')
+                for b in selected_bones:
+                    b.bone.select = True
+
+
+
+
+
+
+class BR_OT_bone_align(bpy.types.Operator):
+    """align selected bone rotation to nearest world axis"""
+    bl_idname = "view3d.bone_align"
+    bl_label = "Align Bone to World Axis"
+
+    def execute(self, context):
+        bone_align(self, context)
+        return {'FINISHED'}
 
 
 class BR_OT_bone_straighten(bpy.types.Operator):
@@ -466,12 +535,14 @@ def menu_draw_bone_settings(self, context):
 
 def menu_draw_bone_context_menu(self, context):
     self.layout.operator(BR_OT_bone_straighten.bl_idname)
+    self.layout.operator(BR_OT_bone_align.bl_idname)
 
 def register():
     bpy.utils.register_class(BR_OT_apply_mesh_pose)
     bpy.utils.register_class(BR_OT_toggle_bone_inherit)
     bpy.utils.register_class(BR_OT_toggle_child_lock)
     bpy.utils.register_class(BR_OT_bone_straighten)
+    bpy.utils.register_class(BR_OT_bone_align)
 
     bpy.types.VIEW3D_MT_pose_apply.prepend(menu_draw_apply)
     bpy.types.VIEW3D_MT_bone_options_toggle.append(menu_draw_bone_settings)
@@ -483,6 +554,7 @@ def unregister():
     bpy.utils.unregister_class(BR_OT_toggle_bone_inherit)
     bpy.utils.unregister_class(BR_OT_toggle_child_lock)
     bpy.utils.unregister_class(BR_OT_bone_straighten)
+    bpy.utils.unregister_class(BR_OT_bone_align)
     bpy.types.VIEW3D_MT_pose_apply.remove(menu_draw_apply)
     bpy.types.VIEW3D_MT_bone_options_toggle.remove(menu_draw_bone_settings)
     bpy.types.VIEW3D_MT_pose_context_menu.remove(menu_draw_bone_context_menu)

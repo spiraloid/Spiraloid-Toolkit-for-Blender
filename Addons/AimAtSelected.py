@@ -59,7 +59,7 @@ def main_aim(self, context):
         if objects:
             context.view_layer.objects.active = objects[0]
             ob = bpy.context.active_object
-            if (bpy.context.active_object.mode == 'EDIT'):
+            if bpy.context.active_object.mode == 'EDIT' or  bpy.context.active_object.mode == 'WEIGHT':
                 # bm = bmesh.new()
                 if ob.type == 'CURVE':
                     selected_knots = []
@@ -108,6 +108,9 @@ def main_aim(self, context):
                             bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
                     else:
                         bpy.ops.view3d.view_center_cursor()
+
+
+
                 if ob.type == 'ARMATURE':
                     old_cursor_loc =  bpy.context.scene.cursor.location.copy()
                     if (bpy.context.active_object) :

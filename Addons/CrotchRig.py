@@ -543,9 +543,9 @@ class BR_OT_generate_twist_bones(bpy.types.Operator):
                         bones_to_process = []
                         for selected_bone in selected_bones:
                             selected_bone_name = selected_bone.name
-                            helper_bone_name = "TWST_" + selected_bone_name
+                            bend_bone_name = "TWST_" + selected_bone_name
                             for bone in armature.pose.bones:
-                                if helper_bone_name in bone.name:
+                                if bend_bone_name in bone.name:
                                     self.report({'Error'}, "Helper bone already exists")
 
                         pose_bones_to_process = [selected_bone]
@@ -581,7 +581,7 @@ class BR_OT_generate_twist_bones(bpy.types.Operator):
                             parent_bone = current_edit_bone.parent
                             parent_bone_name = parent_bone.name
 
-                            helper_bone_name = "TWST_" + current_pose_bone_name
+                            bend_bone_name = "TWST_" + current_pose_bone_name
 
                             c_bone = armature.data.bones[current_pose_bone_name]
                             armature.data.bones.active = c_bone
@@ -594,23 +594,23 @@ class BR_OT_generate_twist_bones(bpy.types.Operator):
                             parent_bone = c_bone.parent
                             parent_bone_name = parent_bone.name
                             # armature.data.bones.active = armature.data.edit_bones[current_pose_bone_name]
-                            bpy.ops.armature.bone_primitive_add(name=helper_bone_name)
-                            helper_edit_bone = armature.data.edit_bones[helper_bone_name]
-                            # helper_bone = armature.data.bones[helper_bone_name]
-                            helper_edit_bone.head = current_edit_bone.head
-                            helper_edit_bone.tail = current_edit_bone.tail
-                            helper_edit_bone.roll = current_edit_bone.roll
-                            helper_edit_bone.head_radius = current_edit_bone.head_radius
-                            helper_edit_bone.tail_radius = current_edit_bone.tail_radius
-                            helper_edit_bone.envelope_distance = current_edit_bone.envelope_distance
-                            helper_edit_bone.parent = current_edit_bone
+                            bpy.ops.armature.bone_primitive_add(name=bend_bone_name)
+                            bend_edit_bone = armature.data.edit_bones[bend_bone_name]
+                            # bend_bone = armature.data.bones[bend_bone_name]
+                            bend_edit_bone.head = current_edit_bone.head
+                            bend_edit_bone.tail = current_edit_bone.tail
+                            bend_edit_bone.roll = current_edit_bone.roll
+                            bend_edit_bone.head_radius = current_edit_bone.head_radius
+                            bend_edit_bone.tail_radius = current_edit_bone.tail_radius
+                            bend_edit_bone.envelope_distance = current_edit_bone.envelope_distance
+                            bend_edit_bone.parent = current_edit_bone
 
 
 
                             # create the helper bone constraint
                             bpy.ops.object.mode_set(mode='POSE')
-                            h_pose_bone = obj.pose.bones[helper_bone_name]
-                            h_bone = obj.data.bones[helper_bone_name]
+                            h_pose_bone = obj.pose.bones[bend_bone_name]
+                            h_bone = obj.data.bones[bend_bone_name]
                             bpy.context.object.data.bones.active = h_bone
                             constraint = h_pose_bone.constraints.new('COPY_ROTATION')
                             constraint.target = obj
@@ -651,31 +651,31 @@ class BR_OT_generate_twist_bones(bpy.types.Operator):
                                 bpy.ops.object.vertex_group_select()
 
                                 # bpy.ops.object.vertex_group_copy()
-                                # helper_bone_vertex_group = mesh.vertex_groups.active
-                                # helper_bone_vertex_group.name = helper_bone_name
+                                # bend_bone_vertex_group = mesh.vertex_groups.active
+                                # bend_bone_vertex_group.name = bend_bone_name
 
 
-                                mesh.vertex_groups.new(name=helper_bone_name)
-                                helper_bone_vertex_group = bpy.context.object.vertex_groups.active
+                                mesh.vertex_groups.new(name=bend_bone_name)
+                                bend_bone_vertex_group = bpy.context.object.vertex_groups.active
 
                                 # raise KeyboardInterrupt()
 
                                 # falloff the bone weight by distance
                                 # distance = current_edit_bone.envelope_distance + current_edit_bone.head_radius
 
-                                bone_e = armature.data.bones[helper_bone_name]
+                                bone_e = armature.data.bones[bend_bone_name]
                                 omx = mesh.matrix_world
-                                bone_pos = armature.data.bones[helper_bone_name].matrix_local.to_translation()
+                                bone_pos = armature.data.bones[bend_bone_name].matrix_local.to_translation()
                                 bone_length = bone_e.length
 
 
                                 # bpy.ops.object.mode_set(mode='EDIT')
                                 # bpy.ops.mesh.select_all(action='DESELECT')
-                                # bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[helper_bone_name]
+                                # bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[bend_bone_name]
                                 # # bpy.ops.object.vertex_group_select()
                                 # # bpy.ops.mesh.select_all(action='INVERT')
 
-                                # bone = armature.data.bones[helper_bone_name]
+                                # bone = armature.data.bones[bend_bone_name]
                                 # midpoint = (bone.head + bone.tail) / 2
                                 # # print(">>>>>>>>>>>>>>> " + str(midpoint))
                                 
@@ -695,18 +695,18 @@ class BR_OT_generate_twist_bones(bpy.types.Operator):
                                     region_of_effect =  bone_length
 
                                     if distance >= region_of_effect:
-                                        helper_bone_vertex_group.add([vert.index], 0.0, 'REPLACE')
+                                        bend_bone_vertex_group.add([vert.index], 0.0, 'REPLACE')
                                     else:
-                                        helper_bone_vertex_group.add([vert.index], value, 'REPLACE')
+                                        bend_bone_vertex_group.add([vert.index], value, 'REPLACE')
 
 
 
                                 # for vert in mesh.data.vertices:
                                 #     region_of_effect = (vert.co - midpoint) 
                                 #     # if region_of_effect >= distance:
-                                #         # helper_bone_vertex_group.remove([vert.index])
+                                #         # bend_bone_vertex_group.remove([vert.index])
                                 #     if distance >= region_of_effect:
-                                #         helper_bone_vertex_group.add([vert.index], 0.0, 'REPLACE')
+                                #         bend_bone_vertex_group.add([vert.index], 0.0, 'REPLACE')
 
                                 bpy.ops.object.vertex_group_clean(group_select_mode='ACTIVE', limit=0.25)
 
@@ -727,18 +727,18 @@ class BR_OT_generate_twist_bones(bpy.types.Operator):
                                 # bpy.ops.mesh.select_all(action='DESELECT')
                                 # bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[first_child_bone_name]
                                 # bpy.ops.object.vertex_group_select()
-                                # bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[helper_bone_name]
+                                # bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[bend_bone_name]
                                 # bpy.ops.object.vertex_group_remove_from(use_all_groups=False, use_all_verts=False)
                                 # # bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[parent_bone_name]
                                 # # bpy.ops.object.vertex_group_remove_from(use_all_groups=False, use_all_verts=False)
 
                                 # bpy.ops.object.mode_set(mode='WEIGHT_PAINT')
-                                # bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[helper_bone_name]
+                                # bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[bend_bone_name]
                                 # bpy.ops.object.vertex_group_clean(group_select_mode='ACTIVE', limit=0.25)
 
 
                                 bpy.ops.object.mode_set(mode='OBJECT')
-                                # helper_bone.hide = True
+                                # bend_bone.hide = True
 
                             bpy.ops.object.mode_set(mode='OBJECT')
                             bpy.ops.object.select_all(action='DESELECT')
@@ -750,7 +750,7 @@ class BR_OT_generate_twist_bones(bpy.types.Operator):
                         bpy.ops.pose.select_all(action='DESELECT')
                         for current_bone in selected_bones:
                             current_bone.bone.select = True
-                            bpy.context.active_object.data.bones.active = bpy.context.active_object.pose.bones[helper_bone_name].bone
+                            bpy.context.active_object.data.bones.active = bpy.context.active_object.pose.bones[bend_bone_name].bone
                         if is_mirror:
                             armature.pose.use_mirror_x = True
                     else:
@@ -761,10 +761,10 @@ class BR_OT_generate_twist_bones(bpy.types.Operator):
         self.report({'INFO'}, 'Twist Bones Inserted!')
         return {'FINISHED'}
 
-class BR_OT_generate_helper_bones(bpy.types.Operator):
-    """Create an driven helper bone foreach of the selected object"""
-    bl_idname = "view3d.generate_helper_bones"
-    bl_label = "Insert Helper Bones"
+class BR_OT_generate_bend_bones(bpy.types.Operator):
+    """Create an driven bend bone foreach of the selected object"""
+    bl_idname = "view3d.generate_bend_bones"
+    bl_label = "Insert Bend Bones"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -787,10 +787,10 @@ class BR_OT_generate_helper_bones(bpy.types.Operator):
                         bones_to_process = []
                         for selected_bone in selected_bones:
                             selected_bone_name = selected_bone.name
-                            helper_bone_name = "HLP_" + selected_bone_name
+                            bend_bone_name = "BEND_" + selected_bone_name
 
                             for bone in armature.pose.bones:
-                                if helper_bone_name in bone.name:
+                                if bend_bone_name in bone.name:
                                     self.report({'Error'}, "Helper bone already exists")
 
                             pose_bones_to_process = [selected_bone]
@@ -809,7 +809,7 @@ class BR_OT_generate_helper_bones(bpy.types.Operator):
 
                             for current_pose_bone in pose_bones_to_process:
                                 current_pose_bone_name = current_pose_bone.name
-                                helper_bone_name = "HLP_" + current_pose_bone_name
+                                bend_bone_name = "BEND_" + current_pose_bone_name
 
                                 c_bone = armature.data.bones[current_pose_bone_name]
                                 armature.data.bones.active = c_bone
@@ -822,21 +822,21 @@ class BR_OT_generate_helper_bones(bpy.types.Operator):
                                 parent_bone = c_bone.parent
                                 parent_bone_name = parent_bone.name
                                 # armature.data.bones.active = armature.data.edit_bones[current_pose_bone_name]
-                                bpy.ops.armature.bone_primitive_add(name=helper_bone_name)
-                                helper_edit_bone = armature.data.edit_bones[helper_bone_name]
-                                # helper_bone = armature.data.bones[helper_bone_name]
-                                helper_edit_bone.head = current_edit_bone.head
-                                helper_edit_bone.tail = current_edit_bone.tail
-                                helper_edit_bone.roll = current_edit_bone.roll
-                                helper_edit_bone.head_radius = current_edit_bone.head_radius
-                                helper_edit_bone.tail_radius = current_edit_bone.tail_radius
-                                helper_edit_bone.envelope_distance = current_edit_bone.envelope_distance
-                                helper_edit_bone.parent = current_edit_bone.parent
+                                bpy.ops.armature.bone_primitive_add(name=bend_bone_name)
+                                bend_edit_bone = armature.data.edit_bones[bend_bone_name]
+                                # bend_bone = armature.data.bones[bend_bone_name]
+                                bend_edit_bone.head = current_edit_bone.head
+                                bend_edit_bone.tail = current_edit_bone.tail
+                                bend_edit_bone.roll = current_edit_bone.roll
+                                bend_edit_bone.head_radius = current_edit_bone.head_radius
+                                bend_edit_bone.tail_radius = current_edit_bone.tail_radius
+                                bend_edit_bone.envelope_distance = current_edit_bone.envelope_distance
+                                bend_edit_bone.parent = current_edit_bone.parent
 
 
                                 # bpy.ops.armature.select_all(action='DESELECT')
-                                # helper_edit_bone.select = True
-                                # armature.data.bones.active = helper_bone
+                                # bend_edit_bone.select = True
+                                # armature.data.bones.active = bend_bone
 
                                 # # parent the new helper bone to the current bone's parent
                                 # bpy.ops.object.mode_set(mode='POSE')
@@ -844,22 +844,22 @@ class BR_OT_generate_helper_bones(bpy.types.Operator):
                                 # parent_bone.select = True
                                 # bpy.context.active_object.data.bones.active = bpy.context.active_object.pose.bones[parent_bone_name].bone
                                 # bpy.ops.object.mode_set(mode='EDIT')
-                                # armature.data.bones.active = helper_bone
-                                # armature.data.edit_bones[helper_bone_name].select = True
+                                # armature.data.bones.active = bend_bone
+                                # armature.data.edit_bones[bend_bone_name].select = True
                                 # armature.data.edit_bones[parent_bone_name].select = True
                                 # bpy.ops.armature.parent_set(type='OFFSET')
 
                                 # raise KeyboardInterrupt()
 
-                                # armature.data.bones.active = armature.data.bones[helper_bone_name]
+                                # armature.data.bones.active = armature.data.bones[bend_bone_name]
 
 
                                 bpy.ops.armature.select_all(action='DESELECT')
                                 bpy.ops.object.mode_set(mode='POSE')
 
                                 # create the helper bone constraint
-                                h_pose_bone = armature.pose.bones[helper_bone_name]
-                                h_bone = armature.data.bones[helper_bone_name]
+                                h_pose_bone = armature.pose.bones[bend_bone_name]
+                                h_bone = armature.data.bones[bend_bone_name]
                                 bpy.context.object.data.bones.active = h_bone
                                 constraint = h_pose_bone.constraints.new('COPY_ROTATION')
                                 constraint.target = armature
@@ -886,15 +886,15 @@ class BR_OT_generate_helper_bones(bpy.types.Operator):
                                 #     mesh.select_set(state=True)
                                 #     bpy.context.view_layer.objects.active = mesh
                                 #     vertices = []
-                                #     mesh.vertex_groups.new(name=helper_bone_name)
+                                #     mesh.vertex_groups.new(name=bend_bone_name)
                                 #     distance = c_bone.envelope_distance + c_bone.head_radius
-                                #     bone_location = armature.pose.bones[helper_bone_name].matrix_basis.translation
+                                #     bone_location = armature.pose.bones[bend_bone_name].matrix_basis.translation
                                 #     for vert in mesh.data.vertices:
                                 #         if (vert.co - bone_location).length <= distance:
                                 #             vertices.append(vert)
                                 #     for vert in vertices:
                                 #         for group in mesh.vertex_groups:
-                                #             if group.name == helper_bone_name:
+                                #             if group.name == bend_bone_name:
                                 #                 group.add([vert.index], 1.0, 'REPLACE')
 
                                 #     bpy.ops.object.mode_set(mode='WEIGHT_PAINT')
@@ -909,30 +909,30 @@ class BR_OT_generate_helper_bones(bpy.types.Operator):
                                     bpy.ops.object.mode_set(mode='WEIGHT_PAINT')
                                     bpy.context.object.data.use_paint_mask_vertex = False
                                     bpy.context.object.data.use_paint_mask = False
-                                    mesh.vertex_groups.new(name=helper_bone_name)
-                                    helper_bone_vertex_group = bpy.context.object.vertex_groups.active
+                                    mesh.vertex_groups.new(name=bend_bone_name)
+                                    bend_bone_vertex_group = bpy.context.object.vertex_groups.active
 
                                     # falloff the bone weight by distance
 
-                                    bone_e = armature.data.bones[helper_bone_name]
+                                    bone_e = armature.data.bones[bend_bone_name]
                                     omx = mesh.matrix_world
-                                    bone_pos = armature.data.bones[helper_bone_name].matrix_local.to_translation()
+                                    bone_pos = armature.data.bones[bend_bone_name].matrix_local.to_translation()
                                     bone_length = bone_e.length
                                     for vert in mesh.data.vertices:
-                                    # vertex_group_verts = [v for v in mesh.data.vertices if v.select and helper_bone_vertex_group.index in [vg.group for vg in v.groups]]
+                                    # vertex_group_verts = [v for v in mesh.data.vertices if v.select and bend_bone_vertex_group.index in [vg.group for vg in v.groups]]
                                     # for vert in vertex_group_verts:
                                         vert_pos = omx @ vert.co
                                         # print(">>>>>>>>>>>>>>>" + str(vert_pos))
                                         # print(">>>>>>>>>>>>>>>" + str(bone_pos))
                                         distance = math.dist(vert_pos, bone_pos)
                                         value = 1.0 - (distance / bone_length)
-                                        helper_bone_vertex_group.add([vert.index], 1.0, 'REPLACE')
+                                        bend_bone_vertex_group.add([vert.index], 1.0, 'REPLACE')
 
                                         region_of_effect = bone_length / 4
                                         if distance >= region_of_effect:
-                                            # helper_bone_vertex_group.remove([vert.index])
-                                            helper_bone_vertex_group.add([vert.index], 0.0, 'REPLACE')
-                                    bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[helper_bone_name]
+                                            # bend_bone_vertex_group.remove([vert.index])
+                                            bend_bone_vertex_group.add([vert.index], 0.0, 'REPLACE')
+                                    bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[bend_bone_name]
                                     # bpy.ops.object.vertex_group_smooth(group_select_mode='ACTIVE', factor=1, repeat=1, expand=0)
                                     # bpy.ops.object.vertex_group_levels(offset=-0.25, gain=1.0)
                                     # bpy.ops.object.vertex_group_normalize()
@@ -956,10 +956,10 @@ class BR_OT_generate_helper_bones(bpy.types.Operator):
                                     bpy.ops.mesh.select_all(action='DESELECT')
 
                                     bpy.ops.object.mode_set(mode='WEIGHT_PAINT')
-                                    bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[helper_bone_name]
+                                    bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[bend_bone_name]
                                     bpy.context.object.data.use_paint_mask_vertex = True
                                     bpy.ops.object.vertex_group_select()
-                                    vertex_group_verts = [v for v in mesh.data.vertices if v.select and helper_bone_vertex_group.index in [vg.group for vg in v.groups]]
+                                    vertex_group_verts = [v for v in mesh.data.vertices if v.select and bend_bone_vertex_group.index in [vg.group for vg in v.groups]]
                                     for vert in vertex_group_verts:
                                         mesh.vertex_groups[current_pose_bone_name].add([vert.index], 0.5, 'REPLACE')
 
@@ -976,7 +976,7 @@ class BR_OT_generate_helper_bones(bpy.types.Operator):
                         bpy.ops.pose.select_all(action='DESELECT')
                         for current_bone in selected_bones:
                             current_bone.bone.select = True
-                            bpy.context.active_object.data.bones.active = bpy.context.active_object.pose.bones[helper_bone_name].bone
+                            bpy.context.active_object.data.bones.active = bpy.context.active_object.pose.bones[bend_bone_name].bone
                         if is_mirror:
                             armature.pose.use_mirror_x = True
                 else:
@@ -1073,7 +1073,7 @@ class BR_MT_quick_rig_menu(bpy.types.Menu):
         layout = self.layout
         layout.operator("view3d.attach_crotch_rig")
         layout.operator("view3d.detach_crotch_rig")
-        layout.operator("view3d.generate_helper_bones")
+        layout.operator("view3d.generate_bend_bones")
         layout.operator("view3d.generate_twist_bones")
 
 
@@ -1086,7 +1086,7 @@ def menu_draw(self, context):
 classes = (
     BR_OT_attach_crotch_rig,
     BR_OT_detach_crotch_rig,
-    BR_OT_generate_helper_bones,
+    BR_OT_generate_bend_bones,
     BR_OT_generate_twist_bones,
     BR_MT_quick_rig_menu,
 )

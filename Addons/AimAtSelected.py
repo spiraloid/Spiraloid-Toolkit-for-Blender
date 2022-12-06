@@ -10,6 +10,7 @@ bl_info = {
 import bpy
 import bmesh
 import mathutils
+from bl_ui.space_toolsystem_common import ToolSelectPanelHelper
 
 
 isAimPivotCursor = False
@@ -21,6 +22,13 @@ isToggleUVPivotCursor = False
 old_snap_elements = []
 old_snap_target = ""
 old_use_snap_backface_culling = ""
+
+def get_orientation_list(slot):
+    try: slot.type = ""
+    except Exception as inst:
+        s = str(inst)
+        s = s[50:]
+        return eval(s)
 
 
 def main_aim(self, context):
@@ -39,7 +47,7 @@ def main_aim(self, context):
                 if (selectedFaces or selectedEdges or selectedVerts):
                     old_uv_cursor_loc =  context.space_data.cursor_location.copy()
                     context.space_data.pivot_point = 'CURSOR'
-                    bpy.ops.uv.snap_cursor(target='SELECTED')
+                    
                     if context.space_data.cursor_location == old_uv_cursor_loc :
                         # print(":::::::::::::::::::")
                         # print(old_uv_cursor_loc)
@@ -54,13 +62,16 @@ def main_aim(self, context):
 
     if bpy.context.area.type == 'VIEW_3D':
         global isAimPivotCursor
-        
+        bpy.context.scene.tool_settings.transform_pivot_point = 'CURSOR'
+
         objects = bpy.context.selected_objects
         if objects:
             context.view_layer.objects.active = objects[0]
             ob = bpy.context.active_object
             if bpy.context.active_object.mode == 'EDIT' or  bpy.context.active_object.mode == 'WEIGHT':
                 # bm = bmesh.new()
+                bpy.context.scene.transform_orientation_slots[0].type = 'CURSOR'
+
                 if ob.type == 'CURVE':
                     selected_knots = []
                     for subcurve in ob.data.splines:
@@ -79,6 +90,7 @@ def main_aim(self, context):
 
                 if ob.type == 'MESH':
                     if bpy.context.active_object.data.total_vert_sel != 0:
+
                         bm = bmesh.from_edit_mesh(ob.data)
                         returnToEdgeMode = False
                         returnToFaceMode = False
@@ -98,17 +110,51 @@ def main_aim(self, context):
                                 bpy.ops.view3d.snap_cursor_to_selected()
                                 if  bpy.context.scene.cursor.location ==  old_cursor_loc :
                                     bpy.ops.view3d.snap_cursor_to_center()
+                                    try:
+                                        bpy.context.scene.cursor.rotation_euler = (0, 0, 0)
+                                    except:
+                                        pass
+                                    
                                 else :
                                     bpy.ops.view3d.view_center_cursor()
+                                    scene = bpy.context.scene
+                                    try:
+                                        bpy.ops.transform.create_orientation(use=False)
+                                        slot = scene.transform_orientation_slots[0]
+
+                                        slots = get_orientation_list(slot)
+
+                                        old_type = slot.type
+                                        slot.type = slots[-1]
+
+                                        mat4x4 = slot.custom_orientation.matrix.to_4x4()
+                                        loc, rot, sca = mat4x4.decompose()
+                                        print(loc)
+                                        print(rot)
+
+                                        cursor = scene.cursor
+                                        old_mode = cursor.rotation_mode
+                                        cursor.rotation_mode = 'QUATERNION'
+                                        scene.cursor.rotation_quaternion = rot
+
+                                        cursor.rotation_mode = old_mode
+
+                                        bpy.ops.transform.delete_orientation()
+                                        slot.type = old_type
+                                    except:
+                                        pass
                         
+
+
                         if returnToFaceMode :
                             bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
 
                         if returnToEdgeMode :
                             bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
+
                     else:
                         bpy.ops.view3d.view_center_cursor()
-
+                        bpy.context.scene.cursor.rotation_euler = (0, 0, 0)
 
 
                 if ob.type == 'ARMATURE':
@@ -119,6 +165,7 @@ def main_aim(self, context):
                             bpy.context.scene.cursor.location = ob.location
                         else :
                             bpy.ops.view3d.view_center_cursor()
+                            bpy.context.scene.cursor.rotation_euler = (0, 0, 0)
 
             if (bpy.context.active_object.mode == 'POSE'):
                 old_cursor_loc =  bpy.context.scene.cursor.location.copy()
@@ -130,6 +177,7 @@ def main_aim(self, context):
                 else:
                     bpy.context.scene.cursor.location = ob.location
                 bpy.ops.view3d.view_center_cursor()
+                bpy.context.scene.cursor.rotation_euler = (0, 0, 0)
 
                 
             if (bpy.context.active_object.mode == 'OBJECT'):
@@ -137,10 +185,13 @@ def main_aim(self, context):
                 bpy.ops.view3d.snap_cursor_to_selected()
                 if  bpy.context.scene.cursor.location ==  old_cursor_loc :
                     bpy.ops.view3d.snap_cursor_to_center()
+                    
                 else :
                     bpy.ops.view3d.view_center_cursor()
+                    bpy.context.scene.cursor.rotation_euler = (0, 0, 0)
         else :
             bpy.ops.view3d.view_center_cursor()
+            bpy.context.scene.cursor.rotation_euler = (0, 0, 0)
 
 
 class BR_OT_surface_snap_activate(bpy.types.Operator):
@@ -207,16 +258,21 @@ def main_toggle(context):
     if bpy.context.area.type == 'VIEW_3D':
     #    context.scene.tool_settings.transform_pivot_point = 'INDIVIDUAL_ORIGINS'
         global isTogglePivotCursor
-
         
-        if isTogglePivotCursor:
-            context.scene.tool_settings.transform_pivot_point = 'INDIVIDUAL_ORIGINS'
-            bpy.ops.view3d.snap_cursor_to_selected()
-            
-        if not isTogglePivotCursor:    
-            context.scene.tool_settings.transform_pivot_point = 'CURSOR'
+        if bpy.context.selected_objects:
+            if isTogglePivotCursor:
+                context.scene.tool_settings.transform_pivot_point = 'INDIVIDUAL_ORIGINS'
+                if (bpy.context.active_object.mode == 'POSE'):
+                    bpy.context.scene.transform_orientation_slots[0].type = 'LOCAL'
+                bpy.ops.view3d.snap_cursor_to_selected()
+                    
+            if not isTogglePivotCursor:    
+                context.scene.tool_settings.transform_pivot_point = 'CURSOR'
+                if (bpy.context.active_object.mode == 'POSE'):
+                    bpy.context.scene.transform_orientation_slots[0].type = 'GLOBAL'
+                bpy.ops.view3d.snap_cursor_to_center()
+        else:
             bpy.ops.view3d.snap_cursor_to_center()
-
         isTogglePivotCursor = not isTogglePivotCursor
 
                 

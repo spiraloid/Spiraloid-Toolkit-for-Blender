@@ -18965,7 +18965,7 @@ keyconfig_data = \
     ("view3d.select",
      {"type": 'LEFTMOUSE', "value": 'CLICK', "ctrl": True},
      {"properties":
-      [("toggle", False),
+      [("toggle", True),
        ],
       },
      ),

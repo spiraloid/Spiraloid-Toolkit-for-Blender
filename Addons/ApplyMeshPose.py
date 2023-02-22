@@ -9,6 +9,8 @@ bl_info = {
 
 import bpy
 import mathutils
+from mathutils import Matrix, Quaternion
+import json
 
 isBoneInherit = False
 isChildLock = False
@@ -351,7 +353,6 @@ def bone_straighten(self, context):
                 for b in prevBoneSelect:
                     b.bone.select = True
 
-
 def bone_align(self, context):
     scene = context.scene
 
@@ -391,10 +392,6 @@ def bone_align(self, context):
                 bpy.ops.pose.select_all(action='DESELECT')
                 for b in selected_bones:
                     b.bone.select = True
-
-
-
-
 
 
 class BR_OT_bone_align(bpy.types.Operator):
@@ -509,11 +506,6 @@ class BR_OT_toggle_child_lock(bpy.types.Operator):
             isChildLock = not isChildLock
         return {'FINISHED'}
 
-
-
-
-
-
 class BR_OT_apply_mesh_pose(bpy.types.Operator):
     """Set current pose and shape as rest bind shape"""
     bl_idname = "view3d.apply_mesh_pose"
@@ -524,7 +516,63 @@ class BR_OT_apply_mesh_pose(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class BR_OT_CopyPoseWorldSpace(bpy.types.Operator):
+    """Copy selected pose bones in world space"""
+    bl_idname = "pose.copy_pose_world_space"
+    bl_label = "Copy Pose World Space"
 
+    def execute(self, context):
+        obj = context.selected_objects[0]
+        pose_data = {}
+        pose_bones = context.selected_pose_bones
+
+        for pb in pose_bones:
+            world_matrix = obj.convert_space(pose_bone=pb, matrix=pb.matrix, from_space='POSE', to_space='WORLD')
+            pose_data[pb.name] = {
+                "location": world_matrix.to_translation()[:],
+                "rotation": world_matrix.to_euler().to_quaternion()[:]
+            }
+        pose_json = json.dumps(pose_data)
+        context.window_manager.clipboard = pose_json
+        self.report({'INFO'}, 'World space pose copied')
+        return {'FINISHED'}
+
+class BR_OT_PastePoseWorldSpace(bpy.types.Operator):
+    """Paste copied pose bones in world space"""
+    bl_idname = "pose.paste_pose_world_space"
+    bl_label = "Paste Pose World Space"
+
+    def execute(self, context):
+        layer = context.view_layer
+        pose_json = context.window_manager.clipboard
+        if not pose_json:
+            return {'CANCELLED'}
+
+        def recursive_paste(obj, pose_data, pb):
+            if pb.name in pose_data:
+                pb_data = pose_data[pb.name]
+                location = pb_data["location"]
+                rotation = pb_data["rotation"]
+                rotation_matrix = Quaternion(rotation).to_matrix().to_4x4()
+                world_matrix = Matrix.Translation(location) @ rotation_matrix
+                world_final = obj.convert_space(pose_bone=pb, matrix=world_matrix, from_space='POSE', to_space='WORLD')
+                local_matrix = obj.convert_space(pose_bone=pb, matrix=world_final, from_space='WORLD', to_space='POSE')
+                pb.matrix = local_matrix
+                layer.update()
+                bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1)
+                for child in pb.children:
+                    recursive_paste(obj, pose_data, child)
+
+        pose_data = json.loads(pose_json)
+        obj = context.selected_objects[0]
+        root_bones = [pb for pb in obj.pose.bones if pb.parent is None]
+        for root in root_bones:
+            recursive_paste(obj, pose_data, root)
+
+        obj.update_tag()
+        layer.update()
+        self.report({'INFO'}, 'World space pose pasted')
+        return {'FINISHED'}
 
 def menu_draw_apply(self, context):
     self.layout.operator(BR_OT_apply_mesh_pose.bl_idname)
@@ -537,17 +585,26 @@ def menu_draw_bone_context_menu(self, context):
     self.layout.operator(BR_OT_bone_straighten.bl_idname)
     self.layout.operator(BR_OT_bone_align.bl_idname)
 
+def pose_menu_func(self, context):
+    self.layout.separator()
+    self.layout.operator("pose.copy_pose_world_space", text="Copy Pose World Space")
+    self.layout.operator("pose.paste_pose_world_space", text="Paste Pose World Space")
+
+
 def register():
     bpy.utils.register_class(BR_OT_apply_mesh_pose)
     bpy.utils.register_class(BR_OT_toggle_bone_inherit)
     bpy.utils.register_class(BR_OT_toggle_child_lock)
     bpy.utils.register_class(BR_OT_bone_straighten)
     bpy.utils.register_class(BR_OT_bone_align)
+    bpy.utils.register_class(BR_OT_CopyPoseWorldSpace)
+    bpy.utils.register_class(BR_OT_PastePoseWorldSpace)
 
     bpy.types.VIEW3D_MT_pose_apply.prepend(menu_draw_apply)
     bpy.types.VIEW3D_MT_bone_options_toggle.append(menu_draw_bone_settings)
     bpy.types.VIEW3D_MT_pose_context_menu.append(menu_draw_bone_context_menu)
-    
+    bpy.types.VIEW3D_MT_pose.append(pose_menu_func)
+
 
 def unregister():
     bpy.utils.unregister_class(BR_OT_apply_mesh_pose)
@@ -555,9 +612,13 @@ def unregister():
     bpy.utils.unregister_class(BR_OT_toggle_child_lock)
     bpy.utils.unregister_class(BR_OT_bone_straighten)
     bpy.utils.unregister_class(BR_OT_bone_align)
+    bpy.utils.unregister_class(BR_OT_CopyPoseWorldSpace)
+    bpy.utils.unregister_class(BR_OT_PastePoseWorldSpace)
+
     bpy.types.VIEW3D_MT_pose_apply.remove(menu_draw_apply)
     bpy.types.VIEW3D_MT_bone_options_toggle.remove(menu_draw_bone_settings)
     bpy.types.VIEW3D_MT_pose_context_menu.remove(menu_draw_bone_context_menu)
+    bpy.types.VIEW3D_MT_pose.remove(pose_menu_func)
 
 
     if __name__ != "__main__":

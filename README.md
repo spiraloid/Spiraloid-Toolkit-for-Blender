@@ -160,9 +160,11 @@ Browse to where you downloaded and uzipped the toolit and install every *.py fil
 
 I strongly urge you buy your own copy of these paid addons as my hotkeys assume they are installed. xray box select especially since I use it for all seleting.
 
+quick x-ray select
 https://gumroad.com/l/daldj
-https://gum.co/dolly_zoom_truck_shift?recommended_by=library
-Next
+
+dolly zoom camera
+https://gum.co/dolly_zoom_truck_shift
 
 In the preferences Go to the "Keymap", use the button “import key configuration” and browse to this folder and import “spiraloid_hotkeys.py”
 
@@ -234,7 +236,7 @@ lets the "[" and "]" do brush sizing like photoshop.
 
 ---
 
-I also strongly suggest these paid addons:
+I also strongly suggest these addons:
 
 xray select
 https://gumroad.com/l/daldj
@@ -245,21 +247,39 @@ https://gum.co/dolly_zoom_truck_shift?recommended_by=library
 Voxel heat diffuse skinning
 https://blendermarket.com/products/voxel-heat-diffuse-skinning
 
+3dcoat style retopo xray mode.
+https://bartoszstyperek.gumroad.com/l/draw_xray
+
+texture path manager for moving relative pointers to external textures en masse.
 https://gumroad.com/l/mfGbS
 
-https://gumroad.com/l/uvpackmaster
+proper UV packing.
+https://glukoz.gumroad.com/l/uvpackmaster3
 
+reasonable IK rigger.
 https://blendermarket.com/products/auto-rig-pro
 
+extra UV tools
 http://renderhjs.net/textools/blender/
 
+shapekey manager
 https://lollypopman.com/2016/08/09/addon-shapekey-helpers/
 
+psd shape key tool
 https://en.blender.org/index.php/Extensions:2.6/Py/Scripts/Animation/Corrective_Shape_Key
 
+grow along edgeloop
 https://www.blendernation.com/2016/06/15/addon-zaloopok/
 
+space switcher to swap coordinate frames (sfm locks)
 https://gitlab.com/AquaticNightmare/space_switcher/-/wikis/home
+
+dense keyframe editing with SFM style time-selections 
+https://github.com/aresdevo/animaide
+
+physical sky
+https://martinsh.gumroad.com/l/PSaA
+
 
 ---
 

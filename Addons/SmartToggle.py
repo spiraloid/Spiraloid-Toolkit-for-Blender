@@ -24,13 +24,35 @@ def main_toggle(self, context):
             if (bpy.context.active_object.mode == 'EDIT'):
                 if previous_mode == 'SCULPT':
                     bpy.ops.object.mode_set(mode='SCULPT')
-                else:
+                # else:
+                    # bpy.ops.object.mode_set(mode='OBJECT')
+
+                if previous_mode == 'OBJECT' or previous_mode == None:
                     bpy.ops.object.mode_set(mode='OBJECT')
+
+                if previous_mode == 'POSE':
+                    active_object = bpy.context.active_object
+                    aa = []
+                    if active_object.type == "MESH" or active_object.type == "CURVE":
+                        for mod in active_object.modifiers:
+                            if mod.type == "ARMATURE":
+                                active_armature = mod.object 
+                                if active_armature:
+                                    aa.append(active_armature)
+                        if aa:
+                            bpy.ops.object.mode_set(mode='OBJECT')
+                            bpy.ops.object.select_all(action='DESELECT')
+                            for a in aa:
+                                a.select_set(state=True)
+                                bpy.context.view_layer.objects.active = a
+                            bpy.ops.object.mode_set(mode='POSE')
+
                 return {'FINISHED'}
 
             if (bpy.context.active_object.mode == 'SCULPT'):
                 previous_mode = 'SCULPT'
                 bpy.ops.object.mode_set(mode='EDIT')
+                print (previous_mode)
                 return {'FINISHED'}
 
             if (bpy.context.active_object.mode == 'OBJECT'):
@@ -54,7 +76,7 @@ def main_toggle(self, context):
                                         if mod.object == arm:
                                             ch.append(laob)
                     if not ch:
-                        bpy.ops.object.mode_set(mode='OBJECT')
+                        bpy.ops.object.mode_set(mode='EDIT')
                     else:
                         bpy.ops.object.mode_set(mode='OBJECT')
                         bpy.ops.object.select_all(action='DESELECT')
@@ -63,6 +85,10 @@ def main_toggle(self, context):
                             bpy.context.view_layer.objects.active = mesh
                         bpy.ops.object.mode_set(mode='WEIGHT_PAINT')
                         bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[selected_bones[0].name]
+                        bpy.context.object.data.use_paint_mask_vertex = False
+
+                        previous_mode = 'POSE'
+                        
                         return {'FINISHED'}
                 else:
                     bpy.ops.object.mode_set(mode='OBJECT')
@@ -82,12 +108,23 @@ def main_toggle(self, context):
                 if not ar:
                     bpy.ops.object.mode_set(mode='OBJECT')
                 else:
-                    bpy.ops.object.mode_set(mode='OBJECT')
-                    bpy.ops.object.select_all(action='DESELECT')
-                    for arm in ar:
-                        arm.select_set(state=True)
-                        bpy.context.view_layer.objects.active = arm
-                    bpy.ops.object.mode_set(mode='POSE')
+                    if previous_mode == 'POSE':
+                        bpy.ops.object.mode_set(mode='EDIT')
+                        bpy.ops.mesh.select_all(action='DESELECT')
+                        bpy.ops.object.mode_set(mode='WEIGHT_PAINT')
+                        bpy.context.object.data.use_paint_mask_vertex = True
+                        bpy.ops.object.mode_set(mode='EDIT')
+                        bpy.ops.mesh.select_all(action='DESELECT')
+                        bpy.ops.object.vertex_group_select()
+                        previous_mode = 'POSE'
+                    else:
+                        bpy.ops.object.mode_set(mode='OBJECT')
+                        bpy.ops.object.select_all(action='DESELECT')
+                        for arm in ar:
+                            arm.select_set(state=True)
+                            bpy.context.view_layer.objects.active = arm
+                        bpy.ops.object.mode_set(mode='POSE')
+                        # previous_mode = None
                     return {'FINISHED'}
 
 

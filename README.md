@@ -213,6 +213,13 @@ This adds an "Aim Selected" item to the view menu.  This will move the cursor to
 
 ---
 
+SmartToggle.py
+
+This replaces the default mode switch by storing a history of the previous mode.  if you have a mesh or curve selected, it toggles edit mode. if you have an armature selected, it cycles through edit to pose to object mode.  if you are in pose mode and have a bone selected it switches to weight paint mode for the skinned meshes with current bone's vertice selected.  if you switch from this mode it enters edit mode with the vertex groups selected, if you have vertex groups selected and you came frm weight mode, it switches back to pose mode.  if you are in pose mode with nothing selected it switches back to object mode.  if you are in sculpt mode it toggles edit mode.
+
+
+---
+
 SmoothAnimationLoop.py
 
 This adds a menu to the graph editor > key > smmooth animation loop.  enter the number of frame the falloff should effect and the animation curves at the end of your selected animation will be moved to the values at the start of the animation with a falloff.

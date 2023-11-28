@@ -175,10 +175,12 @@ def draw_callback_px(self, context):
     strength = unify_settings.strength if (self.uni_str and self.mode != "PARTICLE") else self.brush.strength
     size = unify_settings.size if (self.uni_size and self.mode != "PARTICLE") else self.brush.size
     
-    if context.mode == "SCULPT" and have_brush_channels:
+    if (context.mode == "SCULPT" and have_brush_channels):
         strength = get_channel(context, "strength").value
         size = get_channel(context, "radius").value
         
+
+
     vertices = []
     colors = []
     indices = []
@@ -191,6 +193,9 @@ def draw_callback_px(self, context):
         # circle inside brush
         starti = len(vertices)
         for x, y in circlepoints:
+            if (context.area.type == 'IMAGE_EDITOR' and context.mode == 'PAINT_TEXTURE'):
+                size = context.tool_settings.image_paint.brush.size # + context.area.spaces.active.zoom
+
             vertices.append((int(size * x) + self.cur[0], int(size * y) + self.cur[1]))
             colors.append((self.brushcolor[0], self.brushcolor[1], self.brushcolor[2], strength * 0.25))
         for i in circleindices:
@@ -232,7 +237,7 @@ def draw_callback_px(self, context):
     
     if self.slider != 'NONE' and self.doingstr:
         xpos = self.start[0] + self.offset[0] - self.sliderwidth + (32 if self.text == 'MEDIUM' else 64 if self.text == 'LARGE' else 23)
-        ypos = self.start[1] + self.offset[1] - self.sliderheight# + (1 if self.slider != 'SMALL' else 0)
+        ypos = self.start[1] + self.offset[1] - self.sliderheight# + (1 if self.slider != 'SMALL' else 0) 
         
         if strength < 1.0:
             sliderscale = strength
@@ -282,21 +287,21 @@ def applyChanges(self):
         if self.mode == "SCULPT" and have_brush_channels:
             ch = get_channel(bpy.context, "strength")
             
-            modrate = self.strmod * 0.0025
+            modrate = self.strmod * 0.0005
             newval  = ch.value + modrate
-            if 10.0 > newval > 0.0:
+            if 1.0 > newval > 0.0:
                 ch.value = newval
                 self.strmod_total += modrate
         elif self.uni_str and self.mode != 'PARTICLE':
-            modrate = self.strmod * 0.0025
+            modrate = self.strmod * 0.0005
             newval  = unify_settings.strength + modrate
-            if 10.0 > newval > 0.0:
+            if 1.0 > newval > 0.0:
                 unify_settings.strength = newval
                 self.strmod_total += modrate
         else:
-            modrate = self.strmod * 0.0025
+            modrate = self.strmod * 0.0005
             newval  = self.brush.strength + modrate
-            if 10.0 > newval > 0.0:
+            if 1.0 > newval > 0.0:
                 self.brush.strength = newval
                 self.strmod_total += modrate
     
@@ -400,11 +405,12 @@ class PAINT_OT_brush_modal_quickset(bpy.types.Operator):
         description = "When adjusting one value, lock the other",
         default     = True)
     
+
     
     @classmethod
     def poll(cls, context):
-        return (context.area.type == 'VIEW_3D'
-                and context.mode in {'SCULPT', 'PAINT_WEIGHT', 'PAINT_VERTEX', 'PAINT_TEXTURE', 'PARTICLE'})
+        return ((context.area.type == 'VIEW_3D'
+                and context.mode in {'SCULPT', 'PAINT_WEIGHT', 'PAINT_VERTEX', 'PAINT_TEXTURE', 'PARTICLE'}) or (context.area.type == 'IMAGE_EDITOR' and context.mode == 'PAINT_TEXTURE'))
     
     
     def modal(self, context, event):

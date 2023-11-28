@@ -106,7 +106,7 @@ def main_decrease(context):
                     mod.sculpt_levels = mod_next_level
 
                 if mod_next_level != mod.render_levels:
-                    for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                    for mod in [m for m in obj.modifiers if m.type == 'DECIMATE' or m.type == 'TRIANGULATE']:
                         mod.show_viewport = False
 
 
@@ -117,12 +117,12 @@ def main_decrease(context):
 
                     # bpy.context.space_data.overlay.show_wireframes = False
                 if mod.levels == mod.render_levels:
-                    for dmod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                    for dmod in [m for m in obj.modifiers if m.type == 'DECIMATE' or m.type == 'TRIANGULATE']:
                         if dmod.show_viewport == True:
                             showing_decimators = True
                             
                 if showing_decimators:
-                    for dmod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                    for dmod in [m for m in obj.modifiers if m.type == 'DECIMATE' or m.type == 'TRIANGULATE']:
                         dmod.show_viewport = False
                         mod_next_level = mod.render_levels
                 else:
@@ -134,7 +134,7 @@ def main_decrease(context):
 
                 if mod_next_level == 0:
                     # bpy.context.space_data.overlay.show_wireframes = True
-                    for dmod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                    for dmod in [m for m in obj.modifiers if m.type == 'DECIMATE'  or m.type == 'TRIANGULATE']:
                         dmod.show_viewport = False
 
     return {'FINISHED'}
@@ -176,7 +176,7 @@ def main_increase(context):
                     mod.sculpt_levels = mod_next_level
 
                 if mod_next_level == mod_max_level:
-                    for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                    for mod in [m for m in obj.modifiers if m.type == 'DECIMATE' or m.type == 'TRIANGULATE']:
                         mod.show_viewport = not mod.show_viewport
 
             for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
@@ -189,11 +189,15 @@ def main_increase(context):
                 # if mod_next_level == mod_max_level:
 
             if is_max_subd:
-                for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                
+                for mod in [m for m in obj.modifiers if m.type == 'DECIMATE' or m.type == 'TRIANGULATE']:
                     is_decimated = True
                     if not mod.show_viewport :
                         mod.show_viewport = not mod.show_viewport
                     
+
+
+
                 if is_decimated:
                     for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:              
                             # optimized_mod_next_level = mod.levels - 1
@@ -217,7 +221,7 @@ def main_subdivide(self, context):
                 for mod in [m for m in obj.modifiers if m.type == 'SUBSURF']:
                     obj.modifiers.remove(mod)
 
-                for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                for mod in [m for m in obj.modifiers if m.type == 'DECIMATE' or m.type == 'TRIANGULATE']:
                     obj.modifiers.remove(mod)
 
 
@@ -252,10 +256,15 @@ def main_subdivide(self, context):
 
                     mod = obj.modifiers.new(name = 'Decimate', type = 'DECIMATE')
                     mod.decimate_type = 'COLLAPSE'
-                    mod.use_collapse_triangulate = True
+                    mod.use_collapse_triangulate = False
                     mod.ratio = 0.33
                 
-                for mod in [m for m in obj.modifiers if m.type == 'DECIMATE']:
+                    mod = obj.modifiers.new(name = 'Triangulate', type = 'TRIANGULATE')
+                    mod.quad_method = 'BEAUTY'
+                    mod.ngon_method = 'CLIP'
+
+
+                for mod in [m for m in obj.modifiers if m.type == 'DECIMATE' or m.type == 'TRIANGULATE']:
                     mod.show_viewport = not mod.show_viewport
 
 

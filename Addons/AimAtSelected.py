@@ -73,18 +73,43 @@ def main_aim(self, context):
                 bpy.context.scene.transform_orientation_slots[0].type = 'CURSOR'
 
                 if ob.type == 'CURVE':
-                    selected_knots = []
-                    for subcurve in ob.data.splines:
-                        for bezpoint in subcurve.bezier_points:
-                            if bezpoint.select_control_point:
-                                selected_knots.append(bezpoint)
-                    old_cursor_loc =  bpy.context.scene.cursor.location.copy()
-                    if len(selected_knots) != 0:
-                        bpy.ops.view3d.snap_cursor_to_selected()
-                        if bpy.context.scene.cursor.location ==  old_cursor_loc :
-                            bpy.ops.view3d.snap_cursor_to_center()
-                        else :
-                            bpy.ops.view3d.view_center_cursor()
+                    bpy.ops.view3d.snap_cursor_to_selected()
+
+                    # selected_knots = []
+                    # for subcurve in ob.data.splines:
+                    #     for bezpoint in subcurve.bezier_points:
+                    #         # if bezpoint.select_control_point:
+                    #         if bezpoint.select_control_point or bezpoint.select_left_handle or bezpoint.select_right_handle:
+                    #             selected_knots.append(bezpoint)
+                    # old_cursor_loc =  bpy.context.scene.cursor.location.copy()
+                    # if len(selected_knots) != 0:
+                    #     bpy.ops.view3d.snap_cursor_to_selected()
+                    #     if bpy.context.scene.cursor.location ==  old_cursor_loc :
+                    #         bpy.ops.view3d.snap_cursor_to_center()
+                    #     else :
+                    #         bpy.ops.view3d.view_center_cursor()
+
+
+                    # # Store initial cursor location 
+                    # old_cursor_loc = bpy.context.scene.cursor.location.copy()
+
+                    # # Get selected control points
+                    # curve = bpy.context.object
+                    # selected_knots = [k for k in curve.data.splines[0].bezier_points if k.select_control_point]
+
+                    # if selected_knots:
+                    #     bpy.ops.view3d.snap_cursor_to_selected()
+                    # # Snap cursor
+                        
+                    #     # if bpy.context.scene.cursor.location == old_cursor_loc:
+                        #     # If snap didn't move cursor, set to curve origin
+                        #     bpy.context.scene.cursor.location = curve.location 
+                        # else:
+                        #     # Center view on cursor
+                        #     bpy.ops.view3d.view_center_cursor()
+
+                        # # Reset cursor rotation  
+                        # bpy.context.scene.cursor.rotation_euler = (0, 0, 0)
 
 
 
@@ -279,7 +304,7 @@ def main_toggle(context):
 class BR_OT_aim_at_selected(bpy.types.Operator):
     """Aim at Selected"""
     bl_idname = "wm.aim_at_selected"
-    bl_label = "Aim Selected"
+    bl_label = "Aim At Selected"
 
     def execute(self, context):
         main_aim(self, context)

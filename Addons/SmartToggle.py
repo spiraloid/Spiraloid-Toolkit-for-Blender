@@ -10,17 +10,21 @@ bl_info = {
 import bpy
 previous_mode = None
 
+def has_lights(scene):
+    return any(obj.type == 'LIGHT' for obj in scene.objects)
 
 def main_toggle(self, context):
     global previous_mode
-    if context.area.type == 'IMAGE_EDITOR':
-        if bpy.context.area.ui_type == 'UV':
-            bpy.context.area.ui_type = 'VIEW'
-        if bpy.context.area.ui_type == 'VIEW':
-            bpy.context.area.ui_type = 'UV'
+    if context.area :
+        if context.area.type == 'IMAGE_EDITOR':
+            if bpy.context.area.ui_type == 'UV':
+                bpy.context.area.ui_type = 'VIEW'
+            if bpy.context.area.ui_type == 'VIEW':
+                bpy.context.area.ui_type = 'UV'
 
     if bpy.context.area.type == 'VIEW_3D':
         if bpy.context.active_object: 
+
             if (bpy.context.active_object.mode == 'EDIT'):
 
                 # else:
@@ -41,8 +45,16 @@ def main_toggle(self, context):
 
                 if previous_mode == 'EDIT' or previous_mode == None:
                     bpy.ops.object.mode_set(mode='OBJECT')
+                    bpy.ops.view3d.localview()
                     previous_mode = 'OBJECT'
-                    
+                    # Re-enable scene lights and world if they exist
+                    for space in bpy.context.area.spaces:
+                        if space.type == 'VIEW_3D':
+                            if bpy.context.scene.world:
+                                space.shading.use_scene_world = True
+                                
+                            if has_lights(bpy.context.scene):
+                                space.shading.use_scene_lights = True
 
                 if previous_mode == 'POSE' or previous_mode == 'WEIGHT_PAINT':
                     active_object = bpy.context.active_object
@@ -62,6 +74,14 @@ def main_toggle(self, context):
                             bpy.ops.object.mode_set(mode='POSE')
                             previous_mode = None
 
+                if previous_mode == 'TEXTURE_PAINT':
+                    bpy.ops.object.mode_set(mode='TEXTURE_PAINT')
+                    bpy.context.object.data.use_paint_mask = True
+                    bpy.context.scene.tool_settings.image_paint.use_occlude = False
+                    bpy.context.space_data.overlay.show_overlays = False
+
+                    previous_mode = 'EDIT'
+
                 return {'FINISHED'}
 
             if (bpy.context.active_object.mode == 'SCULPT'):
@@ -77,6 +97,12 @@ def main_toggle(self, context):
 
                 if bpy.context.active_object.type == 'MESH' or bpy.context.active_object.type == 'CURVE':
                     bpy.ops.object.mode_set(mode='EDIT')
+                    for space in bpy.context.area.spaces:
+                        if space.type == 'VIEW_3D':
+                            space.shading.use_scene_lights = False
+                            space.shading.use_scene_world = False
+                            if not space.local_view:  # Check if local view is enabled
+                                bpy.ops.view3d.localview()
                     previous_mode = 'EDIT'
 
 
@@ -103,8 +129,11 @@ def main_toggle(self, context):
                             mesh.select_set(state=True)
                             bpy.context.view_layer.objects.active = mesh
                         bpy.ops.object.mode_set(mode='WEIGHT_PAINT')
-                        bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[selected_bones[0].name]
-                        bpy.context.object.data.use_paint_mask_vertex = False
+                        try:
+                            bpy.context.object.vertex_groups.active = bpy.context.object.vertex_groups[selected_bones[0].name]
+                            bpy.context.object.data.use_paint_mask_vertex = False
+                        except:
+                            pass
                         previous_mode = 'POSE'
                         
                         return {'FINISHED'}
@@ -144,6 +173,10 @@ def main_toggle(self, context):
                         # previous_mode = None
                     return {'FINISHED'}
 
+            if (bpy.context.active_object.mode == 'TEXTURE_PAINT'):
+                bpy.ops.object.mode_set(mode='EDIT')
+                bpy.context.space_data.overlay.show_overlays = True
+                previous_mode = 'TEXTURE_PAINT'
 
                 
 class BR_OT_smart_toggle(bpy.types.Operator):

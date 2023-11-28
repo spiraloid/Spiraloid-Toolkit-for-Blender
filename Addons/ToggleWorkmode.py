@@ -74,7 +74,7 @@ def toggle_workmode(self, context, rendermode):
                     space.overlay.show_motion_paths = True
                     space.overlay.show_object_origins = True
                     space.overlay.show_annotation = True
-                    space.overlay.show_text = True
+                    # space.overlay.show_text = True
                     space.overlay.show_stats = True
                     previous_toolbar_state = space.show_region_toolbar
                     previous_region_ui_state = space.show_region_ui
@@ -82,8 +82,18 @@ def toggle_workmode(self, context, rendermode):
 
 
                     if isWorkmodeToggled:
+                        if (bpy.context.active_object):
+                            if (bpy.context.active_object.mode == 'TEXTURE_PAINT'):
+                                try:
+                                    bpy.ops.image.save_all_modified()
+                                except:
+                                    pass
+                                space.overlay.show_overlays = False
+                            else:
+                                space.overlay.show_overlays = True
+
+
                         previous_selection = bpy.context.selected_objects
-                        space.overlay.show_overlays = True
                         space.overlay.show_floor = False
                         space.overlay.show_axis_x = False
                         space.overlay.show_axis_y = False
@@ -98,7 +108,6 @@ def toggle_workmode(self, context, rendermode):
                         space.overlay.show_outline_selected = False
                         space.overlay.show_extras = False
                         space.show_gizmo = False
-                        space.overlay.show_text = False
                         space.overlay.show_stats = False
                         space.show_region_toolbar = previous_toolbar_state
                         space.show_region_ui = previous_region_ui_state
@@ -117,9 +126,9 @@ def toggle_workmode(self, context, rendermode):
                             # space.overlay.show_outline_selected = True
                             space.overlay.show_extras = True
                             space.overlay.show_overlays = True
-                            space.overlay.show_text = True
+                            # space.overlay.show_text = True
                             space.overlay.show_stats = True
-                            space.overlay.wireframe_opacity = 0.4
+                            space.overlay.wireframe_opacity = 0.75
 
 
                             # bpy.context.space_data.overlay.show_cursor = True
@@ -184,7 +193,8 @@ def toggle_workmode(self, context, rendermode):
 
 
                         if previous_mode == 'SCULPT':
-                            bpy.context.scene.tool_settings.sculpt.show_face_sets = False
+                            # bpy.context.scene.tool_settings.sculpt.show_face_sets = False
+                            bpy.context.space_data.overlay.show_sculpt_face_sets = False
 
 
                     else:
@@ -199,10 +209,18 @@ def toggle_workmode(self, context, rendermode):
                         space.overlay.show_motion_paths = True
                         space.overlay.show_object_origins = True
                         space.overlay.show_annotation = True
-                        space.overlay.show_text = True
+                        # space.overlay.show_text = True
                         space.overlay.show_stats = True
                         space.overlay.wireframe_threshold = 1
                         space.overlay.wireframe_opacity = 0.75
+
+                        if (bpy.context.active_object):
+                            if (bpy.context.active_object.mode == 'TEXTURE_PAINT'):
+                                space.shading.light = 'FLAT'
+                                space.overlay.show_overlays = False
+                                space.shading.background_color = (0.0362528, 0.0362528, 0.0362528)
+                                space.shading.background_type = 'VIEWPORT'
+
 
 
                         space.show_gizmo = True
@@ -212,6 +230,8 @@ def toggle_workmode(self, context, rendermode):
 
 
                         if previous_mode == 'EDIT':
+                            space.shading.use_scene_lights = False
+                            space.shading.use_scene_world = False
                             if not len(bpy.context.selected_objects):
                                 bpy.ops.object.editmode_toggle()
                             # else:
@@ -244,7 +264,7 @@ def toggle_workmode(self, context, rendermode):
                                 space.overlay.show_motion_paths = True
                                 space.overlay.show_object_origins = True
                                 space.overlay.show_annotation = True
-                                space.overlay.show_text = True
+                                # space.overlay.show_text = True
                                 space.overlay.show_stats = True
                                 space.overlay.wireframe_threshold = 1
                                 space.overlay.show_fade_inactive = False
@@ -276,7 +296,6 @@ def toggle_workmode(self, context, rendermode):
                             space.overlay.show_object_origins = False
                             space.overlay.show_annotation = False
                             space.overlay.show_text = False
-                            space.overlay.show_text = False
                             space.overlay.show_outline_selected = False
                             space.overlay.show_extras = False
                             space.overlay.show_overlays = True
@@ -291,9 +310,12 @@ def toggle_workmode(self, context, rendermode):
 
 
                             if isWireframe:
-                                bpy.context.scene.tool_settings.sculpt.show_face_sets = True
+                                # bpy.context.scene.tool_settings.sculpt.show_face_sets = True
+                                bpy.context.space_data.overlay.show_sculpt_face_sets = True
+
                             else:
-                                bpy.context.scene.tool_settings.sculpt.show_face_sets = False
+                                # bpy.context.scene.tool_settings.sculpt.show_face_sets = False
+                                bpy.context.space_data.overlay.show_sculpt_face_sets = False
 
 
 
